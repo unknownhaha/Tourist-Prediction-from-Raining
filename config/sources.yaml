@@ -1,0 +1,55 @@
+date_window:
+  start: "2018-01"
+  end: "2025-08"
+
+covid_window:
+  start: "2020-03"
+  end: "2022-12"
+
+hii:
+  csv_url: "https://data.hii.or.th/dataset/38cbfb06-e174-4653-accd-d491121ba752/resource/120aba77-b0a7-44c0-8043-91124dac45ed/download/spatial-rain-hii.csv"
+  api_url: "https://data.hii.or.th/api/3/action/datastore_search"
+  resource_id: "120aba77-b0a7-44c0-8043-91124dac45ed"
+
+nso:
+  survey_code: MD
+  type_menu: 2
+  rounds:
+    - year_be: 2561
+      subcode: sg
+    - year_be: 2563
+      subcode: MX
+    - year_be: 2565
+      subcode: ks
+  get_survey_file_url: "https://www.nso.go.th/nsoweb/nso/getSurveyFile"
+
+mots:
+  hub_category_id: 411
+  year_categories:
+    - year_be: 2561
+      year_ce: 2018
+      category_id: 497
+    - year_be: 2562
+      year_ce: 2019
+      category_id: 521
+    - year_be: 2563
+      year_ce: 2020
+      category_id: 592
+    - year_be: 2564
+      year_ce: 2021
+      category_id: 628
+    - year_be: 2565
+      year_ce: 2022
+      category_id: 655
+    - year_be: 2566
+      year_ce: 2023
+      category_id: 704
+    - year_be: 2567
+      year_ce: 2024
+      category_id: 758
+    - year_be: 2568
+      year_ce: 2025
+      category_id: 805
+  rss_category_url: "https://www.mots.go.th/api/rss/category/{category_id}"
+  rate_limit_seconds: 1.5
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"

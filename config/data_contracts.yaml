@@ -1,0 +1,24 @@
+dim_province:
+  grain: [province_id]
+  required_columns: [province_id, province_th, region]
+  unique: [province_id]
+
+dim_month:
+  grain: [year_month]
+  required_columns: [year_month, year_ce, month, year_be, is_covid]
+  unique: [year_month]
+
+fact_rainfall:
+  grain: [province_id, year_month]
+  required_columns: [province_id, year_month, avg_rain_mm]
+  unique: [province_id, year_month]
+
+fact_tourism_province_month:
+  grain: [province_id, year_month, metric, tourist_type]
+  required_columns: [province_id, year_month, metric, tourist_type, value, unit]
+  unique: [province_id, year_month, metric, tourist_type]
+
+province_month:
+  grain: [province_id, year_month]
+  required_columns: [province_id, year_month, is_covid]
+  unique: [province_id, year_month]
