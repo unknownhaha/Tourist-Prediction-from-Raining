@@ -8,7 +8,7 @@ def main() -> int:
     path = run_all()
     added = extend_from_mots()
     if added:
-        print(f"Crosswalk: added {added} MOTS aliases (map province_id manually if needed)")
+        print(f"MOTS unmapped province names: {added} (see data/staging/mots/quarantine/unmapped_provinces.csv)")
     print(f"MOTS staging: {path}")
     return 0
 

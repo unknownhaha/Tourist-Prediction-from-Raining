@@ -77,23 +77,22 @@ def stage(csv_path: Path) -> Path:
     return path
 
 
-def build_province_crosswalk(csv_path: Path) -> Path:
-    df = pd.read_csv(csv_path)
-    provinces = (
-        df[["PROV_ID", "PROV_T"]]
-        .drop_duplicates()
-        .rename(columns={"PROV_ID": "province_id", "PROV_T": "province_th"})
-    )
-    provinces["canonical_key"] = provinces["province_id"].astype(str)
-    provinces["alias"] = provinces["province_th"]
-    provinces["region"] = ""
-    provinces["province_en"] = ""
+def validate_province_crosswalk(csv_path: Path) -> Path:
+    """Ensure HII province IDs match config/province_crosswalk.csv (do not overwrite)."""
     from src.common.paths import CONFIG
 
+    hii = pd.read_csv(csv_path)[["PROV_ID", "PROV_T"]].drop_duplicates()
     path = CONFIG / "province_crosswalk.csv"
-    provinces[
-        ["canonical_key", "province_id", "alias", "province_th", "province_en", "region"]
-    ].to_csv(path, index=False)
+    if not path.exists():
+        from src.common.provinces import write_crosswalk_if_needed
+
+        return write_crosswalk_if_needed()
+    cw = pd.read_csv(path)
+    hii_ids = set(hii["PROV_ID"].astype(int).astype(str))
+    cw_ids = set(cw["province_id"].dropna().astype(int).astype(str))
+    missing = hii_ids - cw_ids
+    if missing:
+        raise ValueError(f"province_crosswalk missing HII ids: {sorted(missing)[:5]}")
     return path
 
 
@@ -101,7 +100,7 @@ def main() -> int:
     run_id = new_run_id()
     csv_path = download_csv(run_id)
     stage(csv_path)
-    build_province_crosswalk(csv_path)
+    validate_province_crosswalk(csv_path)
     print(f"HII staged: {STAGING / 'hii' / 'fact_rainfall.parquet'}")
     return 0
 

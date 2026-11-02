@@ -1,0 +1,168 @@
+project:
+  name: ทำนายนักท่องเที่ยวจากฝน
+  tagline: ไปปไลน์ข้อมูลจังหวัด × เดือน (ฝน HII ท่องเที่ยว MOTS ที่พัก NSO)
+
+ui:
+  skip_link: ข้ามไปเนื้อหา
+  handbook: คู่มือ
+  pipeline: ไปปไลน์
+  folders: โฟลเดอร์
+  search_label: ค้นหา
+  search_placeholder: ข้อความในคู่มือ…
+  badge_generated: สร้างอัตโนมัติ
+  badge_optional: เลือกได้
+  badge_pipeline: ไปปไลน์
+  detail_empty: เลือกขั้นตอนไปปไลน์หรือโฟลเดอร์เพื่อดูคำสั่งและ path
+  copy: คัดลอก
+  copied: คัดลอกแล้ว
+  when: เมื่อไหร่
+  inputs: ข้อมูลเข้า
+  outputs: ผลลัพธ์
+  notes: หมายเหตุ
+  command: คำสั่ง
+  purpose: วัตถุประสงค์
+  edit_in_repo: แก้ใน repo ได้
+  edit_yes: ได้ — ด้วยความระมัดระวัง
+  edit_no: ไม่ — สร้างใหม่ผ่านไปปไลน์
+  open_handbook: เปิดคู่มือ
+  search_matches: ผลการค้นหา
+  doc_title_suffix: คู่มือ
+  lang_label: ภาษา
+  generated_notice: เอกสารนี้สร้างอัตโนมัติจากไปปไลน์ (เนื้อหาหลักเป็นภาษาอังกฤษ)
+  chart_no_data: ยังไม่มีข้อมูลแผนภูมิ รัน python -m src.core.build_core แล้ว python -m src.docs.build_site
+  chart_axis_month: เดือน
+  chart_axis_tourism: ท่องเที่ยว (ผลรวมประเทศ)
+  chart_axis_rain: ฝน (มม. เฉลี่ย)
+  chart_legend_guests: Guest arrivals
+  chart_legend_visitors: Visitors
+  chart_legend_rain: ฝนเฉลี่ย
+  chart_covid_band: ช่วง COVID (ธงโครงการ)
+  chart_hover_month: เดือน
+  chart_null: —
+
+roles:
+  operator:
+    title: ผู้ดูแลไปปไลน์
+    brief: ติดตั้ง dependencies รัน ingest → staging → core → QA และรู้ว่าควรรันเฉพาะส่วนใดหลังเปลี่ยนการดาวน์โหลดหรือ config
+  ds_ml:
+    title: วิทยาการข้อมูล / ML
+    brief: เริ่มโมเดลจาก province_month.parquet (โครงสร้าง 77 × 92) ใช้ตาราง long สำหรับ metric อื่น ไปปไลน์ไม่สร้างฟีเจอร์โมเดล
+  qa:
+    title: QA / นักวิเคราะห์
+    brief: รัน checks และ pytest อ่าน coverage และ manifest ตรวจ quarantine CSV ของ MOTS เมื่อตัวเลขต่ำ
+  stakeholder:
+    title: ผู้มีส่วนได้ส่วนเสีย
+    brief: แหล่งข้อมูล ช่วงเวลา และความหมายของตารางรวม โดยไม่ต้องรัน Python
+
+pages:
+  national:
+    title: ภาพรวมระดับประเทศ
+  index:
+    title: ดัชนีคู่มือ
+  stakeholder:
+    title: ภาพรวมผู้มีส่วนได้ส่วนเสีย
+  operator:
+    title: คู่มือผู้ปฏิบัติการ
+  repository:
+    title: แผนที่ repository
+  data_dictionary:
+    title: พจนานุกรมข้อมูล
+  handoff_ds_ml_qa:
+    title: ส่งต่อ DS / ML / QA
+  coverage_report:
+    title: รายงานความครอบคลุม
+  file_type_catalog:
+    title: แคตตาล็อกไฟล์ MOTS
+
+stages:
+  setup:
+    title: ติดตั้ง
+    when: clone ครั้งแรกหรือเปลี่ยน dependencies
+    inputs: requirements.txt
+    outputs: สภาพแวดล้อม Python พร้อม Playwright Chromium; 7-Zip บน PATH (Windows)
+  hii:
+    title: ดึงข้อมูลฝน HII
+    when: อัปเดตฝนจาก HII หรือ data/raw/hii ว่าง
+    inputs: config/sources.yaml (hii.csv_url)
+    outputs: data/raw/hii/spatial-rain-hii.csv, data/staging/hii/fact_rainfall.parquet
+  nso:
+    title: ดึงข้อมูลที่พัก NSO
+    when: ดาวน์โหลด RAR สำรวจ MD; ใช้ --stage-only ถ้ามี RAR แล้ว
+    inputs: config/sources.yaml (nso rounds)
+    outputs: data/raw/nso/, data/staging/nso/fact_accommodation_nso_inventory.parquet
+  mots_tree:
+    title: ต้นไม้หมวด MOTS
+    when: ก่อน crawl ครั้งแรกหรือโครงสร้างเว็บ MOTS เปลี่ยน
+    inputs: config/sources.yaml (mots hub)
+    outputs: config/mots_category_tree.json
+  mots_crawl:
+    title: Crawler MOTS
+    when: ทดลองหนึ่งปี พ.ศ.; ใช้ --all สำหรับทุกปีที่ตั้งค่า
+    inputs: ต้นไม้หมวด, Playwright สำหรับบางแนบ
+    outputs: data/raw/mots/, แถวใน manifest
+    notes: Flags --inventory-only, --skip-posts
+  mots_cleanup:
+    title: ทำความสะอาด MOTS (ทางเลือก)
+    when: ย้ายดาวน์โหลดเมนู 2018 ที่ไม่เกี่ยวออกจาก data/raw/mots
+    inputs: data/raw/mots/2018/
+    outputs: data/raw/_offtopic/mots/
+  staging:
+    title: Staging MOTS
+    when: หลังมี raw MOTS ใหม่หรืออัปเดต crosswalk
+    inputs: data/raw/mots/, config/province_crosswalk.csv
+    outputs: fact_tourism_long.parquet, quarantine/*.csv
+  catalog:
+    title: แคตตาล็อกไฟล์ MOTS
+    when: หลัง ingest MOTS ใหญ่; อัปเดต file_type_catalog.md
+    inputs: data/raw/mots/
+    outputs: docs/file_type_catalog.md
+  core:
+    title: สร้างตาราง core
+    when: หลัง staging หรือ staging HII เปลี่ยน
+    inputs: data/staging/, crosswalk
+    outputs: data/core/*.parquet (7 ตาราง)
+  qa_checks:
+    title: ตรวจ QA
+    when: หลัง build core; เกณฑ์ก่อนส่งมอบ
+    inputs: data/core/, config/data_contracts.yaml
+    outputs: รหัส exit 0/1; สรุปบน console
+  coverage:
+    title: รายงานความครอบคลุม
+    when: อัปเดต coverage_report.md จาก core/manifest ปัจจุบัน
+    inputs: data/core/, manifest
+    outputs: docs/coverage_report.md
+  pytest:
+    title: Pytest
+    when: หลังเปลี่ยนโค้ดหรือสัญญาข้อมูล
+    inputs: tests/, data/core/
+    outputs: ผ่าน/ไม่ผ่าน
+
+folders:
+  config:
+    purpose: URL ช่วงวันที่ สัญญาข้อมูล crosswalk จังหวัด ต้นไม้หมวด MOTS
+  src_ingest:
+    purpose: ดาวน์โหลด CSV HII, RAR NSO, แนบ MOTS ผ่าน crawler
+  src_staging:
+    purpose: แปลง raw เป็น staging Parquet (MOTS long, ฝน HII)
+  src_core:
+    purpose: สร้างมิติ ข้อเท็จจริง และ province_month
+  src_qa:
+    purpose: ตรวจสัญญา ความสอดคล้อง ตัวสร้าง coverage report
+  src_catalog:
+    purpose: โปรไฟล์ layout workbook MOTS → file_type_catalog.md
+  src_common:
+    purpose: paths ปฏิทิน manifest จังหวัด โหลด config
+  data_raw:
+    purpose: ดาวน์โหลดดิบ ไม่แก้ด้วยมือ — สร้างใหม่ผ่าน ingest
+  data_staging:
+    purpose: Parquet ที่ parse แล้ว และ quarantine CSV ของ MOTS
+  data_core:
+    purpose: ตารางพร้อมโมเดล รวม province_month.parquet
+  data_manifest:
+    purpose: manifest_downloads.csv — ที่มาต่อ URL (บันทึก append)
+  docs:
+    purpose: markdown คู่มือ และ explorer.yaml (ต้นฉบับ HTML)
+  tests:
+    purpose: pytest สำหรับ staging, core, QA, ingest
+  site:
+    purpose: HTML explorer (รัน python -m src.docs.build_site)

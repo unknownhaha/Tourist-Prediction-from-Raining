@@ -20,5 +20,8 @@ fact_tourism_province_month:
 
 province_month:
   grain: [province_id, year_month]
-  required_columns: [province_id, year_month, is_covid]
+  required_columns: [province_id, year_month, is_covid, guest_arrivals, visitors_total]
   unique: [province_id, year_month]
+  coverage:
+    guest_arrivals_min_non_null: 5000
+    visitors_total_min_non_null: 2400

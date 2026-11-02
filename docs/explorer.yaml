@@ -1,0 +1,216 @@
+project:
+  name: Tourist Prediction from Raining
+  tagline: Province × month data pipeline (HII rainfall, MOTS tourism, NSO accommodation)
+
+roles:
+  operator:
+    title: Pipeline operator
+    start_page: operator
+    brief: >
+      Install dependencies, run ingest → staging → core → QA, and know when to rerun
+      only part of the pipeline after downloads or config changes.
+  ds_ml:
+    title: Data science / ML
+    start_page: national
+    brief: >
+      Start modeling from province_month.parquet (77 × 92 spine). Use the long table
+      for custom metrics; this pipeline does not build model features.
+  qa:
+    title: QA / analyst
+    start_page: handoff_ds_ml_qa
+    brief: >
+      Run automated checks and pytest, interpret coverage and manifest status, and
+      review MOTS quarantine CSVs when numbers look low.
+  stakeholder:
+    title: Stakeholder
+    start_page: national
+    brief: >
+      What data sources feed the project, the published date window, and what the
+      combined table represents — without running Python.
+
+pages:
+  - id: national
+    title: National picture
+    path: docs/national_picture.md
+    path_th: docs/th/national_picture.md
+  - id: index
+    title: Handbook index
+    path: docs/index.md
+    path_th: docs/th/index.md
+  - id: stakeholder
+    title: Stakeholder overview
+    path: docs/stakeholder_overview.md
+    path_th: docs/th/stakeholder_overview.md
+  - id: operator
+    title: Operator runbook
+    path: docs/pipeline_operators.md
+    path_th: docs/th/pipeline_operators.md
+  - id: repository
+    title: Repository map
+    path: docs/repository_map.md
+    path_th: docs/th/repository_map.md
+  - id: data_dictionary
+    title: Data dictionary
+    path: docs/data_dictionary.md
+    path_th: docs/th/data_dictionary.md
+  - id: handoff_ds_ml_qa
+    title: DS / ML / QA handoff
+    path: docs/handoff_ds_ml_qa.md
+    path_th: docs/th/handoff_ds_ml_qa.md
+  - id: coverage_report
+    title: Coverage report
+    path: docs/coverage_report.md
+    generated: true
+  - id: file_type_catalog
+    title: MOTS file catalog
+    path: docs/file_type_catalog.md
+    generated: true
+
+folders:
+  - id: config
+    path: config/
+    purpose: Source URLs, date windows, data contracts, province crosswalk, MOTS category tree
+    editable: true
+  - id: src_ingest
+    path: src/ingest/
+    purpose: Download HII CSV, NSO RARs, MOTS attachments via crawler
+    editable: true
+  - id: src_staging
+    path: src/staging/
+    purpose: Parse raw files into staging Parquet (MOTS long table, HII rainfall)
+    editable: true
+  - id: src_core
+    path: src/core/
+    purpose: Build dimension and fact tables plus province_month spine
+    editable: true
+  - id: src_qa
+    path: src/qa/
+    purpose: Contract checks, consistency rules, coverage report generator
+    editable: true
+  - id: src_catalog
+    path: src/catalog/
+    purpose: Profile MOTS workbook layouts into file_type_catalog.md
+    editable: true
+  - id: src_common
+    path: src/common/
+    purpose: Paths, calendar, manifest, provinces, config loader
+    editable: true
+  - id: data_raw
+    path: data/raw/
+    purpose: Untouched downloads (HII, MOTS, NSO). Rebuild via ingest, do not hand-edit
+    editable: false
+  - id: data_staging
+    path: data/staging/
+    purpose: Parsed Parquet and MOTS quarantine CSVs
+    editable: false
+  - id: data_core
+    path: data/core/
+    purpose: Modeling-ready tables including province_month.parquet
+    editable: false
+  - id: data_manifest
+    path: data/manifest/
+    purpose: manifest_downloads.csv — provenance per URL (append-only log)
+    editable: false
+  - id: docs
+    path: docs/
+    purpose: Handbook markdown and explorer.yaml (source for HTML site)
+    editable: true
+  - id: tests
+    path: tests/
+    purpose: Pytest contracts for staging, core, QA, and ingest helpers
+    editable: true
+  - id: site
+    path: site/
+    purpose: Generated HTML explorer (run python -m src.docs.build_site)
+    editable: false
+
+stages:
+  - id: setup
+    title: Setup
+    command: pip install -r requirements.txt && python -m playwright install chromium
+    when: First clone or after dependency changes
+    inputs: requirements.txt
+    outputs: Python env with Playwright Chromium; 7-Zip on PATH for NSO RAR (Windows)
+    page: operator
+    optional: false
+  - id: hii
+    title: HII rainfall ingest
+    command: python -m src.ingest.hii
+    when: Refresh rainfall from HII or empty data/raw/hii
+    inputs: config/sources.yaml (hii.csv_url)
+    outputs: data/raw/hii/spatial-rain-hii.csv, data/staging/hii/fact_rainfall.parquet
+    page: operator
+  - id: nso
+    title: NSO accommodation ingest
+    command: python -m src.ingest.nso
+    when: Download NSO MD survey RARs; use --stage-only if RARs already in data/raw
+    inputs: config/sources.yaml (nso rounds)
+    outputs: data/raw/nso/, data/staging/nso/fact_accommodation_nso_inventory.parquet
+    page: operator
+  - id: mots_tree
+    title: MOTS category tree
+    command: python -m src.ingest.mots_crawler --build-tree
+    when: Before first crawl or when MOTS site structure changes
+    inputs: config/sources.yaml (mots hub)
+    outputs: config/mots_category_tree.json
+    page: operator
+  - id: mots_crawl
+    title: MOTS crawler
+    command: python -m src.ingest.mots_crawler --year-be 2561
+    when: Pilot one BE year; use --all for all configured years
+    inputs: Category tree, Playwright for some attachments
+    outputs: data/raw/mots/, rows in data/manifest/manifest_downloads.csv
+    page: operator
+    notes: Flags --inventory-only, --skip-posts
+  - id: mots_cleanup
+    title: MOTS cleanup (optional)
+    command: python -m src.ingest.mots_cleanup
+    when: Move off-topic 2018 menu downloads out of data/raw/mots
+    inputs: data/raw/mots/2018/{category folders}
+    outputs: data/raw/_offtopic/mots/
+    page: operator
+    optional: true
+  - id: staging
+    title: MOTS staging
+    command: python -m src.staging
+    when: After new MOTS raw files or crosswalk updates
+    inputs: data/raw/mots/, config/province_crosswalk.csv
+    outputs: data/staging/mots/fact_tourism_long.parquet, quarantine/*.csv
+    page: operator
+  - id: catalog
+    title: MOTS file catalog
+    command: python -m src.catalog.profile_mots
+    when: After large MOTS ingest; refreshes docs/file_type_catalog.md
+    inputs: data/raw/mots/
+    outputs: docs/file_type_catalog.md
+    page: operator
+    optional: true
+  - id: core
+    title: Build core tables
+    command: python -m src.core.build_core
+    when: After staging or HII staging changes
+    inputs: data/staging/, crosswalk
+    outputs: data/core/*.parquet (seven tables)
+    page: operator
+  - id: qa_checks
+    title: QA checks
+    command: python -m src.qa.checks
+    when: After core build; gate before handoff
+    inputs: data/core/, config/data_contracts.yaml
+    outputs: Exit code 0/1; console summary
+    page: handoff_ds_ml_qa
+  - id: coverage
+    title: Coverage report
+    command: python -m src.qa.coverage_report
+    when: Refresh docs/coverage_report.md from current core/manifest
+    inputs: data/core/, manifest
+    outputs: docs/coverage_report.md
+    page: coverage_report
+    optional: true
+  - id: pytest
+    title: Pytest
+    command: python -m pytest tests/
+    when: After code or data contract changes
+    inputs: tests/, data/core/ (some tests)
+    outputs: Test pass/fail
+    page: handoff_ds_ml_qa
