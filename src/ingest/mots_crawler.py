@@ -19,9 +19,35 @@ from src.common.manifest import append_row, known_news_url, known_url, new_run_i
 from src.common.paths import CONFIG, RAW
 
 MOTS_RAW = RAW / "mots"
-ATTACH_RE = re.compile(
-    r'href="([^"]+\.(?:xlsx|xls|xlsx?|zip|rar|pdf))"', re.I
-)
+ATTACH_RE = re.compile(r'href="([^"]+\.(?:xlsx|xls|zip|rar|pdf))"', re.I)
+
+# Linked from every category page (site menu), not year-specific statistics.
+SITEWIDE_CATEGORY_IDS = {
+    3,
+    11,
+    12,
+    30,
+    55,
+    56,
+    59,
+    60,
+    72,
+    73,
+    74,
+    139,
+    260,
+    297,
+    335,
+    367,
+    411,
+    427,
+    466,
+    651,
+    773,
+    816,
+    823,
+    826,
+}
 CATEGORY_RE = re.compile(r"/news/category/(\d+)")
 NEWS_LINK_RE = re.compile(r'href="(/news/\d+)"')
 
@@ -87,10 +113,37 @@ def build_tree(session: requests.Session, cfg: dict) -> list[dict]:
         }
         time.sleep(cfg["rate_limit_seconds"])
         for child in parse_child_categories(html):
+            if child in SITEWIDE_CATEGORY_IDS:
+                continue
             if child not in seen:
                 queue.append((child, cid, year_be))
 
     return list(nodes.values())
+
+
+def discover_year_category_ids(
+    session: requests.Session,
+    cfg: dict,
+    root_id: int,
+) -> set[int]:
+    """BFS from a year root, skipping sitewide menu categories."""
+    year_roots = {y["category_id"] for y in cfg["year_categories"]}
+    seen: set[int] = {root_id}
+    queue = [root_id]
+    while queue:
+        cid = queue.pop(0)
+        html = fetch_category_html(session, cid)
+        time.sleep(cfg["rate_limit_seconds"])
+        for child in parse_child_categories(html):
+            if child in seen:
+                continue
+            if child in SITEWIDE_CATEGORY_IDS:
+                continue
+            if child in year_roots and child != root_id:
+                continue
+            seen.add(child)
+            queue.append(child)
+    return seen
 
 
 def category_descendants(tree: list[dict], root_id: int) -> set[int]:
@@ -238,15 +291,17 @@ def download_attachments(
     run_id: str,
     meta: dict,
     storage_slug: str,
-) -> tuple[int, int]:
+) -> tuple[int, int, int]:
     files = 0
     total_bytes = 0
+    failures = 0
     year_ce = meta["year_ce"]
     cid = meta["category_id"]
     news_url = meta["news_url"]
     title = meta["news_title"]
     for file_url in attach_urls:
-        if known_url("mots", file_url):
+        prev = known_url("mots", file_url)
+        if prev and prev.get("status") == "ok":
             continue
         ext = Path(urlparse(file_url).path).suffix.lower().lstrip(".")
         dest = (
@@ -256,7 +311,7 @@ def download_attachments(
             / storage_slug
             / Path(urlparse(file_url).path).name
         )
-        if dest.exists():
+        if dest.exists() and prev and prev.get("status") == "ok":
             continue
         try:
             status, size = download_file(session, file_url, dest)
@@ -282,7 +337,10 @@ def download_attachments(
             if status == 200:
                 files += 1
                 total_bytes += size
+            else:
+                failures += 1
         except Exception as e:
+            failures += 1
             append_row(
                 {
                     "run_id": run_id,
@@ -297,18 +355,23 @@ def download_attachments(
                     "error_message": str(e)[:500],
                 }
             )
-    return files, total_bytes
+    return files, total_bytes, failures
 
 
 def download_file(session: requests.Session, url: str, dest: Path) -> tuple[int, int]:
     dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dest.with_suffix(dest.suffix + ".part")
     r = session.get(url, timeout=300, stream=True)
+    if r.status_code != 200:
+        tmp.unlink(missing_ok=True)
+        raise RuntimeError(f"HTTP {r.status_code} for {url}")
     size = 0
-    with dest.open("wb") as f:
+    with tmp.open("wb") as f:
         for chunk in r.iter_content(65536):
             if chunk:
                 f.write(chunk)
                 size += len(chunk)
+    tmp.replace(dest)
     return r.status_code, size
 
 
@@ -331,7 +394,7 @@ def crawl_year(
         tree = build_tree(session, cfg)
         save_tree(tree)
 
-    cat_ids = category_descendants(tree, root_id)
+    cat_ids = discover_year_category_ids(session, cfg, root_id)
 
     stats = {"categories": len(cat_ids), "posts": 0, "files": 0, "bytes": 0, "inventory": []}
 
@@ -363,7 +426,7 @@ def crawl_year(
                 "news_url": cat_url,
                 "news_title": cat_title,
             }
-            f, b = download_attachments(
+            f, b, fail = download_attachments(
                 session, cat_attach, run_id=run_id, meta=meta, storage_slug=f"_cat_{cid}"
             )
             stats["files"] += f
@@ -373,7 +436,7 @@ def crawl_year(
                     "run_id": run_id,
                     "source": "mots",
                     **meta,
-                    "status": "ok",
+                    "status": "failed" if fail else "ok",
                     "error_message": "category_listing",
                 }
             )
@@ -421,7 +484,7 @@ def crawl_year(
                     }
                 )
                 continue
-            f, b = download_attachments(
+            f, b, fail = download_attachments(
                 session, attach_urls, run_id=run_id, meta=meta, storage_slug=slug
             )
             stats["files"] += f
@@ -431,7 +494,7 @@ def crawl_year(
                     "run_id": run_id,
                     "source": "mots",
                     **meta,
-                    "status": "ok",
+                    "status": "failed" if fail else "ok",
                 }
             )
     return stats

@@ -20,6 +20,7 @@ python -m src.ingest.nso              # or --stage-only after RARs exist
 python -m src.ingest.mots_crawler --build-tree
 python -m src.ingest.mots_crawler --year-be 2561   # pilot
 python -m src.ingest.mots_crawler --all
+python -m src.ingest.mots_cleanup   # optional: move off-topic 2018 menu downloads
 python -m src.staging
 python -m src.catalog.profile_mots
 python -m src.core.build_core
@@ -28,4 +29,11 @@ python -m src.qa.coverage_report
 python -m pytest tests/
 ```
 
-**Modeling start table:** `data/core/province_month.parquet` (see `docs/handoff_ds_ml_qa.md`).
+**Modeling start table:** `data/core/province_month.parquet` — `guest_arrivals`, `visitors_total`, rainfall, `is_covid` (see `docs/handoff_ds_ml_qa.md` and `docs/coverage_report.md`).
+
+## Documentation
+
+- **Handbook (Markdown):** [docs/index.md](docs/index.md) — Thai: [docs/th/index.md](docs/th/index.md)
+- **Interactive explorer:** open [site/index.html](site/index.html) in a browser after `python -m src.docs.build_site` (switch **English / ไทย** in the header)
+
+Tested with **Python 3.11+** (CI/local may use 3.14).

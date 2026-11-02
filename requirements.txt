@@ -7,3 +7,4 @@ pyyaml>=6.0
 playwright>=1.40
 rarfile>=4.1
 pytest>=7.4
+markdown>=3.5

@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 import pandas as pd
 import yaml
 
-from src.common.calendar import is_covid, month_range
+from src.common.calendar import month_range
 from src.common.config_loader import load_sources
-from src.common.manifest import load_manifest
 from src.common.paths import CONFIG, CORE, STAGING
+from src.qa.consistency import check_guest_months_sum_to_quarter, check_thai_foreign_total
+from src.qa.manifest_summary import latest_manifest_df
 
 
 def _load_contracts() -> dict:
@@ -32,6 +32,12 @@ def check_columns(df: pd.DataFrame, required: list[str], name: str, errors: list
     missing = [c for c in required if c not in df.columns]
     if missing:
         errors.append(f"{name}: missing columns {missing}")
+
+
+def _invalid_province_ids(series: pd.Series) -> int:
+    s = series.astype("string")
+    bad = s.isna() | (s.str.strip() == "") | (s.str.lower() == "nan")
+    return int(bad.sum())
 
 
 def main() -> int:
@@ -60,7 +66,7 @@ def main() -> int:
             continue
         spec = contracts[name]
         if name == "fact_tourism_province_month" and df.empty:
-            print("Note: fact_tourism_province_month empty (MOTS parse/mapping pending)")
+            errors.append(f"{name}: empty table")
             continue
         check_columns(df, spec["required_columns"], name, errors)
         check_unique(df, spec["unique"], name, errors)
@@ -86,14 +92,53 @@ def main() -> int:
     if long_path.exists():
         long_df = pd.read_parquet(long_path)
         if "province_id" in long_df.columns:
-            unmapped = long_df[long_df["province_id"].isna() & long_df["province_th"].notna()]
+            prov_rows = long_df[long_df.get("area_level", "province") == "province"]
+            invalid = _invalid_province_ids(prov_rows["province_id"])
+            if invalid:
+                errors.append(f"fact_tourism_long: {invalid} province-level rows missing province_id")
+            raw_col = "province_th_raw" if "province_th_raw" in long_df.columns else "province_th"
+            unmapped = prov_rows[prov_rows["province_id"].isna() & prov_rows[raw_col].notna()]
             if len(unmapped):
-                errors.append(f"fact_tourism_long: {len(unmapped)} rows with unmapped province_th")
+                errors.append(f"fact_tourism_long: {len(unmapped)} unmapped province names")
+            if (long_df["value"] < 0).any():
+                errors.append("fact_tourism_long: negative values present")
 
-    manifest = load_manifest()
-    failed = [r for r in manifest if r.get("status") in ("failed", "error", "rejected_title_mismatch")]
-    if failed:
-        print(f"Manifest: {len(failed)} non-ok download rows (see data/manifest/manifest_downloads.csv)")
+    if not tour.empty:
+        errors.extend(check_thai_foreign_total(tour))
+
+    staging_long = STAGING / "mots" / "fact_tourism_long.parquet"
+    if staging_long.exists():
+        s_long = pd.read_parquet(staging_long)
+        errors.extend(check_guest_months_sum_to_quarter(s_long))
+
+    if not pm.empty:
+        spec = contracts.get("province_month", {})
+        cov = spec.get("coverage", {})
+        gmin = cov.get("guest_arrivals_min_non_null")
+        vmin = cov.get("visitors_total_min_non_null")
+        if gmin and pm["guest_arrivals"].notna().sum() < gmin:
+            errors.append(
+                f"province_month: guest_arrivals non-null {pm['guest_arrivals'].notna().sum()} < {gmin}"
+            )
+        if vmin and pm["visitors_total"].notna().sum() < vmin:
+            errors.append(
+                f"province_month: visitors_total non-null {pm['visitors_total'].notna().sum()} < {vmin}"
+            )
+        late = pm[pm["year_month"] > cfg["date_window"]["end"]]
+        if len(late):
+            errors.append(f"province_month: {len(late)} rows after window end")
+
+    latest = latest_manifest_df()
+    if not latest.empty:
+        file_rows = latest[latest["file_url"].notna()]
+        bad_files = file_rows[file_rows["status"] == "failed"]
+        bad_news = latest[latest["file_url"].isna() & latest["status"].isin(("failed", "error"))]
+        print(
+            f"Manifest (latest per URL): {len(bad_files)} failed file downloads, "
+            f"{len(bad_news)} failed/error news rows"
+        )
+        if len(bad_files):
+            errors.append(f"manifest: {len(bad_files)} file URLs with latest status failed")
 
     quarantine = STAGING / "mots" / "quarantine" / "quarantine.csv"
     if quarantine.exists():

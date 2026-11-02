@@ -1,0 +1,75 @@
+project:
+  name: Tourist Prediction from Raining
+  tagline: Province × month data pipeline (HII rainfall, MOTS tourism, NSO accommodation)
+
+ui:
+  skip_link: Skip to content
+  handbook: Handbook
+  pipeline: Pipeline
+  folders: Folders
+  search_label: Search
+  search_placeholder: Handbook text…
+  badge_generated: generated
+  badge_optional: opt
+  badge_pipeline: pipeline
+  detail_empty: Select a pipeline stage or folder to see commands and paths.
+  copy: Copy
+  copied: Copied
+  when: When
+  inputs: Inputs
+  outputs: Outputs
+  notes: Notes
+  command: Command
+  purpose: Purpose
+  edit_in_repo: Edit in repo
+  edit_yes: Yes — with care
+  edit_no: No — regenerate via pipeline
+  open_handbook: "Open handbook:"
+  search_matches: Search matches
+  doc_title_suffix: Handbook
+  lang_label: Language
+  generated_notice: This page is auto-generated from the pipeline (body text is in English).
+  chart_no_data: No chart data yet. Run python -m src.core.build_core then python -m src.docs.build_site.
+  chart_axis_month: Month
+  chart_axis_tourism: Tourism (national sum)
+  chart_axis_rain: Rainfall (mm, mean)
+  chart_legend_guests: Guest arrivals
+  chart_legend_visitors: Visitors
+  chart_legend_rain: Avg rain
+  chart_covid_band: COVID window (project flag)
+  chart_hover_month: Month
+  chart_null: —
+
+roles:
+  operator:
+    title: Pipeline operator
+    brief: Install dependencies, run ingest → staging → core → QA, and know when to rerun only part of the pipeline after downloads or config changes.
+  ds_ml:
+    title: Data science / ML
+    brief: Start modeling from province_month.parquet (77 × 92 spine). Use the long table for custom metrics; this pipeline does not build model features.
+  qa:
+    title: QA / analyst
+    brief: Run automated checks and pytest, interpret coverage and manifest status, and review MOTS quarantine CSVs when numbers look low.
+  stakeholder:
+    title: Stakeholder
+    brief: What data sources feed the project, the published date window, and what the combined table represents — without running Python.
+
+pages:
+  national:
+    title: National picture
+  index:
+    title: Handbook index
+  stakeholder:
+    title: Stakeholder overview
+  operator:
+    title: Operator runbook
+  repository:
+    title: Repository map
+  data_dictionary:
+    title: Data dictionary
+  handoff_ds_ml_qa:
+    title: DS / ML / QA handoff
+  coverage_report:
+    title: Coverage report
+  file_type_catalog:
+    title: MOTS file catalog
