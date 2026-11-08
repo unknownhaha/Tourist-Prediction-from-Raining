@@ -65,7 +65,7 @@ Fetches configured MD survey rounds, extracts RARs, builds accommodation invento
 
 ### Staging — `python -m src.staging`
 
-Walks `data/raw/mots/` workbooks, dispatches layouts, dedupes, writes `data/staging/mots/fact_tourism_long.parquet`. Unmapped names go to **`unmapped_provinces.csv`**; unparsed files to **`quarantine.csv`**.
+Walks `data/raw/mots/` workbooks, dispatches layouts, dedupes, writes `data/staging/mots/fact_tourism_long.parquet`. Province names that fail to match go to **`unmapped_provinces.csv`**. Sub-area sheets are not listed there. Unparsed files go to **`quarantine.csv`**.
 
 ### Core — `python -m src.core.build_core`
 

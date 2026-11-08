@@ -65,7 +65,7 @@ python -m src.docs.build_site
 
 ### Staging — `python -m src.staging`
 
-อ่าน workbook ใน `data/raw/mots/` เขียน `fact_tourism_long.parquet` และ quarantine
+อ่าน workbook ใน `data/raw/mots/` เขียน `fact_tourism_long.parquet` ชื่อจังหวัดที่จับคู่ไม่ได้ไปที่ **`unmapped_provinces.csv`** ชีตพื้นที่ย่อยไม่ถูกรวมในไฟล์นั้น ไฟล์ที่อ่านไม่ได้ไปที่ **`quarantine.csv`**
 
 ### Core — `python -m src.core.build_core`
 

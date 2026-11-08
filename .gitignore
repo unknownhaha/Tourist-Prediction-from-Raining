@@ -1,7 +1,4 @@
 data/raw/
-data/staging/
-data/core/
-data/manifest/
 __pycache__/
 *.py[cod]
 .pytest_cache/
