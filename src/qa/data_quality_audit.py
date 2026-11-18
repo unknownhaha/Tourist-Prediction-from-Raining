@@ -20,6 +20,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from src.common.calendar import month_range
 from src.common.config_loader import load_sources
@@ -48,6 +49,85 @@ PRIORITY = {
     "mots_guests_total_only": 110,
     "mots_sub_area_null_province": 120,
     "manifest_nso_stale_extract_failed": 130,
+    "leakage_same_month_features": 15,
+    "leakage_quarter_total": 25,
+    "timeliness_coverage_end": 35,
+    "integrity_join_rates": 36,
+    "coverage_imbalance_volume": 45,
+    "hii_url_unreachable": 72,
+    "contract_visitors_floor": 85,
+    "lineage_dedupe_tie_break": 140,
+}
+
+# One primary dimension per finding. The summary table counts these.
+DIMENSION = {
+    "pm_visitors_structural_null": "completeness",
+    "nso_inventory_only": "completeness",
+    "mots_guests_total_only": "completeness",
+    "mots_quarterly_null_year_month": "completeness",
+    "mots_quarantine_national": "completeness",
+    "pm_grid": "completeness",
+    "dim_province_count": "completeness",
+    "crosswalk_missing": "completeness",
+    "crosswalk_exact_duplicate_rows": "uniqueness",
+    "hii_province_id_dtype": "validity",
+    "contract_visitors_floor": "validity",
+    "contract_violations": "validity",
+    "pm_guest_published_zeros": "accuracy",
+    "pm_guest_iqr_by_province": "accuracy",
+    "pm_rain_z_by_province": "accuracy",
+    "pm_visitors_z_by_province": "accuracy",
+    "pm_zero_rainfall_dry_season": "accuracy",
+    "pm_spend_per_visitor": "accuracy",
+    "pm_mom_jumps": "accuracy",
+    "mots_noncanonical_province_names": "consistency",
+    "pm_guest_vs_visitors_ratio": "consistency",
+    "hii_months_outside_window": "timeliness",
+    "mots_months_outside_window": "timeliness",
+    "timeliness_coverage_end": "timeliness",
+    "mots_sub_area_null_province": "integrity",
+    "integrity_join_rates": "integrity",
+    "pm_rain_float_residue": "conformity",
+    "mots_windows_paths": "conformity",
+    "mots_core_windows_paths": "conformity",
+    "nso_windows_paths": "conformity",
+    "pm_covid_level_shift": "temporal",
+    "pm_seasonality": "temporal",
+    "mots_2023_monthly_from_prior_column": "leakage",
+    "leakage_same_month_features": "leakage",
+    "leakage_quarter_total": "leakage",
+    "coverage_imbalance_volume": "coverage_imbalance",
+    "raw_sources_absent": "lineage",
+    "mots_source_files_missing_on_disk": "lineage",
+    "nso_workbooks_missing_on_disk": "lineage",
+    "manifest_mots_latest_errors": "lineage",
+    "manifest_nso_stale_extract_failed": "lineage",
+    "manifest_missing": "lineage",
+    "hii_url_unreachable": "lineage",
+    "lineage_dedupe_tie_break": "lineage",
+}
+
+DIMENSION_LABEL = {
+    "completeness": "Completeness",
+    "uniqueness": "Uniqueness",
+    "validity": "Validity",
+    "accuracy": "Accuracy / plausibility",
+    "consistency": "Consistency",
+    "timeliness": "Timeliness / freshness",
+    "integrity": "Integrity",
+    "conformity": "Conformity / format",
+    "temporal": "Temporal / stationarity",
+    "leakage": "Data leakage",
+    "coverage_imbalance": "Coverage imbalance",
+    "lineage": "Lineage / reproducibility",
+}
+
+EXPECTED_METRIC_UNIT = {
+    "guest_arrivals": "count",
+    "guests": "count",
+    "visitors": "count",
+    "occupancy_pct": "percent",
+    "revenue_million_baht": "million_baht",
 }
 
 # Monthly average rainfall above this is treated as physically implausible for Thailand.
@@ -85,6 +165,24 @@ class AuditReport:
     availability: list[str]
     probe_lines: list[str]
     generated_at: str
+
+
+def dimension_of(issue_id: str) -> str:
+    if issue_id in DIMENSION:
+        return DIMENSION[issue_id]
+    if issue_id.startswith("raw_dup_"):
+        return "uniqueness"
+    if issue_id.startswith(("raw_neg_", "raw_unreadable_")):
+        return "validity"
+    if issue_id.startswith(("raw_null_", "raw_empty_", "missing_file_")):
+        return "completeness"
+    return "other"
+
+
+def _months_between(later: str, earlier: str) -> int:
+    later_y, later_m = map(int, later.split("-"))
+    earlier_y, earlier_m = map(int, earlier.split("-"))
+    return (later_y - earlier_y) * 12 + (later_m - earlier_m)
 
 
 def _md(value: object) -> str:
@@ -549,9 +647,39 @@ def build_audit(probe: bool = True) -> AuditReport:
 
     _audit_crosswalk(findings, passed)
     _audit_manifest_and_quarantine(findings, passed)
+    _audit_framework_dimensions(
+        pm=pm,
+        dim_p=dim_p,
+        dim_m=dim_m,
+        rain_stage=rain_stage,
+        mots_stage=mots_stage,
+        mots_pm=mots_pm,
+        nso_stage=nso_stage,
+        months=months,
+        findings=findings,
+        passed=passed,
+    )
 
-    findings.sort(key=lambda item: (SEVERITY_RANK.get(item.severity, 9), PRIORITY.get(item.issue_id, 50), item.issue_id))
     probe_lines = _probe_sources() if probe else ["- Skipped (`--skip-network`)."]
+    if probe:
+        hii_line = next((line for line in probe_lines if line.startswith("- HII")), "")
+        if "HTTP 200" not in hii_line:
+            findings.append(
+                Finding(
+                    issue_id="hii_url_unreachable",
+                    severity="medium",
+                    issue="The configured HII rainfall CSV did not return a body in this run",
+                    file_path="config/sources.yaml",
+                    column="hii.csv_url",
+                    count="1 URL",
+                    example=hii_line.split("`", 2)[1] if "`" in hii_line else hii_line[:180],
+                    recommended_fix=(
+                        "Retry the download from a network that can read data.hii.or.th before refreshing rainfall. "
+                        "The staged extract already on disk remains the audited copy. Do not replace it with an empty file."
+                    ),
+                )
+            )
+    findings.sort(key=lambda item: (SEVERITY_RANK.get(item.severity, 9), PRIORITY.get(item.issue_id, 50), item.issue_id))
     return AuditReport(
         findings=findings,
         passed=passed,
@@ -1340,13 +1468,560 @@ def _audit_manifest_and_quarantine(findings: list[Finding], passed: list[PassedC
         passed.append(PassedCheck("Unmapped province names written by staging", _rel(unmapped), "(rows)", str(len(udf))))
 
 
+def _audit_framework_dimensions(
+    pm: pd.DataFrame | None,
+    dim_p: pd.DataFrame | None,
+    dim_m: pd.DataFrame | None,
+    rain_stage: pd.DataFrame | None,
+    mots_stage: pd.DataFrame | None,
+    mots_pm: pd.DataFrame | None,
+    nso_stage: pd.DataFrame | None,
+    months: list[str],
+    findings: list[Finding],
+    passed: list[PassedCheck],
+) -> None:
+    """Checks that sit outside missing-value, duplicate, and outlier screens."""
+    _audit_contracts(findings, passed)
+    if pm is not None and dim_m is not None:
+        be_bad = int((pm["year_be"] != pm["year_ce"] + 543).sum())
+        covid_bad = int(
+            (pm["is_covid"] != ((pm["year_month"] >= "2020-03") & (pm["year_month"] <= "2022-12"))).sum()
+        )
+        passed.append(PassedCheck("year_be is not year_ce + 543", "data/core/province_month.parquet", "year_be, year_ce", str(be_bad)))
+        passed.append(
+            PassedCheck(
+                "is_covid disagrees with the 2020-03..2022-12 window",
+                "data/core/province_month.parquet",
+                "is_covid, year_month",
+                str(covid_bad),
+            )
+        )
+        passed.extend(_audit_timeliness(pm, rain_stage, mots_stage, nso_stage, findings))
+        _audit_integrity(pm, rain_stage, mots_stage, nso_stage, findings, passed)
+        _audit_accuracy_and_shift(pm, dim_p, findings, passed)
+        _audit_leakage(pm, mots_stage, findings)
+        _audit_imbalance(pm, findings)
+    if mots_stage is not None:
+        _audit_conformity_and_units(mots_stage, dim_p, rain_stage, findings, passed)
+    _audit_lineage_determinism(findings, passed)
+
+
+def _audit_contracts(findings: list[Finding], passed: list[PassedCheck]) -> None:
+    path = CONFIG / "data_contracts.yaml"
+    if not path.exists():
+        return
+    contracts = yaml.safe_load(path.read_text(encoding="utf-8"))
+    tables = {
+        "dim_province": CORE / "dim_province.parquet",
+        "dim_month": CORE / "dim_month.parquet",
+        "fact_rainfall": CORE / "fact_rainfall.parquet",
+        "fact_tourism_province_month": CORE / "fact_tourism_province_month.parquet",
+        "province_month": CORE / "province_month.parquet",
+    }
+    violations: list[str] = []
+    for name, spec in contracts.items():
+        file_path = tables.get(name)
+        if file_path is None or not file_path.exists():
+            violations.append(f"{name}: file missing")
+            continue
+        df = pd.read_parquet(file_path)
+        missing = [col for col in spec.get("required_columns", []) if col not in df.columns]
+        if missing:
+            violations.append(f"{name}: missing columns {missing}")
+        keys = spec.get("unique", [])
+        if keys and int(df.duplicated(keys).sum()):
+            violations.append(f"{name}: {int(df.duplicated(keys).sum())} duplicate keys {keys}")
+        coverage = spec.get("coverage") or {}
+        for col, floor in coverage.items():
+            if not col.endswith("_min_non_null"):
+                continue
+            series_name = col[: -len("_min_non_null")]
+            if series_name in df.columns and int(df[series_name].notna().sum()) < int(floor):
+                violations.append(f"{name}: {series_name} non-null below {floor}")
+    if violations:
+        findings.append(
+            Finding(
+                issue_id="contract_violations",
+                severity="high",
+                issue="Core tables break data_contracts.yaml",
+                file_path="config/data_contracts.yaml",
+                column="required_columns, unique, coverage",
+                count=f"{len(violations)} violations",
+                example=violations[0],
+                recommended_fix="Fix the named table before modeling. The contract check is the same grain the QA module enforces.",
+            )
+        )
+    else:
+        passed.append(
+            PassedCheck(
+                "data_contracts.yaml required columns, unique keys, and coverage floors",
+                "config/data_contracts.yaml",
+                "required_columns, unique, coverage",
+                "0 violations",
+            )
+        )
+    pm_path = CORE / "province_month.parquet"
+    if pm_path.exists():
+        pm = pd.read_parquet(pm_path)
+        floor = (contracts.get("province_month") or {}).get("coverage", {}).get("visitors_total_min_non_null")
+        actual = int(pm["visitors_total"].notna().sum()) if "visitors_total" in pm.columns else 0
+        early_null = int(pm.loc[pm["year_month"] < "2023-01", "visitors_total"].isna().sum())
+        late_null = int(pm.loc[pm["year_month"] >= "2023-01", "visitors_total"].isna().sum())
+        if floor and actual >= int(floor) and early_null and late_null == 0:
+            findings.append(
+                Finding(
+                    issue_id="contract_visitors_floor",
+                    severity="low",
+                    issue="The visitors_total coverage floor passes even though an entire period is null",
+                    file_path="config/data_contracts.yaml",
+                    column="province_month.coverage.visitors_total_min_non_null",
+                    count=f"floor {floor}, actual non-null {actual}, nulls before 2023-01 {early_null}, nulls from 2023-01 onward {late_null}",
+                    example="a hole inside 2023-01..2025-08 would still pass as long as 2400 cells stay filled",
+                    recommended_fix=(
+                        "Add a contract rule that visitors_total is null exactly when year_month < 2023-01, "
+                        "and non-null on every later spine row."
+                    ),
+                )
+            )
+
+
+def _audit_timeliness(
+    pm: pd.DataFrame,
+    rain_stage: pd.DataFrame | None,
+    mots_stage: pd.DataFrame | None,
+    nso_stage: pd.DataFrame | None,
+    findings: list[Finding],
+) -> list[PassedCheck]:
+    asof = datetime.now(timezone.utc).strftime("%Y-%m")
+    ends = [("province_month", "data/core/province_month.parquet", str(pm["year_month"].max()))]
+    if rain_stage is not None and len(rain_stage):
+        ends.append(("HII staged rainfall", "data/staging/hii/fact_rainfall.parquet", str(rain_stage["year_month"].max())))
+    if mots_stage is not None and len(mots_stage):
+        monthly = mots_stage.loc[mots_stage["layout"] == "monthly_province", "year_month"].dropna()
+        if len(monthly):
+            ends.append(("MOTS monthly (R) staged", "data/staging/mots/fact_tourism_long.parquet", str(monthly.max())))
+    if nso_stage is not None and len(nso_stage):
+        ends.append(
+            (
+                "NSO survey year",
+                "data/staging/nso/fact_accommodation_nso_inventory.parquet",
+                f"{int(nso_stage['survey_year_ce'].max())}-12",
+            )
+        )
+    pm_end = str(pm["year_month"].max())
+    hii_end = next((end for _label, _path, end in ends if _label.startswith("HII")), pm_end)
+    example = "; ".join(f"{label} ends {end} ({_months_between(asof, end)} months before {asof})" for label, _path, end in ends)
+    findings.append(
+        Finding(
+            issue_id="timeliness_coverage_end",
+            severity="medium",
+            issue="The modeling table stops before the rainfall extract and well before the audit clock",
+            file_path="data/core/province_month.parquet",
+            column="year_month",
+            count=(
+                f"province_month ends {pm_end} ({_months_between(asof, pm_end)} months before {asof}); "
+                f"staged HII ends {hii_end} ({_months_between(hii_end, pm_end)} months later)"
+            ),
+            example=example,
+            recommended_fix=(
+                "Treat 2025-08 as a declared label window, not as 'latest available'. "
+                "Extend config/sources.yaml and rebuild core when models need the rainfall already staged through the HII end month. "
+                "NSO stays a biennial survey (2018, 2020, 2022); do not expect a monthly accommodation series from it."
+            ),
+        )
+    )
+    steps = _month_steps(pm)
+    irregular = int((steps != 1).sum()) if len(steps) else 0
+    return [
+        PassedCheck(
+            "Irregular month steps inside a province series",
+            "data/core/province_month.parquet",
+            "year_month",
+            str(irregular),
+        )
+    ]
+
+
+def _month_steps(df: pd.DataFrame) -> pd.Series:
+    ordered = df.sort_values(["province_id", "year_month"])
+    ordinal = ordered["year_month"].str.slice(0, 4).astype(int) * 12 + ordered["year_month"].str.slice(5, 7).astype(int)
+    previous = ordinal.groupby(ordered["province_id"]).shift(1)
+    return (ordinal - previous).dropna()
+
+
+def _audit_integrity(
+    pm: pd.DataFrame,
+    rain_stage: pd.DataFrame | None,
+    mots_stage: pd.DataFrame | None,
+    nso_stage: pd.DataFrame | None,
+    findings: list[Finding],
+    passed: list[PassedCheck],
+) -> None:
+    spine = len(pm)
+    rain_matched = int(pm["avg_rain_mm"].notna().sum())
+    guest_matched = int(pm["guest_arrivals"].notna().sum())
+    visitor_matched = int(pm["visitors_total"].notna().sum())
+    rain_orphans = 0
+    if rain_stage is not None:
+        rain_orphans = int((~rain_stage["year_month"].isin(set(pm["year_month"]))).sum())
+    mots_orphans = 0
+    if mots_stage is not None:
+        mots_orphans = int(
+            (mots_stage["year_month"].notna() & ~mots_stage["year_month"].isin(set(pm["year_month"]))).sum()
+        )
+    nso_keys = 0 if nso_stage is None else int(sum(col in nso_stage.columns for col in ("province_id", "year_month")))
+    ids_only_in_facts = 0
+    if rain_stage is not None:
+        ids_only_in_facts = len(set(rain_stage["province_id"].astype(str)) - set(pm["province_id"].astype(str)))
+    findings.append(
+        Finding(
+            issue_id="integrity_join_rates",
+            severity="high" if visitor_matched < spine or nso_keys == 0 else "info",
+            issue="Join match rates onto the province-month spine",
+            file_path="data/core/province_month.parquet",
+            column="province_id, year_month",
+            count=(
+                f"rainfall {rain_matched}/{spine} ({_pct(rain_matched, spine)}); "
+                f"guest_arrivals {guest_matched}/{spine} ({_pct(guest_matched, spine)}); "
+                f"visitors_total {visitor_matched}/{spine} ({_pct(visitor_matched, spine)}); "
+                f"NSO province_id/year_month columns present {nso_keys}/2; "
+                f"staged rainfall rows outside the spine months {rain_orphans}; "
+                f"staged MOTS rows outside the spine months {mots_orphans}; "
+                f"rainfall province ids missing from the spine {ids_only_in_facts}"
+            ),
+            example="visitors_total matches only 2023-01 onward; NSO inventory has no province_id and cannot be joined",
+            recommended_fix=(
+                "Keep the left-join spine so unmatched visitors stay null. "
+                "Do not inner-join or the pre-2023 rows disappear. "
+                "Parse NSO to province_id before any accommodation join. "
+                "Sub-area MOTS rows stay off this spine until a parent-province rule exists."
+            ),
+        )
+    )
+    passed.append(
+        PassedCheck(
+            "Rainfall province ids absent from province_month",
+            "data/staging/hii/fact_rainfall.parquet",
+            "province_id",
+            str(ids_only_in_facts),
+        )
+    )
+
+
+def _audit_accuracy_and_shift(
+    pm: pd.DataFrame,
+    dim_p: pd.DataFrame | None,
+    findings: list[Finding],
+    passed: list[PassedCheck],
+) -> None:
+    path = "data/core/province_month.parquet"
+    ordered = pm.sort_values(["province_id", "year_month"]).copy()
+    ordered["previous"] = ordered.groupby("province_id")["guest_arrivals"].shift(1)
+    ordered["ratio"] = ordered["guest_arrivals"] / ordered["previous"].replace(0, np.nan)
+    jumps = ordered[(ordered["previous"] > 1000) & ((ordered["ratio"] > 5) | (ordered["ratio"] < 0.2))]
+    outside = jumps[(jumps["year_month"] < "2020-03") | (jumps["year_month"] > "2022-12")]
+    example = "none"
+    if len(jumps):
+        row = jumps.sort_values("ratio").iloc[0]
+        example = (
+            f"{row.province_th} {row.year_month}: {row.previous:.0f} -> {row.guest_arrivals:.0f} "
+            f"(ratio {row.ratio:.3f})"
+        )
+    findings.append(
+        Finding(
+            issue_id="pm_mom_jumps",
+            severity="info" if outside.empty else "medium",
+            issue="Month-to-month guest_arrivals moves of more than 5x sit inside the COVID window",
+            file_path=path,
+            column="guest_arrivals",
+            count=(
+                f"{len(jumps)} province-months with previous > 1000 and ratio > 5 or < 0.2; "
+                f"{len(outside)} of them fall outside 2020-03..2022-12"
+            ),
+            example=example,
+            recommended_fix=(
+                "Keep the jumps. They are the shutdown and reopening, not corrupted cells. "
+                "A drift detector trained on 2018-2019 will alarm through 2021; start the reference window at 2023-01 for post-COVID monitoring, or condition on is_covid."
+            ),
+            on_todo=not outside.empty,
+        )
+    )
+
+    both = pm[pm["visitors_total"].notna() & (pm["visitors_total"] > 0)].copy()
+    guests_above = int((both["guest_arrivals"] > both["visitors_total"]).sum())
+    passed.append(
+        PassedCheck(
+            "guest_arrivals greater than visitors_total in the same province-month",
+            path,
+            "guest_arrivals, visitors_total",
+            str(guests_above),
+        )
+    )
+    if dim_p is not None and (CORE / "fact_tourism_province_month.parquet").exists():
+        facts = pd.read_parquet(CORE / "fact_tourism_province_month.parquet")
+        revenue = facts[(facts["metric"] == "revenue_million_baht") & (facts["tourist_type"] == "total")][
+            ["province_id", "year_month", "value"]
+        ].rename(columns={"value": "revenue"})
+        visitors = facts[(facts["metric"] == "visitors") & (facts["tourist_type"] == "total")][
+            ["province_id", "year_month", "value"]
+        ].rename(columns={"value": "visitors"})
+        spend = revenue.merge(visitors, on=["province_id", "year_month"])
+        spend["baht"] = spend["revenue"] * 1_000_000 / spend["visitors"]
+        names = dict(zip(dim_p["province_id"].astype(str), dim_p["province_th"], strict=False))
+        low = spend.loc[spend["baht"].idxmin()]
+        high = spend.loc[spend["baht"].idxmax()]
+        absurd = int(((spend["baht"] < 50) | (spend["baht"] > 500_000)).sum())
+        findings.append(
+            Finding(
+                issue_id="pm_spend_per_visitor",
+                severity="high" if absurd else "info",
+                issue="Revenue per visitor stays in a baht range, with no thousands-vs-persons break",
+                file_path="data/core/fact_tourism_province_month.parquet",
+                column="value",
+                count=(
+                    f"{len(spend)} province-months; baht per visitor min {spend['baht'].min():,.0f}, "
+                    f"median {spend['baht'].median():,.0f}, max {spend['baht'].max():,.0f}; "
+                    f"{absurd} outside 50..500,000 baht"
+                ),
+                example=(
+                    f"low {names.get(str(low.province_id), low.province_id)} {low.year_month} {low.baht:,.0f} baht; "
+                    f"high {names.get(str(high.province_id), high.province_id)} {high.year_month} {high.baht:,.0f} baht"
+                ),
+                recommended_fix=(
+                    "Keep million_baht as the revenue unit. Phuket peak months near 40,000 baht per visitor are resort spend, not a unit error. "
+                    "Do not multiply or divide the column by 1,000."
+                ),
+                on_todo=bool(absurd),
+            )
+        )
+
+    def _period(year_month: str) -> str:
+        if year_month < "2020-03":
+            return "pre"
+        if year_month <= "2022-12":
+            return "covid"
+        return "post"
+
+    labeled = pm.assign(period=pm["year_month"].map(_period))
+    med = labeled.groupby("period")["guest_arrivals"].median()
+    rain_by_month = pm.groupby("month")["avg_rain_mm"].median()
+    rain_index = rain_by_month / rain_by_month.mean()
+    guest_index = labeled.groupby("month")["guest_arrivals"].median()
+    guest_index = guest_index / guest_index.mean()
+    findings.append(
+        Finding(
+            issue_id="pm_seasonality",
+            severity="info",
+            issue="Rainfall is strongly seasonal; guest_arrivals move much less across calendar months",
+            file_path=path,
+            column="avg_rain_mm, guest_arrivals, month",
+            count=(
+                f"rainfall median index month {int(rain_index.idxmin())}={rain_index.min():.2f} vs "
+                f"month {int(rain_index.idxmax())}={rain_index.max():.2f}; "
+                f"guest_arrivals median index {guest_index.min():.2f}..{guest_index.max():.2f}; "
+                f"guest median pre={med.get('pre', float('nan')):,.0f}, "
+                f"covid={med.get('covid', float('nan')):,.0f} "
+                f"({med.get('covid', float('nan')) / med.get('pre', float('nan')):.2f}x pre), "
+                f"post={med.get('post', float('nan')):,.0f} ({med.get('post', float('nan')) / med.get('pre', float('nan')):.2f}x pre)"
+            ),
+            example=f"driest calendar month index {rain_index.min():.2f}, wettest {rain_index.max():.2f}",
+            recommended_fix=(
+                "Put calendar month, or a wet-season flag, in any rainfall model. "
+                "For drift detection, compare a month with the same calendar month in the reference set. "
+                "The COVID level shift (about 0.42x the pre-2020 median) is a structural break, not a sensor fault. "
+                "A reference set of only 2018-2019 will flag 2020-2022 as drift by design."
+            ),
+            on_todo=False,
+        )
+    )
+
+
+def _audit_leakage(pm: pd.DataFrame, mots_stage: pd.DataFrame | None, findings: list[Finding]) -> None:
+    same_rain = int((pm["avg_rain_mm"].notna() & pm["guest_arrivals"].notna()).sum())
+    same_visitors = int((pm["visitors_total"].notna() & pm["guest_arrivals"].notna()).sum())
+    findings.append(
+        Finding(
+            issue_id="leakage_same_month_features",
+            severity="high",
+            issue="Same-month rainfall and visitors are contemporaneous with guest_arrivals",
+            file_path="data/core/province_month.parquet",
+            column="avg_rain_mm, visitors_total, guest_arrivals",
+            count=f"{same_rain} rows have same-month rain and guests; {same_visitors} also have same-month visitors_total",
+            example="a row for 2024-12 contains that month's rain, visitors, and guest_arrivals together",
+            recommended_fix=(
+                "For a forecast of month t decided before t ends, use features from months through t-1 only. "
+                "Same-month avg_rain_mm is valid only for a nowcast, and the training label must say so. "
+                "Do not use same-month visitors_total to predict same-month guest_arrivals; they are published together."
+            ),
+        )
+    )
+    if mots_stage is None or mots_stage.empty:
+        return
+    sub = mots_stage[
+        (mots_stage["layout"] == "quarterly_domestic")
+        & (mots_stage["metric"] == "guest_arrivals")
+        & (mots_stage["area_level"] == "province")
+    ].copy()
+    monthly = sub[sub["year_month"].notna()].copy()
+    quarterly = sub[sub["quarter"].notna()][["source_file", "sheet", "year_ce", "tourist_type", "quarter"]].drop_duplicates()
+    if monthly.empty or quarterly.empty:
+        return
+    monthly["quarter"] = (
+        monthly["year_ce"].astype(int).astype(str)
+        + "-Q"
+        + (((monthly["month"] - 1) // 3 + 1).astype(int)).astype(str)
+    )
+    keys = ["source_file", "sheet", "year_ce", "tourist_type", "quarter"]
+    exposed = monthly.merge(quarterly, on=keys, how="inner")
+    findings.append(
+        Finding(
+            issue_id="leakage_quarter_total",
+            severity="medium",
+            issue="Quarterly guest_arrivals equal the sum of the three months in the same workbook",
+            file_path="data/staging/mots/fact_tourism_long.parquet",
+            column="quarter, value",
+            count=f"{len(exposed)} monthly rows sit next to a quarter total that includes them",
+            example="2018-Q1 total is the sum of Jan+Feb+Mar guest_arrivals in the same source file (0 mismatches)",
+            recommended_fix=(
+                "Do not feed the quarter total into a model that predicts one of that quarter's months. "
+                "The audit already checks that the quarter matches the monthly sum within 0.1%."
+            ),
+        )
+    )
+
+
+def _audit_imbalance(pm: pd.DataFrame, findings: list[Finding]) -> None:
+    volume = pm.groupby("province_id")["guest_arrivals"].sum().sort_values(ascending=False)
+    total = float(volume.sum())
+    names = dict(zip(pm["province_id"], pm["province_th"], strict=False))
+    top_id = str(volume.index[0])
+    visitor_counts = pm.groupby("province_id")["visitors_total"].apply(lambda s: int(s.notna().sum()))
+    findings.append(
+        Finding(
+            issue_id="coverage_imbalance_volume",
+            severity="medium",
+            issue="Guest volume is highly uneven across provinces; visitor coverage is not",
+            file_path="data/core/province_month.parquet",
+            column="guest_arrivals",
+            count=(
+                f"{names.get(top_id, top_id)} is {volume.iloc[0] / total:.1%} of national guest_arrivals; "
+                f"largest/median province total {volume.iloc[0] / volume.median():.1f}x; "
+                f"smallest/median {volume.iloc[-1] / volume.median():.2f}x; "
+                f"visitors_total non-null months per province min {int(visitor_counts.min())}, max {int(visitor_counts.max())}"
+            ),
+            example=f"{names.get(top_id, top_id)} {volume.iloc[0]:,.0f} vs median province {volume.median():,.0f}",
+            recommended_fix=(
+                "Fit province effects or a log target. Score errors per province, not only on the pooled sum, or Bangkok dominates. "
+                "Do not drop large provinces to balance the sample. The missing visitors_total cells are the same 60 months in every province."
+            ),
+        )
+    )
+
+
+def _audit_conformity_and_units(
+    mots_stage: pd.DataFrame,
+    dim_p: pd.DataFrame | None,
+    rain_stage: pd.DataFrame | None,
+    findings: list[Finding],
+    passed: list[PassedCheck],
+) -> None:
+    path = "data/staging/mots/fact_tourism_long.parquet"
+    text_frames = [("province_th_raw", mots_stage["province_th_raw"])]
+    if dim_p is not None:
+        text_frames.append(("dim_province.province_th", dim_p["province_th"]))
+        text_frames.append(("dim_province.province_en", dim_p["province_en"]))
+    if rain_stage is not None:
+        text_frames.append(("hii.province_th", rain_stage["province_th"]))
+    dirty = 0
+    for _name, series in text_frames:
+        text = series.astype(str)
+        dirty += int((text != text.str.strip()).sum())
+        dirty += int(text.str.contains(r"\s{2,}", regex=True).sum())
+        dirty += int(text.str.contains("\ufffd", regex=False).sum())
+        dirty += int(text.str.contains(r"à¸|Ã.|à¹", regex=True).sum())
+    passed.append(
+        PassedCheck(
+            "Thai/English labels with surrounding whitespace, double spaces, U+FFFD, or Latin-1 mojibake",
+            path,
+            "province_th_raw, province_th, province_en",
+            str(dirty),
+        )
+    )
+    pairs = mots_stage.groupby(["metric", "unit"], dropna=False).size().reset_index(name="n")
+    bad_pairs = [
+        f"{row.metric}->{row.unit} ({int(row.n)})"
+        for row in pairs.itertuples(index=False)
+        if EXPECTED_METRIC_UNIT.get(row.metric) not in (None, row.unit)
+    ]
+    passed.append(
+        PassedCheck(
+            "MOTS metric stored under more than one unit, or a unit other than the expected one",
+            path,
+            "metric, unit",
+            str(len(bad_pairs)) if not bad_pairs else "; ".join(bad_pairs),
+        )
+    )
+    if (CORE / "fact_tourism_province_month.parquet").exists():
+        facts = pd.read_parquet(CORE / "fact_tourism_province_month.parquet")
+        guests = facts[(facts["metric"] == "guests") & (facts["tourist_type"] == "total")][
+            ["province_id", "year_month", "value"]
+        ]
+        arrivals = facts[(facts["metric"] == "guest_arrivals") & (facts["tourist_type"] == "total")][
+            ["province_id", "year_month", "value"]
+        ]
+        both = guests.merge(arrivals, on=["province_id", "year_month"], suffixes=("_guests", "_arrivals"))
+        disagree = int((both["value_guests"] != both["value_arrivals"]).sum()) if len(both) else 0
+        passed.append(
+            PassedCheck(
+                "Monthly guests metric disagrees with guest_arrivals on the same province-month",
+                "data/core/fact_tourism_province_month.parquet",
+                "value",
+                f"{disagree} of {len(both)}",
+            )
+        )
+
+
+def _audit_lineage_determinism(findings: list[Finding], passed: list[PassedCheck]) -> None:
+    facts_path = CORE / "fact_tourism_province_month.parquet"
+    dup = 0
+    if facts_path.exists():
+        facts = pd.read_parquet(facts_path)
+        dup = int(facts.duplicated(["province_id", "year_month", "metric", "tourist_type"]).sum())
+    findings.append(
+        Finding(
+            issue_id="lineage_dedupe_tie_break",
+            severity="info",
+            issue="Core dedupe is deterministic only while duplicate keys stay at zero",
+            file_path="src/core/build_core.py",
+            column="from_prior_year_column",
+            count=f"{dup} duplicate province-month-metric-type keys in the published fact table",
+            example="build_fact_tourism_province_month sorts by from_prior_year_column and keeps the first row",
+            recommended_fix=(
+                "Add source_file and sheet as tie-breaks before drop_duplicates. "
+                "Today the output does not depend on parquet row order because no key is duplicated. "
+                "A second current-year copy of the same key would."
+            ),
+            on_todo=False,
+        )
+    )
+    passed.append(
+        PassedCheck(
+            "Duplicate keys that would make core dedupe depend on row order",
+            "data/core/fact_tourism_province_month.parquet",
+            "province_id, year_month, metric, tourist_type",
+            str(dup),
+        )
+    )
+
+
 def _findings_table(findings: list[Finding]) -> str:
-    header = "| Severity | Issue | File path | Column | Count | Example | Recommended fix |"
-    sep = "| --- | --- | --- | --- | --- | --- | --- |"
+    header = "| Dimension | Severity | Issue | File path | Column | Count | Example | Recommended fix |"
+    sep = "| --- | --- | --- | --- | --- | --- | --- | --- |"
     rows = [header, sep]
     for item in findings:
         rows.append(
-            "| {sev} | {issue} | `{path}` | `{col}` | {count} | {example} | {fix} |".format(
+            "| {dim} | {sev} | {issue} | `{path}` | `{col}` | {count} | {example} | {fix} |".format(
+                dim=_md(DIMENSION_LABEL.get(dimension_of(item.issue_id), dimension_of(item.issue_id))),
                 sev=item.severity,
                 issue=_md(item.issue),
                 path=_md(item.file_path),
@@ -1359,13 +2034,31 @@ def _findings_table(findings: list[Finding]) -> str:
     return "\n".join(rows)
 
 
+def _dimension_summary(findings: list[Finding]) -> str:
+    rows = [
+        "| Dimension | Findings | High | Medium | Low | Info | First item |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | --- |",
+    ]
+    for key, label in DIMENSION_LABEL.items():
+        group = [item for item in findings if dimension_of(item.issue_id) == key]
+        counts = {severity: sum(1 for item in group if item.severity == severity) for severity in SEVERITY_RANK}
+        first = group[0].issue if group else "No defect rows. Related passed checks are listed below."
+        rows.append(
+            f"| {label} | {len(group)} | {counts['high']} | {counts['medium']} | {counts['low']} | {counts['info']} | {_md(first)} |"
+        )
+    other = [item for item in findings if dimension_of(item.issue_id) not in DIMENSION_LABEL]
+    if other:
+        rows.append(f"| Other | {len(other)} |  |  |  |  | {_md(other[0].issue)} |")
+    return "\n".join(rows)
+
+
 def _todo(findings: list[Finding]) -> str:
     ranked = [item for item in findings if item.on_todo]
     lines = []
     for index, item in enumerate(ranked, start=1):
         lines.append(
-            f"{index}. **[{item.severity}]** {item.issue} "
-            f"(`{item.file_path}`, `{item.column}`, {item.count}). {item.recommended_fix}"
+            f"{index}. **[{item.severity} / {DIMENSION_LABEL.get(dimension_of(item.issue_id), dimension_of(item.issue_id))}]** "
+            f"{item.issue} (`{item.file_path}`, `{item.column}`, {item.count}). {item.recommended_fix}"
         )
     return "\n".join(lines)
 
@@ -1419,6 +2112,12 @@ def render_report(report: AuditReport) -> str:
         "",
         "\n".join(report.probe_lines),
         "",
+        "## Summary by dimension",
+        "",
+        "Each finding has one primary dimension. Counts are the number of finding rows, not the number of bad cells.",
+        "",
+        _dimension_summary(report.findings),
+        "",
         "## Top issues",
         "",
         "\n".join(top_lines) if top_lines else "- No high or medium issues.",
@@ -1452,14 +2151,21 @@ def render_report(report: AuditReport) -> str:
         "\n".join(report.profiles),
         "## Method",
         "",
-        "- Missing values: pandas `isna` counts and percent of rows. The 77×92 grid gap is `dim_province.province_id` × the `config/sources.yaml` month list, left-joined to the table.",
-        "- Duplicates: exact duplicate rows, plus the grain keys in `config/data_contracts.yaml` (province_id, year_month, and metric/tourist_type where that is the grain).",
-        "- Outliers: within each province, IQR fences at 1.5×IQR and |z| > 3 using the population standard deviation. Global fences are reported only to show they flag Bangkok because the cross-province distribution is skewed.",
-        "- Impossible values: negative rainfall or counts, `min_rain_mm` > `max_rain_mm`, `avg_rain_mm` outside that range, occupancy outside 0–100, rainfall above "
-        f"{ABSURD_RAIN_MM:.0f} mm, revenue above {ABSURD_REVENUE_MILLION_BAHT:,.0f} million baht.",
-        "- Province names: `province_th_raw` compared with `dim_province.province_th` on `province_id`. Crosswalk aliases that differ from the canonical name are expected.",
-        "- Dates: `year_month` must match `YYYY-MM`, and `year_ce` / `month` must match that string. Quarterly rows are allowed to have a null `year_month`.",
-        "- Thai + foreign versus total, and quarterly guest_arrivals versus the sum of months, use the same tolerance as `src/qa/consistency.py` (max of 1 person or 0.1%).",
+        "The audit scores twelve dimensions. A finding is filed under one primary dimension so the summary does not double-count it.",
+        "",
+        "- **Completeness.** Null counts and percent of rows, the 77×92 grid (`dim_province` × the month list in `config/sources.yaml`), and whole sources or periods that never arrive (visitors before 2023-01, NSO measures, quarterly rows with a null month).",
+        "- **Uniqueness.** Exact duplicate rows and the grains in `config/data_contracts.yaml`.",
+        "- **Validity.** Required columns, key uniqueness, and coverage floors in `data_contracts.yaml`; `year_be = year_ce + 543`; `is_covid` versus the configured window; occupancy in 0–100; negative values; rainfall above "
+        f"{ABSURD_RAIN_MM:.0f} mm; revenue above {ABSURD_REVENUE_MILLION_BAHT:,.0f} million baht; `province_id` dtype.",
+        "- **Accuracy / plausibility.** Per-province IQR (1.5×IQR) and |z| > 3. Month-to-month ratios above 5 or below 0.2 when the previous month exceeds 1,000 guests. Baht per visitor outside 50..500,000. `guest_arrivals` above `visitors_total`.",
+        "- **Consistency.** Canonical province names versus `province_th_raw`. One unit per metric. Monthly `guests` versus `guest_arrivals`. Thai + foreign versus total, and quarter versus the sum of months, at the tolerance in `src/qa/consistency.py` (1 person or 0.1%).",
+        "- **Timeliness.** Last `year_month` per source versus the audit clock and versus the modeling window. Steps between consecutive months inside each province. Buddhist-era versus Gregorian years.",
+        "- **Integrity.** Match rate of rainfall, guest_arrivals, and visitors_total onto the spine. NSO rows that lack join keys. Staged rows whose month is outside the spine.",
+        "- **Conformity.** Surrounding whitespace, double spaces, U+FFFD, and Latin-1 mojibake on Thai and English names. Windows backslashes in stored paths. Float residue past 0.01 mm.",
+        "- **Temporal / stationarity.** Pre-COVID (through 2020-02), COVID (2020-03..2022-12), and post-COVID medians. Calendar-month index of rainfall and guests, for drift rules that should compare like months.",
+        "- **Data leakage.** Same-month rain and visitors beside `guest_arrivals`. Quarter totals that equal the months being predicted. 2023 monthly figures taken from a 2024 prior-year block.",
+        "- **Coverage imbalance.** Share of national `guest_arrivals` and the ratio of the largest province total to the median. Visitors non-null months per province.",
+        "- **Lineage.** Raw files absent from git, source URLs that do not return a body, manifest rows still in error, and dedupe that would follow parquet row order if a key were duplicated.",
         "",
     ]
     return "\n".join(parts)

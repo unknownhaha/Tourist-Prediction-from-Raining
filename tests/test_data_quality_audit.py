@@ -29,8 +29,24 @@ def test_audit_flags_structural_gaps_without_rewriting_data(tmp_path: Path):
     out.write_text(text, encoding="utf-8")
 
     assert province_month.read_bytes() == before
-    assert "| Severity | Issue | File path | Column | Count | Example | Recommended fix |" in text
+    assert "| Dimension | Severity | Issue | File path | Column | Count | Example | Recommended fix |" in text
+    assert "## Summary by dimension" in text
     assert "## Prioritized cleaning to-do" in text
+    for label in (
+        "Completeness",
+        "Uniqueness",
+        "Validity",
+        "Accuracy / plausibility",
+        "Consistency",
+        "Timeliness / freshness",
+        "Integrity",
+        "Conformity / format",
+        "Temporal / stationarity",
+        "Data leakage",
+        "Coverage imbalance",
+        "Lineage / reproducibility",
+    ):
+        assert f"| {label} |" in text
 
     visitors = _finding(report, "pm_visitors_structural_null")
     assert visitors.severity == "high"
@@ -48,3 +64,10 @@ def test_audit_flags_structural_gaps_without_rewriting_data(tmp_path: Path):
     grid = [item for item in report.passed if "Full" in item.check and "province_month" in item.file_path]
     assert grid and "gaps=0" in grid[0].count
     assert not any(item.issue_id == "pm_grid" for item in report.findings)
+
+    leakage = _finding(report, "leakage_same_month_features")
+    assert leakage.severity == "high"
+    assert "7084 rows" in leakage.count
+    imbalance = _finding(report, "coverage_imbalance_volume")
+    assert imbalance.file_path == "data/core/province_month.parquet"
+    assert "กรุงเทพมหานคร" in imbalance.count or "19." in imbalance.count
