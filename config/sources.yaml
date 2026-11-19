@@ -1,6 +1,6 @@
 date_window:
   start: "2018-01"
-  end: "2025-08"
+  end: "2025-12"
 
 covid_window:
   start: "2020-03"

@@ -1,6 +1,6 @@
 # Tourist Prediction from Raining — data pipeline
 
-Province × month datasets (2018-01–2025-08 CE) combining HII rainfall, MOTS tourism attachments, and NSO accommodation surveys.
+Province × month datasets (2018-01–2025-12 CE) combining HII rainfall, MOTS tourism attachments, and NSO accommodation surveys.
 
 ## Setup
 
@@ -24,12 +24,15 @@ python -m src.ingest.mots_cleanup   # optional: move off-topic 2018 menu downloa
 python -m src.staging
 python -m src.catalog.profile_mots
 python -m src.core.build_core
+python scripts/build_unified_province_month.py
 python -m src.qa.checks
 python -m src.qa.coverage_report
 python -m pytest tests/
 ```
 
-**Modeling start table:** `data/core/province_month.parquet` — `guest_arrivals`, `visitors_total`, rainfall, `is_covid` (see `docs/handoff_ds_ml_qa.md` and `docs/coverage_report.md`).
+**Modeling start table:** `data/model/province_month_unified.parquet` — target `guest_arrivals_total`, rainfall, `is_covid` (see `data/model/README.md`). Rebuild with `python scripts/build_unified_province_month.py`.
+
+The pipeline table `data/core/province_month.parquet` is still produced by `python -m src.core.build_core` and keeps its original column names (see `docs/handoff_ds_ml_qa.md` and `docs/coverage_report.md`).
 
 ## Documentation
 

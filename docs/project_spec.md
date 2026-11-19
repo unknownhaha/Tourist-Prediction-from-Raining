@@ -15,19 +15,15 @@ One row per province × month.
 - **77** Thai provinces.
 - One calendar month per row (`YYYY-MM`, Gregorian).
 
-The modeling table is `data/core/province_month.parquet`. It carries HII rainfall (`avg_rain_mm`) and MOTS tourism (`guest_arrivals`, `visitors_total`). Which of those tourism series is the training label is a modeling choice; both are province × month counts. `guest_arrivals` covers the ingested window. `visitors_total` is filled from 2023-01 onward.
+The modeling table is **`data/model/province_month_unified.parquet`** (77 × 96, 2018-01–2025-12). The training target is **`guest_arrivals_total`**. The unified table does not include `visitors_total`. It is built from the clean MOTS province-month file (2019–2025) with 2018 totals prepended from core, and rainfall from staging HII. See `data/model/README.md`.
+
+`data/core/province_month.parquet` is still built by the batch pipeline. It keeps its original column names (`guest_arrivals`, `avg_rain_mm`, `visitors_total`, `year_ce`) so existing scripts and tests keep working. Core `visitors_total` remains filled from 2023-01 onward only.
 
 ## Official data range
 
 **2018-01 through 2025-12.**
 
-That end month is the team decision. The ingested window is shorter:
-
-- `config/sources.yaml` `date_window.end` is **2025-08**.
-- `province_month` therefore stops at **2025-08** (77 × 92).
-- **September–December 2025 still have to be ingested** into that configured window and rebuilt into core.
-
-Staged files can already hold months after 2025-08 (MOTS rows through 2025-12, HII rainfall past the window). Those rows are not in `province_month` until `date_window.end` moves to 2025-12 and core is rebuilt. This spec does not change the config.
+`config/sources.yaml` `date_window.end` is **2025-12**. Core and the unified table both cover this window (77 × 96 = 7,392). Staging HII rainfall still continues past 2025-12 (currently through 2026-09); those later months stay in staging only.
 
 ## Sources
 

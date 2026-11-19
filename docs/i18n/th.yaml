@@ -46,7 +46,7 @@ roles:
     brief: ติดตั้ง dependencies รัน ingest → staging → core → QA และรู้ว่าควรรันเฉพาะส่วนใดหลังเปลี่ยนการดาวน์โหลดหรือ config
   ds_ml:
     title: วิทยาการข้อมูล / ML
-    brief: เริ่มโมเดลจาก province_month.parquet (โครงสร้าง 77 × 92) ใช้ตาราง long สำหรับ metric อื่น ไปปไลน์ไม่สร้างฟีเจอร์โมเดล
+    brief: เริ่มโมเดลจาก data/model/province_month_unified.parquet (โครงสร้าง 77 × 96 ตัวแปรเป้า guest_arrivals_total) ใช้ตาราง long สำหรับ metric อื่น ไปป์ไลน์ไม่สร้างฟีเจอร์โมเดล
   qa:
     title: QA / นักวิเคราะห์
     brief: รัน checks และ pytest อ่าน coverage และ manifest ตรวจ quarantine CSV ของ MOTS เมื่อตัวเลขต่ำ

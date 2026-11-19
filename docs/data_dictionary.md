@@ -86,20 +86,24 @@ flowchart LR
 | Table | Grain | Description |
 |-------|-------|-------------|
 | `dim_province` | province_id | 77 Thai provinces (`province_th`, `province_en`, `region`) |
-| `dim_month` | year_month | 2018-01 … 2025-08 with `year_be`, `is_covid` |
+| `dim_month` | year_month | 2018-01 … 2025-12 with `year_be`, `is_covid` |
 | `fact_rainfall` | province_id × year_month | HII min/max/avg rainfall (mm) |
 | `fact_tourism_long` | row per metric | All parsed MOTS metrics (long format) |
 | `fact_tourism_province_month` | province × month × metric × tourist_type | Province-month tourism only |
 | `fact_accommodation_nso` | extracted workbook | NSO MD inventory (`survey_year_be`, `survey_year_ce`, `status`, `file_path`); not monthly |
-| `province_month` | province × month | **Start here for DS/ML**: full 77×92 spine, `avg_rain_mm`, `guest_arrivals`, `visitors_total`, `is_covid` |
+| `province_month` | province × month | Pipeline table: full 77×96 spine, `avg_rain_mm`, `guest_arrivals`, `visitors_total`, `is_covid`. For modeling start at `data/model/province_month_unified.parquet` |
 
 ### `province_month` columns
 
 | Column | Source | Notes |
 |--------|--------|--------|
 | `guest_arrivals` | MOTS domestic quarterly workbooks | Monthly guest nights / arrivals block (`Grand Total` row), 2018–2025 where published |
-| `visitors_total` | MOTS monthly `(R)` sheets | Total visitors by province; typically 2023-01–2025-08 |
+| `visitors_total` | MOTS monthly `(R)` sheets | Total visitors by province; typically 2023-01–2025-12 |
 | `avg_rain_mm` | HII | Complete for all spine rows |
+
+## Modeling table (`data/model/`)
+
+`province_month_unified` is the single source of truth for monthly modeling: 77 × 96 (2018-01–2025-12), target `guest_arrivals_total`. 2018 thai/foreign splits are null. Full dictionary: `data/model/README.md`. Rebuild with `python scripts/build_unified_province_month.py`.
 
 ## Staging (`data/staging/`)
 

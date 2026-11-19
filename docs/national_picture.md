@@ -1,6 +1,6 @@
 # National picture
 
-Monthly view of **`province_month.parquet`** aggregated across all **77** provinces (2018-01–2025-08 CE).
+Monthly view of **`province_month.parquet`** aggregated across all **77** provinces (2018-01–2025-12 CE).
 
 The chart above shows:
 

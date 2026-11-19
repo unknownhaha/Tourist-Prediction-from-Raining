@@ -1,6 +1,6 @@
 # Project handbook
 
-Province × month datasets (**2018-01** through **2025-08** CE) combining HII rainfall, MOTS tourism attachments, and NSO accommodation survey metadata.
+Province × month datasets (**2018-01** through **2025-12** CE) combining HII rainfall, MOTS tourism attachments, and NSO accommodation survey metadata.
 
 ## Start by role
 

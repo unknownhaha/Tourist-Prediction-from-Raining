@@ -86,19 +86,19 @@ flowchart LR
 | ตาราง | Grain | คำอธิบาย |
 |-------|-------|----------|
 | `dim_province` | province_id | 77 จังหวัด |
-| `dim_month` | year_month | 2018-01 … 2025-08 พร้อม `year_be`, `is_covid` |
+| `dim_month` | year_month | 2018-01 … 2025-12 พร้อม `year_be`, `is_covid` |
 | `fact_rainfall` | province_id × year_month | ฝน HII (mm) |
 | `fact_tourism_long` | แถวต่อ metric | MOTS รูปแบบ long |
 | `fact_tourism_province_month` | จังหวัด × เดือน × metric × tourist_type | ท่องเที่ยวรายเดือนระดับจังหวัด |
 | `fact_accommodation_nso` | ไฟล์ที่แตกแล้ว | บัญชี NSO (`survey_year_be`, `survey_year_ce`, `status`, `file_path`) ไม่ใช่รายเดือน |
-| `province_month` | จังหวัด × เดือน | **เริ่ม DS/ML ที่นี่** |
+| `province_month` | จังหวัด × เดือน | ตารางไปป์ไลน์ 77×96 — เริ่มโมเดลที่ `data/model/province_month_unified.parquet` |
 
 ### คอลัมน์ `province_month`
 
 | คอลัมน์ | แหล่ง | หมายเหตุ |
 |--------|--------|----------|
 | `guest_arrivals` | MOTS รายไตรมาสภายในประเทศ | 2018–2025 ตามที่เผยแพร่ |
-| `visitors_total` | MOTS รายเดือน `(R)` | โดยทั่วไป 2023-01–2025-08 |
+| `visitors_total` | MOTS รายเดือน `(R)` | โดยทั่วไป 2023-01–2025-12 |
 | `avg_rain_mm` | HII | ครบทุกแถวของโครงสร้าง |
 
 ## Staging (`data/staging/`)
