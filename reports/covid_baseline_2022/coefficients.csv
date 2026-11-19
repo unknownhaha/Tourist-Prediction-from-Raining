@@ -1,0 +1,6 @@
+model,feature,coefficient,std_error,df,p_value,method
+Seasonal naive,iscovid,,,,,No linear coefficient
+Linear Regression,iscovid,-1.7152716164589368,0.3194386837809462,35.0,5.235868707750859e-06,OLS two-way cluster robust t (province and year-month)
+Ridge Regression,iscovid,-1.6894663721514045,,,,Ridge penalized coefficient
+Random Forest,iscovid,,,,,No linear coefficient
+CatBoost,iscovid,,,,,No linear coefficient
