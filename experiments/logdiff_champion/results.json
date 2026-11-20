@@ -1,0 +1,887 @@
+{
+  "psi_features": [
+    "guest_lag_1",
+    "guest_lag_12",
+    "rain_lag_1",
+    "rain_roll3"
+  ],
+  "psi_reference": "2023-01..2024-12 base features only; extended columns are not scored",
+  "candidates": [
+    "logdiff_expanding",
+    "logdiff_12m",
+    "rf_expanding",
+    "rf_12m",
+    "linear_expanding"
+  ],
+  "champion": "logdiff_expanding rf|logdiff|ext|d10_leaf3 alpha 1 fit 2019-01..2024-12",
+  "dq": [
+    {
+      "month": "2025-01",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-02",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-03",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-04",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-05",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-06",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-07",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-08",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-09",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-10",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-11",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    },
+    {
+      "month": "2025-12",
+      "hard_fail": false,
+      "n_warnings": 0,
+      "n_cleaning_actions": 0,
+      "base_rows": 77,
+      "label_rows": 77
+    }
+  ],
+  "frozen_wape": 0.04788460348726727,
+  "frozen_wape_matches_protocol_b": true,
+  "frozen_wape_abs_diff": 0.0,
+  "protocol_b_frozen_wape": 0.04788460348726727,
+  "previous_rf_champion_wape": {
+    "legacy": 0.0601809721016076,
+    "margin_0005_confirm_1": 0.06028049862702164,
+    "margin_0005_confirm_2": 0.06254650120481828,
+    "margin_001_confirm_2": 0.06390442846674334
+  },
+  "runs": [
+    {
+      "preset": "no_promotion",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_triggers": 7,
+      "promotions": [],
+      "n_promotions": 0,
+      "served": {
+        "wape": 0.04788460348726727,
+        "mae": 9136.952348350851,
+        "rmse": 19797.47950344812,
+        "mase": 0.8737397948526759,
+        "n": 924,
+        "bias": 0.0007047596632298002
+      },
+      "by_month": [
+        {
+          "year_month": "2025-01",
+          "wape_served": 0.04465073560535522,
+          "wape_naive": 0.06123703341180149,
+          "n": 77
+        },
+        {
+          "year_month": "2025-02",
+          "wape_served": 0.04441309846003542,
+          "wape_naive": 0.047233847282790585,
+          "n": 77
+        },
+        {
+          "year_month": "2025-03",
+          "wape_served": 0.06265644376239807,
+          "wape_naive": 0.059521535872140374,
+          "n": 77
+        },
+        {
+          "year_month": "2025-04",
+          "wape_served": 0.054964210995049445,
+          "wape_naive": 0.059211731559480604,
+          "n": 77
+        },
+        {
+          "year_month": "2025-05",
+          "wape_served": 0.02787143320060826,
+          "wape_naive": 0.056546329271376615,
+          "n": 77
+        },
+        {
+          "year_month": "2025-06",
+          "wape_served": 0.05793754937771296,
+          "wape_naive": 0.07776265108954325,
+          "n": 77
+        },
+        {
+          "year_month": "2025-07",
+          "wape_served": 0.06684951294370736,
+          "wape_naive": 0.04721169464766233,
+          "n": 77
+        },
+        {
+          "year_month": "2025-08",
+          "wape_served": 0.03972160096677285,
+          "wape_naive": 0.04930610533668116,
+          "n": 77
+        },
+        {
+          "year_month": "2025-09",
+          "wape_served": 0.054507494690251235,
+          "wape_naive": 0.06744558012965428,
+          "n": 77
+        },
+        {
+          "year_month": "2025-10",
+          "wape_served": 0.04860183947829597,
+          "wape_naive": 0.0452240276535178,
+          "n": 77
+        },
+        {
+          "year_month": "2025-11",
+          "wape_served": 0.03681032903200419,
+          "wape_naive": 0.044058379479706686,
+          "n": 77
+        },
+        {
+          "year_month": "2025-12",
+          "wape_served": 0.038371020768902774,
+          "wape_naive": 0.04532800304643122,
+          "n": 77
+        }
+      ],
+      "provinces_improved": 49,
+      "provinces": 77
+    },
+    {
+      "preset": "legacy",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_triggers": 7,
+      "promotions": [
+        {
+          "month": "2025-03",
+          "winner": "logdiff_12m",
+          "effective_from": "2025-04",
+          "champion_wape": 0.06265644376239807,
+          "winner_wape": 0.04756850766547559
+        },
+        {
+          "month": "2025-05",
+          "winner": "logdiff_expanding",
+          "effective_from": "2025-06",
+          "champion_wape": 0.04391198141396803,
+          "winner_wape": 0.026717262521231827
+        },
+        {
+          "month": "2025-07",
+          "winner": "rf_12m",
+          "effective_from": "2025-08",
+          "champion_wape": 0.0696021456717691,
+          "winner_wape": 0.05114077843854166
+        },
+        {
+          "month": "2025-08",
+          "winner": "rf_12m",
+          "effective_from": "2025-09",
+          "champion_wape": 0.03885376411475677,
+          "winner_wape": 0.0308079783446011
+        },
+        {
+          "month": "2025-12",
+          "winner": "logdiff_12m",
+          "effective_from": "2026-01",
+          "champion_wape": 0.056712040476513036,
+          "winner_wape": 0.036009566342544895
+        }
+      ],
+      "n_promotions": 5,
+      "served": {
+        "wape": 0.05155689266358662,
+        "mae": 9837.668836946536,
+        "rmse": 24537.403154943924,
+        "mase": 0.9407472452205206,
+        "n": 924,
+        "bias": 0.008208421571799667
+      },
+      "by_month": [
+        {
+          "year_month": "2025-01",
+          "wape_served": 0.04465073560535522,
+          "wape_naive": 0.06123703341180149,
+          "n": 77
+        },
+        {
+          "year_month": "2025-02",
+          "wape_served": 0.04441309846003542,
+          "wape_naive": 0.047233847282790585,
+          "n": 77
+        },
+        {
+          "year_month": "2025-03",
+          "wape_served": 0.06265644376239807,
+          "wape_naive": 0.059521535872140374,
+          "n": 77
+        },
+        {
+          "year_month": "2025-04",
+          "wape_served": 0.059804290395597696,
+          "wape_naive": 0.059211731559480604,
+          "n": 77
+        },
+        {
+          "year_month": "2025-05",
+          "wape_served": 0.04391198141396803,
+          "wape_naive": 0.056546329271376615,
+          "n": 77
+        },
+        {
+          "year_month": "2025-06",
+          "wape_served": 0.056761939225808265,
+          "wape_naive": 0.07776265108954325,
+          "n": 77
+        },
+        {
+          "year_month": "2025-07",
+          "wape_served": 0.0696021456717691,
+          "wape_naive": 0.04721169464766233,
+          "n": 77
+        },
+        {
+          "year_month": "2025-08",
+          "wape_served": 0.03885376411475677,
+          "wape_naive": 0.04930610533668116,
+          "n": 77
+        },
+        {
+          "year_month": "2025-09",
+          "wape_served": 0.053126815284079226,
+          "wape_naive": 0.06744558012965428,
+          "n": 77
+        },
+        {
+          "year_month": "2025-10",
+          "wape_served": 0.04705800985280325,
+          "wape_naive": 0.0452240276535178,
+          "n": 77
+        },
+        {
+          "year_month": "2025-11",
+          "wape_served": 0.0415230869583461,
+          "wape_naive": 0.044058379479706686,
+          "n": 77
+        },
+        {
+          "year_month": "2025-12",
+          "wape_served": 0.056712040476513036,
+          "wape_naive": 0.04532800304643122,
+          "n": 77
+        }
+      ],
+      "provinces_improved": 50,
+      "provinces": 77
+    },
+    {
+      "preset": "margin_0005_confirm_1",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_triggers": 7,
+      "promotions": [
+        {
+          "month": "2025-03",
+          "winner": "logdiff_12m",
+          "effective_from": "2025-04",
+          "champion_wape": 0.06265644376239807,
+          "winner_wape": 0.04756850766547559
+        },
+        {
+          "month": "2025-05",
+          "winner": "logdiff_expanding",
+          "effective_from": "2025-06",
+          "champion_wape": 0.04391198141396803,
+          "winner_wape": 0.026717262521231827
+        },
+        {
+          "month": "2025-07",
+          "winner": "rf_12m",
+          "effective_from": "2025-08",
+          "champion_wape": 0.0696021456717691,
+          "winner_wape": 0.05114077843854166
+        },
+        {
+          "month": "2025-08",
+          "winner": "rf_12m",
+          "effective_from": "2025-09",
+          "champion_wape": 0.03885376411475677,
+          "winner_wape": 0.0308079783446011
+        },
+        {
+          "month": "2025-12",
+          "winner": "logdiff_12m",
+          "effective_from": "2026-01",
+          "champion_wape": 0.056712040476513036,
+          "winner_wape": 0.036009566342544895
+        }
+      ],
+      "n_promotions": 5,
+      "served": {
+        "wape": 0.05155689266358662,
+        "mae": 9837.668836946536,
+        "rmse": 24537.403154943924,
+        "mase": 0.9407472452205206,
+        "n": 924,
+        "bias": 0.008208421571799667
+      },
+      "by_month": [
+        {
+          "year_month": "2025-01",
+          "wape_served": 0.04465073560535522,
+          "wape_naive": 0.06123703341180149,
+          "n": 77
+        },
+        {
+          "year_month": "2025-02",
+          "wape_served": 0.04441309846003542,
+          "wape_naive": 0.047233847282790585,
+          "n": 77
+        },
+        {
+          "year_month": "2025-03",
+          "wape_served": 0.06265644376239807,
+          "wape_naive": 0.059521535872140374,
+          "n": 77
+        },
+        {
+          "year_month": "2025-04",
+          "wape_served": 0.059804290395597696,
+          "wape_naive": 0.059211731559480604,
+          "n": 77
+        },
+        {
+          "year_month": "2025-05",
+          "wape_served": 0.04391198141396803,
+          "wape_naive": 0.056546329271376615,
+          "n": 77
+        },
+        {
+          "year_month": "2025-06",
+          "wape_served": 0.056761939225808265,
+          "wape_naive": 0.07776265108954325,
+          "n": 77
+        },
+        {
+          "year_month": "2025-07",
+          "wape_served": 0.0696021456717691,
+          "wape_naive": 0.04721169464766233,
+          "n": 77
+        },
+        {
+          "year_month": "2025-08",
+          "wape_served": 0.03885376411475677,
+          "wape_naive": 0.04930610533668116,
+          "n": 77
+        },
+        {
+          "year_month": "2025-09",
+          "wape_served": 0.053126815284079226,
+          "wape_naive": 0.06744558012965428,
+          "n": 77
+        },
+        {
+          "year_month": "2025-10",
+          "wape_served": 0.04705800985280325,
+          "wape_naive": 0.0452240276535178,
+          "n": 77
+        },
+        {
+          "year_month": "2025-11",
+          "wape_served": 0.0415230869583461,
+          "wape_naive": 0.044058379479706686,
+          "n": 77
+        },
+        {
+          "year_month": "2025-12",
+          "wape_served": 0.056712040476513036,
+          "wape_naive": 0.04532800304643122,
+          "n": 77
+        }
+      ],
+      "provinces_improved": 50,
+      "provinces": 77
+    },
+    {
+      "preset": "margin_0005_confirm_2",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_triggers": 7,
+      "promotions": [
+        {
+          "month": "2025-08",
+          "winner": "rf_12m",
+          "effective_from": "2025-09",
+          "champion_wape": 0.03972160096677285,
+          "winner_wape": 0.0308079783446011
+        }
+      ],
+      "n_promotions": 1,
+      "served": {
+        "wape": 0.04976558162114711,
+        "mae": 9495.865366856266,
+        "rmse": 21908.424545879956,
+        "mase": 0.9080615878535421,
+        "n": 924,
+        "bias": 0.0005060203268848159
+      },
+      "by_month": [
+        {
+          "year_month": "2025-01",
+          "wape_served": 0.04465073560535522,
+          "wape_naive": 0.06123703341180149,
+          "n": 77
+        },
+        {
+          "year_month": "2025-02",
+          "wape_served": 0.04441309846003542,
+          "wape_naive": 0.047233847282790585,
+          "n": 77
+        },
+        {
+          "year_month": "2025-03",
+          "wape_served": 0.06265644376239807,
+          "wape_naive": 0.059521535872140374,
+          "n": 77
+        },
+        {
+          "year_month": "2025-04",
+          "wape_served": 0.054964210995049445,
+          "wape_naive": 0.059211731559480604,
+          "n": 77
+        },
+        {
+          "year_month": "2025-05",
+          "wape_served": 0.02787143320060826,
+          "wape_naive": 0.056546329271376615,
+          "n": 77
+        },
+        {
+          "year_month": "2025-06",
+          "wape_served": 0.05793754937771296,
+          "wape_naive": 0.07776265108954325,
+          "n": 77
+        },
+        {
+          "year_month": "2025-07",
+          "wape_served": 0.06684951294370736,
+          "wape_naive": 0.04721169464766233,
+          "n": 77
+        },
+        {
+          "year_month": "2025-08",
+          "wape_served": 0.03972160096677285,
+          "wape_naive": 0.04930610533668116,
+          "n": 77
+        },
+        {
+          "year_month": "2025-09",
+          "wape_served": 0.053126815284079226,
+          "wape_naive": 0.06744558012965428,
+          "n": 77
+        },
+        {
+          "year_month": "2025-10",
+          "wape_served": 0.04705800985280325,
+          "wape_naive": 0.0452240276535178,
+          "n": 77
+        },
+        {
+          "year_month": "2025-11",
+          "wape_served": 0.0415230869583461,
+          "wape_naive": 0.044058379479706686,
+          "n": 77
+        },
+        {
+          "year_month": "2025-12",
+          "wape_served": 0.056712040476513036,
+          "wape_naive": 0.04532800304643122,
+          "n": 77
+        }
+      ],
+      "provinces_improved": 48,
+      "provinces": 77
+    },
+    {
+      "preset": "margin_001_confirm_2",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_triggers": 7,
+      "promotions": [],
+      "n_promotions": 0,
+      "served": {
+        "wape": 0.04788460348726727,
+        "mae": 9136.952348350851,
+        "rmse": 19797.47950344812,
+        "mase": 0.8737397948526759,
+        "n": 924,
+        "bias": 0.0007047596632298002
+      },
+      "by_month": [
+        {
+          "year_month": "2025-01",
+          "wape_served": 0.04465073560535522,
+          "wape_naive": 0.06123703341180149,
+          "n": 77
+        },
+        {
+          "year_month": "2025-02",
+          "wape_served": 0.04441309846003542,
+          "wape_naive": 0.047233847282790585,
+          "n": 77
+        },
+        {
+          "year_month": "2025-03",
+          "wape_served": 0.06265644376239807,
+          "wape_naive": 0.059521535872140374,
+          "n": 77
+        },
+        {
+          "year_month": "2025-04",
+          "wape_served": 0.054964210995049445,
+          "wape_naive": 0.059211731559480604,
+          "n": 77
+        },
+        {
+          "year_month": "2025-05",
+          "wape_served": 0.02787143320060826,
+          "wape_naive": 0.056546329271376615,
+          "n": 77
+        },
+        {
+          "year_month": "2025-06",
+          "wape_served": 0.05793754937771296,
+          "wape_naive": 0.07776265108954325,
+          "n": 77
+        },
+        {
+          "year_month": "2025-07",
+          "wape_served": 0.06684951294370736,
+          "wape_naive": 0.04721169464766233,
+          "n": 77
+        },
+        {
+          "year_month": "2025-08",
+          "wape_served": 0.03972160096677285,
+          "wape_naive": 0.04930610533668116,
+          "n": 77
+        },
+        {
+          "year_month": "2025-09",
+          "wape_served": 0.054507494690251235,
+          "wape_naive": 0.06744558012965428,
+          "n": 77
+        },
+        {
+          "year_month": "2025-10",
+          "wape_served": 0.04860183947829597,
+          "wape_naive": 0.0452240276535178,
+          "n": 77
+        },
+        {
+          "year_month": "2025-11",
+          "wape_served": 0.03681032903200419,
+          "wape_naive": 0.044058379479706686,
+          "n": 77
+        },
+        {
+          "year_month": "2025-12",
+          "wape_served": 0.038371020768902774,
+          "wape_naive": 0.04532800304643122,
+          "n": 77
+        }
+      ],
+      "provinces_improved": 49,
+      "provinces": 77
+    }
+  ]
+}
