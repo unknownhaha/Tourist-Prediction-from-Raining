@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import json
+import platform
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import numpy as np
 import pandas as pd
+import sklearn
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
@@ -90,8 +93,24 @@ def psi_alarm(score):
     return score >= PSI_THRESHOLD
 
 
-def _freeze_baseline(path, metrics):
-    payload = {
+def _runtime():
+    return {"python": platform.python_version(), "sklearn": sklearn.__version__, "numpy": np.__version__}
+
+
+def _numbers_close(left, right, rel=1e-6, abs_tol=1e-9):
+    if isinstance(left, dict) and isinstance(right, dict):
+        return left.keys() == right.keys() and all(_numbers_close(left[k], right[k], rel, abs_tol) for k in left)
+    if isinstance(left, list) and isinstance(right, list):
+        return len(left) == len(right) and all(_numbers_close(a, b, rel, abs_tol) for a, b in zip(left, right))
+    if isinstance(left, bool) or isinstance(right, bool):
+        return left == right
+    if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+        return abs(float(left) - float(right)) <= max(abs_tol, rel * max(abs(float(left)), abs(float(right))))
+    return left == right
+
+
+def _baseline_payload(metrics):
+    return {
         "decision_date": "2026-11-20", "split_role": "test",
         "train": {"start": TIME_SPLIT["train"][0], "end": TIME_SPLIT["train"][1]},
         "validation_for_hyperparameters": {"start": TIME_SPLIT["validation"][0], "end": TIME_SPLIT["validation"][1]},
@@ -99,11 +118,26 @@ def _freeze_baseline(path, metrics):
         "tuned_on_test": False, "model_version": "rf-depth10-fit-2022-12",
         "hyperparameters": RF_PARAMETERS, "metrics": metrics,
     }
+
+
+def _freeze_baseline(path, metrics):
+    payload = _baseline_payload(metrics)
+    runtime = _runtime()
     path = Path(path)
     if path.exists():
-        if json.loads(path.read_text(encoding="utf-8")) != payload:
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        recorded = existing.get("runtime")
+        comparable = {key: value for key, value in existing.items() if key != "runtime"}
+        if not _numbers_close(comparable, payload):
             raise ValueError(f"Existing frozen baseline differs from the 2024 evaluation: {path}")
+        if recorded != runtime:
+            warnings.warn(
+                f"Baseline runtime {recorded} differs from {runtime}; numeric metrics matched within tolerance",
+                UserWarning,
+                stacklevel=2,
+            )
         return
+    payload["runtime"] = runtime
     path.parent.mkdir(parents=True, exist_ok=True)
     with NamedTemporaryFile("w", dir=path.parent, encoding="utf-8", delete=False) as handle:
         temp = Path(handle.name)

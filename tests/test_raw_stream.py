@@ -24,7 +24,10 @@ def test_raw_batches_are_atomic_and_use_the_deployed_version(tmp_path, monkeypat
     assert len(result["rows"]) == 77 and not result["competition"]["scores"]
     deploy = january["deployment"]
     feb = studio.apply("step", {"month": "2025-02"})["months"][-1]
-    assert deploy["effective_from"] == feb["month"]
+    if result["competition"]["decision"] == "PROMOTE":
+        assert deploy["effective_from"] == feb["month"]
+    else:
+        assert deploy["effective_from"] == "2025-01"
     assert {r["version"] for r in feb["served_forecast"]} == {deploy["version"]}
     assert [r["y_pred"] for r in feb["served_forecast"]] == [r["y_pred"] for r in feb["rows"]]
     contest = feb["competition"]
@@ -32,7 +35,11 @@ def test_raw_batches_are_atomic_and_use_the_deployed_version(tmp_path, monkeypat
     assert not feb["psi"]["rain_lag_1"]["alarm"]
     assert contest["trigger"] == ["rain_roll3"]
     assert contest["fit_end"] == "2025-01" and contest["evaluation_month"] == "2025-02"
-    assert len(contest["scores"]) == 3 and feb["pipeline"]["deploy"]["effective_from"] == "2025-03"
+    assert len(contest["scores"]) == 3
+    if contest["decision"] == "PROMOTE":
+        assert feb["pipeline"]["deploy"]["effective_from"] == "2025-03"
+    else:
+        assert feb["pipeline"]["deploy"]["effective_from"] == deploy["effective_from"]
     assert (contest["decision"] == "PROMOTE") == (
         min(item["wape"] for item in contest["scores"].values()) < feb["metrics"]["champion"]["wape"] - 1e-12)
     assert {e["stage"] for e in studio.progress["events"]} == {"FEATURES", "PREDICT", "MONITOR", "RETRAIN", "COMPARE", "DEPLOY", "DONE"}

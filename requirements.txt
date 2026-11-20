@@ -8,4 +8,4 @@ playwright>=1.40
 rarfile>=4.1
 pytest>=7.4
 markdown>=3.5
-scikit-learn>=1.4
+scikit-learn==1.9.1

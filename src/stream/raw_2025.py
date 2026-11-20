@@ -64,6 +64,20 @@ def _guests(path, number, sheets):
         workbook.close()
 
 
+def _collect_sources(loaded):
+    """Split guest grids and rainfall frames. Manifest order does not matter."""
+    guests = []
+    rain_parts = []
+    for kind, payload in loaded:
+        if kind == "xlsx":
+            guests.extend(payload)
+        else:
+            rain_parts.append(payload)
+    if not rain_parts:
+        raise ValueError("Manifest has no rainfall file")
+    return guests, pd.concat(rain_parts, ignore_index=True)
+
+
 def read_month(month):
     period = pd.Period(month, freq="M")
     if period.year != 2025:
@@ -71,16 +85,18 @@ def read_month(month):
     manifest = source_files()
     try:
         cw = load_crosswalk()
-        guests = []
+        loaded = []
         for item in manifest:
             path = _cached(item)
-            if path.suffix == ".xlsx":
-                guests.extend(_guests(path, period.month, item["sheets"]))
+            if path.suffix.lower() == ".xlsx":
+                loaded.append(("xlsx", list(_guests(path, period.month, item["sheets"]))))
             else:
                 raw = pd.read_csv(path, dtype={"PROV_ID": str})
-                rain = raw.loc[(raw.YEAR == 2025) & (raw.MONTH == period.month),
+                part = raw.loc[(raw.YEAR == 2025) & (raw.MONTH == period.month),
                                ["PROV_ID", "MinRain", "AvgRain", "MaxRain"]].copy()
-                rain.columns = ["province_id", "rain_min_mm", "rain_avg_mm", "rain_max_mm"]
+                part.columns = ["province_id", "rain_min_mm", "rain_avg_mm", "rain_max_mm"]
+                loaded.append(("rain", part))
+        guests, rain = _collect_sources(loaded)
         province = cw.dropna(subset=["province_id"]).drop_duplicates("province_id")
         panel = pd.DataFrame(guests).merge(rain, on="province_id", validate="one_to_one")
         panel = panel.merge(province[["province_id", "province_th", "province_en", "region"]],

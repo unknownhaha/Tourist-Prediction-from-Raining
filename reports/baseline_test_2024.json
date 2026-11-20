@@ -647,5 +647,10 @@
         "n_months": 12
       }
     ]
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.5"
   }
 }

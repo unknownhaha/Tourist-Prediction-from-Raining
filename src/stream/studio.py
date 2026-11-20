@@ -12,7 +12,7 @@ import joblib
 import pandas as pd
 
 from src.common.paths import DATA, ROOT
-from src.stream.champion_policy import ChampionPolicy
+from src.stream.champion_policy import ChampionPolicy, promotion_rule
 from src.stream.lineage import sha256_file, sha256_frame, write_json
 from src.stream.metrics import _block, summarize
 from src.stream.reference import REFERENCE_VERSION, build_reference
@@ -26,6 +26,15 @@ SNAPSHOT = DATA / "model" / "province_month_unified.parquet"
 MODELS = ("rf_fixed", "rf_monthly", "linear")
 
 
+def note_deployment(state, contest, version, month):
+    """Move effective_from only when a challenger is promoted."""
+    if contest and contest.get("decision") == "PROMOTE":
+        next_month = str(pd.Period(month, freq="M") + 1)
+        state["deployment"] = dict(model=state["champion"], version=version, effective_from=next_month)
+        state["registry"].append(dict(month=month, action="PROMOTE", **state["deployment"]))
+    return state
+
+
 def jsonable(value):
     if isinstance(value, dict):
         return {k: jsonable(v) for k, v in value.items()}
@@ -37,12 +46,15 @@ def jsonable(value):
 
 
 class Studio:
-    def __init__(self, output=DEFAULT_DIR, snapshot=SNAPSHOT, baseline_path=None, raw=False, triggered=None):
+    def __init__(self, output=DEFAULT_DIR, snapshot=SNAPSHOT, baseline_path=None, raw=False, triggered=None,
+                 promotion="legacy"):
         self.output = Path(output)
         self.output.mkdir(exist_ok=True, parents=True)
         self.snapshot = Path(snapshot)
         self.raw = raw
         self.triggered = raw if triggered is None else triggered
+        self.promotion = promotion
+        promotion_rule(promotion)
         self.progress = {"month": None, "stage": "IDLE", "events": []}
         self.baseline_path = baseline_path or self.output / "baseline_test_2024.json"
         self.db = self.output / "studio.sqlite"
@@ -54,7 +66,8 @@ class Studio:
         return sqlite3.connect(self.db, timeout=180)
 
     def empty(self):
-        return dict(triggered=self.triggered, rain_lag_confirmation_months=2 if self.triggered else None,
+        return dict(triggered=self.triggered, promotion=self.promotion,
+                    rain_lag_confirmation_months=2 if self.triggered else None,
                     trained=False, months=[], baseline={}, champion=None, registry=[],
                     source={"file": "MOTS XLSX + HII CSV" if self.raw else self.snapshot.name,
                             "raw": self.raw}, halt=None)
@@ -82,6 +95,8 @@ class Studio:
                 raise ValueError("Choose a separate directory for this replay policy")
             if state["trained"] and self.triggered and state.get("rain_lag_confirmation_months") != 2:
                 raise ValueError("Use a new output directory for the two-month rain_lag_1 rule")
+            if state["trained"] and state.get("promotion", "legacy") != self.promotion:
+                raise ValueError("Choose a separate directory for this promotion preset")
             if action == "train":
                 if state["trained"]:
                     return state
@@ -103,7 +118,7 @@ class Studio:
                 models = prepare(history, self.baseline_path, champion_only=self.triggered)
                 initial = "champion" if self.triggered else "rf_fixed"
                 if self.triggered:
-                    models = ChampionPolicy(models, models.fixed_forest)
+                    models = ChampionPolicy(models, models.fixed_forest, rule=promotion_rule(self.promotion))
                 reference, stats = build_reference(history, source_hash)
                 reference.to_parquet(self.output / "reference_2023_2024.parquet", index=False)
                 write_json(self.output / "reference_2023_2024_stats.json", stats)
@@ -165,11 +180,7 @@ class Studio:
                 contest = result.get("competition")
                 ranking = (sorted(contest["scores"], key=lambda k: contest["scores"][k]["wape"]) if contest is not None
                            else sorted(MODELS, key=lambda k: result["metrics"][k]["wape"]))
-                next_month = str(pd.Period(month, freq="M") + 1)
-                state["deployment"] = dict(model=state["champion"], version=models.versions[state["champion"]],
-                                           effective_from=next_month)
-                if contest and contest["decision"] == "PROMOTE":
-                    state["registry"].append(dict(month=month, action="PROMOTE", **state["deployment"]))
+                note_deployment(state, contest, models.versions[state["champion"]], month)
                 result["pipeline"] = dict(features={"rows": len(result["served_forecast"]),
                                                     "cutoff": str(pd.Period(month, freq="M") - 1)},
                                           predict=result["versions"], monitor={"psi": result["psi"], "ph": result["ph"]},
