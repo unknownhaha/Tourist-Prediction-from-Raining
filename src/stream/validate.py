@@ -32,11 +32,16 @@ FEATURE_COLUMNS = (
 
 
 class StreamHalt(Exception):
-    """Stop the replay. Do not predict, learn, or impute."""
+    """Stop the replay. Do not predict, learn, or impute.
 
-    def __init__(self, message: str, checks: list[dict] | None = None):
+    A halted run keeps the DQ report and lineage for the failing month and
+    does not write predictions or metrics.
+    """
+
+    def __init__(self, message: str, checks: list[dict] | None = None, year_month: str | None = None):
         super().__init__(message)
         self.checks = checks or []
+        self.year_month = year_month
 
 
 def _check(name: str, passed: bool, detail: str = "", *, severity: str = "hard") -> dict:
@@ -47,7 +52,7 @@ def _raise_if_hard(checks: list[dict], year_month: str, stage: str) -> list[dict
     failed = [item for item in checks if item["severity"] == "hard" and not item["passed"]]
     if failed:
         names = ", ".join(item["name"] for item in failed)
-        raise StreamHalt(f"{stage} failed for {year_month}: {names}", checks)
+        raise StreamHalt(f"{stage} failed for {year_month}: {names}", checks, year_month=year_month)
     return checks
 
 
@@ -80,7 +85,10 @@ def _as_bool(value: object) -> bool:
 def validate_working_set(frame: pd.DataFrame, year_month: str) -> list[dict]:
     """Reject rows after `year_month` in the frame used to build this month."""
     if "year_month" not in frame.columns:
-        raise StreamHalt(f"working set for {year_month} has no year_month column")
+        raise StreamHalt(
+            f"working set for {year_month} has no year_month column",
+            year_month=year_month,
+        )
     future = frame.loc[frame["year_month"].astype(str) > year_month]
     checks = [
         _check(
@@ -111,7 +119,8 @@ def validate_month(frame: pd.DataFrame, year_month: str, *, stage: str) -> list[
     padded = month["province_id"].map(_pad_candidate)
     bad_ids = int(padded.isna().sum())
     checks.append(_check("province_id", bad_ids == 0, f"{bad_ids} values cannot be a 2-digit id"))
-    if stage == "re-validate":
+    strict = stage in {"re-validate", "history"}
+    if strict:
         as_text = month["province_id"].astype(str)
         not_padded = int((~as_text.map(lambda value: PROVINCE_ID.fullmatch(value) is not None)).sum())
         checks.append(_check("province_id_padded", not_padded == 0, f"{not_padded} ids are not \\d{{2}}"))
@@ -130,7 +139,7 @@ def validate_month(frame: pd.DataFrame, year_month: str, *, stage: str) -> list[
 
     unique_ready = int(padded.dropna().nunique()) if not month.empty else 0
     one_month = int(month["year_month"].nunique()) == 1 if not month.empty else False
-    if stage == "re-validate":
+    if strict:
         count_ok = (not conflict) and unique_ready == N_PROVINCES and len(month) == N_PROVINCES and one_month
     else:
         count_ok = (not conflict) and unique_ready == N_PROVINCES and one_month
@@ -148,7 +157,7 @@ def validate_month(frame: pd.DataFrame, year_month: str, *, stage: str) -> list[
         checks.append(_check(f"{column}_numeric", became_null == 0, f"{became_null} non-numeric"))
         negative = int((numeric.dropna() < 0).sum())
         checks.append(_check(f"{column}_non_negative", negative == 0, f"{negative} negative"))
-        if stage == "re-validate":
+        if strict:
             nulls = int(numeric.isna().sum())
             checks.append(_check(f"{column}_not_null", nulls == 0, f"{nulls} null"))
 
@@ -189,3 +198,33 @@ def validate_features(features: pd.DataFrame, year_month: str) -> list[dict]:
         lag_ok = bool((~features["is_covid_lag12"].map(bool)).all())
         checks.append(_check("feature_is_covid_lag12", lag_ok, "2025 lag-12 must be outside COVID"))
     return _raise_if_hard(checks, year_month, "features")
+
+
+def history_source_months(stream_months: list[str]) -> list[str]:
+    """Lag sources that are never themselves a replay month.
+
+    For 2025-01..2025-12 this is 2024-01..2024-12: every month
+    `forecast_source_months` reads that falls before the stream.
+    """
+    from src.model.leakage import forecast_source_months
+
+    start = min(stream_months)
+    found: set[str] = set()
+    for month in stream_months:
+        found.update(source for source in forecast_source_months(month).values() if source < start)
+    return sorted(found)
+
+
+def validate_history(panel: pd.DataFrame, stream_months: list[str]) -> list[str]:
+    """Apply the month-t value rules to every lag-source history month."""
+    months = history_source_months(stream_months)
+    for month in months:
+        sliver = panel.loc[panel["year_month"].astype(str) == month]
+        if sliver.empty:
+            raise StreamHalt(
+                f"history failed for {month}: row_count",
+                [_check("row_count", False, "0 rows")],
+                year_month=month,
+            )
+        validate_month(sliver, month, stage="history")
+    return months

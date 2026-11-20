@@ -50,7 +50,11 @@ class PageHinkley:
 
 
 class PageHinkleyOnError:
-    """Optional example. Watches monthly WAPE. Does not retrain by itself."""
+    """EXAMPLE hook only. DS/MLE choose the real detector and its thresholds.
+
+    Watches monthly WAPE. Does not retrain by itself. The delta and threshold
+    below are wiring defaults, not a team decision.
+    """
 
     name = "page-hinkley"
 

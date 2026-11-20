@@ -21,6 +21,11 @@ def rmse(y: np.ndarray, pred: np.ndarray) -> float:
 
 
 def mase(y: np.ndarray, pred: np.ndarray, naive: np.ndarray) -> float:
+    """MAE divided by seasonal-naive MAE on the same out-of-sample rows.
+
+    This is a relative-to-baseline score for the months being scored. It is
+    not the textbook MASE that scales by in-sample training-period errors.
+    """
     scale = float(np.mean(np.abs(y - naive)))
     if scale == 0:
         return float("nan")

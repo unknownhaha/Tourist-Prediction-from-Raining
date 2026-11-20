@@ -35,10 +35,12 @@ class SeasonalNaive:
 
 
 class OnlineLinear:
-    """Per-province linear step, deterministic, numpy only.
+    """EXAMPLE wiring only. DS/MLE own the real model.
 
-    The first prediction for a province is `guest_lag_12`. Later months take
-    one gradient step on the revealed target. Not the default baseline.
+    Per-province linear step, deterministic, numpy only. The first prediction
+    for a province is `guest_lag_12`. Later months take one gradient step on
+    the revealed target. Not the default baseline. Do not treat the step size
+    as a tuned hyperparameter.
     """
 
     model_version = "online-linear-numpy"

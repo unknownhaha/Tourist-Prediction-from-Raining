@@ -129,6 +129,33 @@ def test_replay_is_deterministic_and_covers_twelve_by_seventy_seven(tmp_path):
     text_b = (second / "lineage" / "2025-06.json").read_text(encoding="utf-8")
     assert text_a == text_b
     assert "logged_at" not in text_a
+    for month_number in range(1, 13):
+        name = f"2025-{month_number:02d}.parquet"
+        assert (first / "features" / name).read_bytes() == (second / "features" / name).read_bytes()
+
+
+def test_negative_rain_in_2024_12_halts_and_writes_lineage(tmp_path):
+    panel = _panel(month_range("2022-01", "2025-12"))
+    mask = (panel["year_month"] == "2024-12") & (panel["province_id"] == "01")
+    panel.loc[mask, ["rain_min_mm", "rain_avg_mm", "rain_max_mm"]] = [-3.0, -2.0, -1.0]
+    with pytest.raises(StreamHalt, match="history failed for 2024-12"):
+        replay(output_dir=tmp_path / "out", panel=panel)
+    lineage = (tmp_path / "out" / "lineage" / "2024-12.json").read_text(encoding="utf-8")
+    assert "rain_avg_mm_non_negative" in lineage
+    assert '"passed": false' in lineage
+    assert (tmp_path / "out" / "dq" / "2024-12.json").exists()
+    assert not (tmp_path / "out" / "predictions.parquet").exists()
+    assert not (tmp_path / "out" / "metrics.json").exists()
+
+
+def test_null_target_in_history_halts_and_writes_lineage(tmp_path):
+    panel = _panel(month_range("2022-01", "2025-12"))
+    mask = (panel["year_month"] == "2024-06") & (panel["province_id"] == "01")
+    panel.loc[mask, "guest_arrivals_total"] = None
+    with pytest.raises(StreamHalt, match="history failed for 2024-06"):
+        replay(output_dir=tmp_path / "out", panel=panel)
+    assert "guest_arrivals_total_not_null" in (tmp_path / "out" / "lineage" / "2024-06.json").read_text(encoding="utf-8")
+    assert (tmp_path / "out" / "dq" / "2024-06.json").exists()
 
 
 def test_replay_halts_when_a_stream_month_is_missing(tmp_path):
