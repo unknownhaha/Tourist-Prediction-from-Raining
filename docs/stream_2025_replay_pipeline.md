@@ -37,9 +37,9 @@
 สำหรับเดือน `t` ใช้เฉพาะแถวที่ `year_month <= t` แถวที่ `year_month > t` ถูกกันออกจากก้อนงานของเดือนนี้และบันทึกใน lineage ว่าถูกกันไว้ ไม่ใช่การลบออกจาก snapshot
 
 1. **Validate** ก้อนก่อน clean (หัวข้อ 8) hard fail แล้วหยุด
-2. **Data quality** เขียนรายงานรายเดือน (หัวข้อ 9) warn ไม่หยุด hard fail หยุด
-3. **Clean** ตามกฎที่บันทึกทุกการเปลี่ยน (หัวข้อ 10) ไม่แก้ target เงียบ ๆ
-4. **Re-validate** ก้อนที่ clean แล้วด้วยกฎเดียวกับหัวข้อ 8 ถ้ายังไม่ผ่านให้ hard fail ห้ามส่งต่อ
+2. **Clean** ตามกฎที่บันทึกทุกการเปลี่ยน (หัวข้อ 10) ไม่แก้ target เงียบ ๆ
+3. **Re-validate** ก้อนที่ clean แล้วด้วยกฎเดียวกับหัวข้อ 8 ถ้ายังไม่ผ่านให้ hard fail ห้ามส่งต่อ
+4. **Data quality** เขียนรายงานของเดือนที่ผ่านการ clean แล้ว (หัวข้อ 9) warn ไม่หยุด hard fail หยุด
 5. แยก `y_t` ออกจากเฟรม feature เรียก `build_forecast_features` แล้ว `assert_no_future_leakage` ทุกเดือนต้นทางต้อง `< t`
 6. `predict` ครบ 77 จังหวัดก่อน จังหวัดหนึ่งห้าม `learn` จาก `y_t` ของเดือนเดียวกัน
 7. เปิด `y_t` เขียน prediction log และ lineage (หัวข้อ 12)
@@ -54,12 +54,12 @@ flowchart TD
   warm --> month{เดือน t ใน 2025}
   month --> val1[validate ก่อน clean]
   val1 -->|hard fail| halt[หยุดและ alert]
-  val1 --> dq[เขียน DQ report]
-  dq -->|hard fail| halt
-  dq --> clean[clean ตามกฎที่บันทึก]
+  val1 --> clean[clean ตามกฎที่บันทึก]
   clean --> val2[re-validate]
   val2 -->|hard fail| halt
-  val2 --> feats[build_forecast_features จากเดือนน้อยกว่า t]
+  val2 --> dq[เขียน DQ report]
+  dq -->|hard fail| halt
+  dq --> feats[build_forecast_features จากเดือนน้อยกว่า t]
   feats --> leak[assert_no_future_leakage]
   leak --> pred[predict ครบ 77 แถว ไม่สุ่ม]
   pred --> reveal[เปิด y_t]
@@ -170,7 +170,7 @@ Hard fail หมายถึงหยุดโปรเซส exit code ไม�
 
 ## 9. Data quality
 
-ขั้นนี้อยู่ระหว่าง validate รอบแรกกับ clean เขียนไฟล์ทุกเดือนแม้จะมีแค่ warn ถ้ามี hard fail จากหัวข้อ 8 ให้เขียนรายงานแล้วหยุด
+ขั้นนี้ทำหลัง re-validate บนเดือนที่ clean แล้ว และก่อนสร้าง feature เขียนไฟล์ทุกเดือนแม้จะมีแค่ warn ถ้ามี hard fail ให้เขียนรายงานแล้วหยุด
 
 ไฟล์: `reports/stream_dq/{year_month}.json` และแถวธง `reports/stream_dq/{year_month}_rows.parquet`
 

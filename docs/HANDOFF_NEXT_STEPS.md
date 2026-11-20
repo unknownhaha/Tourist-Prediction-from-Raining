@@ -72,8 +72,8 @@ Path: `reports/baseline_test_2024.json`. Do not put predictions for 2025 in this
 - Do not drop 2018 or COVID rows before computing lags.
 - Do not fill 2018 Thai/foreign nulls or pre-2023 `visitors_total` with 0.
 - Do not shuffle, and do not use random K-fold.
-- Do not implement the 2025 replay until the team gives a go-ahead.
-- Do not merge to `main` without review.
+- Do not merge to `main` without review. Merge PR #7 before the replay PR.
+- Do not treat `SeasonalNaive` as the production model. It is the runnable baseline. The team's model must implement `predict` and `learn`.
 - Do not sample or shuffle the 77 provinces. Use every row, ordered by `year_month` then `province_id`.
 - Do not skip or impute a missing stream month. Halt and alert.
 - Do not clip negative guest arrivals or rain. That is a hard failure.
@@ -81,17 +81,15 @@ Path: `reports/baseline_test_2024.json`. Do not put predictions for 2025 in this
 - Do not refresh `data/model/reference_2023_2024.parquet` because a drift alarm fired. Only a team decision after a confirmed retrain may cut a new version.
 - Do not choose ADWIN, Page-Hinkley, DDM, PSI, KS, or their thresholds in the data-engineering feeder. Deliver the hooks and the reference set. DS/MLE own the choice.
 
-## Next build item
+## Replay feeder
 
-Build the 2025 replay feeder described in `docs/stream_2025_replay_pipeline.md`. It is not in the repo. Wait for the team to say to build it.
-
-When that go-ahead arrives, the feeder replays 2025-01 .. 2025-12 one month at a time. Per month the order is fixed: validate, data-quality report, clean, re-validate, features through `t-1`, `predict` all 77 provinces, reveal `y_t`, log, then `learn`. The model loaded at the start is the step-2 refit (2019-01 .. 2024-12). Proposed command, not implemented:
+The feeder is in `src/stream/`. Per month: validate, clean, re-validate, data-quality report, features through `t-1`, `predict` all 77 provinces, reveal `y_t`, log, `learn`, then the optional drift hook. The shipped baseline is `SeasonalNaive` (`guest_lag_12`). Replace it with the team's model by implementing `predict` and `learn`. The 2019-01..2024-12 refit artifact is still a data-science task; this pipeline does not train it.
 
 ```powershell
-python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --model-path models/warm_start.joblib --log data/stream/replay_2025.parquet
+python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --output-dir outputs/stream_2025
 ```
 
-Proposed modules, also not created: `src/stream/replay.py`, `contracts.py`, `quality.py`, `clean.py`, `reference.py`, `lineage.py`, `metrics.py`, `drift.py`, and `tests/test_stream_replay.py`. Call `build_forecast_features` and `assert_no_future_leakage` from `src/model/leakage.py`. Do not copy the lag formulas.
+`--start` / `--end` other than 2025-01..2025-12 are rejected. Outputs under `outputs/stream_2025/` are gitignored. Modules: `validate.py`, `clean.py`, `quality.py`, `reference.py`, `lineage.py`, `metrics.py`, `drift.py`, `model.py`, `replay.py`. Lags come from `src/model/leakage.py`.
 
 ## Feeder stages to implement with the design
 

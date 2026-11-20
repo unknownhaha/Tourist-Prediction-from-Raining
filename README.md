@@ -36,7 +36,15 @@ python -m pytest tests/
 
 **2025 replay design (Thai, not built yet):** [docs/stream_2025_replay_pipeline.md](docs/stream_2025_replay_pipeline.md) — month-by-month feeder for the online model.
 
-**Next-build handoff (English):** [docs/HANDOFF_NEXT_STEPS.md](docs/HANDOFF_NEXT_STEPS.md) — frozen 2024 baseline, then refit through 2024 as the 2025 warm start. Do not build the replay until the team says so.
+**Next-build handoff (English):** [docs/HANDOFF_NEXT_STEPS.md](docs/HANDOFF_NEXT_STEPS.md) — frozen 2024 baseline, then refit through 2024 as the 2025 warm start.
+
+Replay 2025 with the shipped seasonal-naive baseline (no extra packages; the real model implements `predict` / `learn` in `src/stream/model.py`):
+
+```powershell
+python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --output-dir outputs/stream_2025
+```
+
+Logs, the data-quality reports, lineage, and the 2023-01..2024-12 reference set are written under `outputs/stream_2025/`. That directory is gitignored. Add `--drift page-hinkley` for the optional error hook. `--model online-linear` is a deterministic numpy step, not a tuned model.
 
 The pipeline table `data/core/province_month.parquet` is still produced by `python -m src.core.build_core` and keeps its original column names (see `docs/handoff_ds_ml_qa.md` and `docs/coverage_report.md`).
 
