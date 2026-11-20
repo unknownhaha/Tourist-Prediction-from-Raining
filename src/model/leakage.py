@@ -25,12 +25,14 @@ GUEST_LAGS: tuple[int, ...] = (1, 12)
 RAIN_ROLLING_MONTHS = 3
 DEFAULT_LAGS = GUEST_LAGS
 
-# Single time split. 2018 is lag history only and is not a training row.
+# Decision 2026-11-20. 2018 is lag history only and is not a training row.
+# 2024 is the held-out test. The online stream is 2025 only.
 TIME_SPLIT: dict[str, tuple[str, str]] = {
     "lag_history": ("2018-01", "2018-12"),
     "train": ("2019-01", "2022-12"),
     "validation": ("2023-01", "2023-12"),
-    "online_stream": ("2024-01", "2025-12"),
+    "test": ("2024-01", "2024-12"),
+    "online_stream": ("2025-01", "2025-12"),
 }
 
 _YEAR_MONTH = re.compile(r"\d{4}-\d{2}$")

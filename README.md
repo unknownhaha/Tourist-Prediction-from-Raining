@@ -34,12 +34,15 @@ python -m pytest tests/
 
 **Feature rules (Thai, for data scientists):** [docs/feature_rules_for_modeling.md](docs/feature_rules_for_modeling.md) — lags through t−1 only, no quarter total that contains the month being predicted.
 
+**2025 replay design (Thai, not built yet):** [docs/stream_2025_replay_pipeline.md](docs/stream_2025_replay_pipeline.md) — month-by-month feeder for the online model.
+
 The pipeline table `data/core/province_month.parquet` is still produced by `python -m src.core.build_core` and keeps its original column names (see `docs/handoff_ds_ml_qa.md` and `docs/coverage_report.md`).
 
 ## Documentation
 
 - **Handbook (Markdown):** [docs/index.md](docs/index.md) — Thai: [docs/th/index.md](docs/th/index.md)
 - **Modeling feature rules (Thai):** [docs/feature_rules_for_modeling.md](docs/feature_rules_for_modeling.md)
+- **2025 replay design (Thai):** [docs/stream_2025_replay_pipeline.md](docs/stream_2025_replay_pipeline.md)
 - **Interactive explorer:** open [site/index.html](site/index.html) in a browser after `python -m src.docs.build_site` (switch **English / ไทย** in the header)
 
 Tested with **Python 3.11+** (CI/local may use 3.14).

@@ -7,7 +7,7 @@
 | บทบาท | เริ่มที่ |
 |--------|---------|
 | ผู้ดูแลไปปไลน์ | [คู่มือผู้ปฏิบัติการ](pipeline_operators.md) |
-| วิทยาการข้อมูล / ML | [กฎ feature](../feature_rules_for_modeling.md) แล้ว [ภาพรวมระดับประเทศ](national_picture.md) และ [ส่งต่อ DS / ML / QA](handoff_ds_ml_qa.md) |
+| วิทยาการข้อมูล / ML | [กฎ feature](../feature_rules_for_modeling.md) และ [แบบสาย replay ปี 2025](../stream_2025_replay_pipeline.md) แล้ว [ภาพรวมระดับประเทศ](national_picture.md) และ [ส่งต่อ DS / ML / QA](handoff_ds_ml_qa.md) |
 | QA / นักวิเคราะห์ | [ส่งต่อ](handoff_ds_ml_qa.md) และ [รายงานความครอบคลุม](../coverage_report.md) |
 | ผู้มีส่วนได้ส่วนเสีย | [ภาพรวมระดับประเทศ](national_picture.md) (แผนภูมิ) |
 
@@ -21,7 +21,7 @@ python -m src.docs.build_site
 
 ## อ้างอิงด่วน
 
-- **ตารางโมเดล:** `data/model/province_month_unified.parquet` — [กฎ feature](../feature_rules_for_modeling.md)
+- **ตารางโมเดล:** `data/model/province_month_unified.parquet` — [กฎ feature](../feature_rules_for_modeling.md) — [แบบสาย replay ปี 2025](../stream_2025_replay_pipeline.md)
 - **ตารางไปป์ไลน์:** `data/core/province_month.parquet`
 - **ลำดับรัน:** [คู่มือผู้ปฏิบัติการ](pipeline_operators.md) หรือ [README](../../README.md)
 - **สัญญาข้อมูล:** `config/data_contracts.yaml`
