@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML Drift Training Studio — Online Retraining</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --navy: #17587e;
+      --navy-d: #0f3d59;
+      --navy-l: #e8f1f7;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --line: #dde3ea;
+      --ink: #1c2733;
+      --muted: #5d6b7a;
+      --ok: #1f8a5b;
+      --ok-l: #e3f4ec;
+      --warn: #c77700;
+      --warn-l: #fdf1dc;
+      --bad: #c0392b;
+      --bad-l: #fbe6e3;
+      --accent: #e07a2f;
+      --radius: 12px;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      font-size: 15px
+    }
+
+    a {
+      color: var(--navy)
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    /* ---------- top bar ---------- */
+    header.top {
+      background: var(--navy-d);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 20
+    }
+
+    header.top .wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      height: 56px
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: .3px
+    }
+
+    .brand small {
+      display: block;
+      font-weight: 400;
+      font-size: 11px;
+      opacity: .7;
+      letter-spacing: 1.5px
+    }
+
+    nav.tabs {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+      flex-wrap: wrap
+    }
+
+    nav.tabs a {
+      color: #cfe0ec;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px
+    }
+
+    nav.tabs a:hover,
+    nav.tabs a.active {
+      background: rgba(255, 255, 255, .12);
+      color: #fff
+    }
+
+    .conn {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #3a2a10;
+      color: #ffc66b;
+      white-space: nowrap
+    }
+
+    .conn.on {
+      background: #103a28;
+      color: #7be0b0
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-d) 100%);
+      color: #fff;
+      padding: 40px 0 34px
+    }
+
+    .kicker {
+      font-size: 12px;
+      letter-spacing: 2px;
+      opacity: .75;
+      font-family: var(--mono)
+    }
+
+    .hero h1 {
+      margin: 6px 0 6px;
+      font-size: 32px;
+      line-height: 1.25
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: .85;
+      max-width: 760px
+    }
+
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 20px;
+      align-items: center
+    }
+
+    .pipeline span {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .18);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      transition: .2s
+    }
+
+    .pipeline span.lit {
+      background: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .pipeline i {
+      opacity: .5;
+      font-style: normal
+    }
+
+    /* ---------- layout ---------- */
+    section.block {
+      padding: 28px 0 6px
+    }
+
+    .sec-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 0 0 14px
+    }
+
+    .sec-title h2 {
+      margin: 0;
+      font-size: 21px
+    }
+
+    .sec-title .num {
+      font-family: var(--mono);
+      color: #fff;
+      background: var(--navy);
+      border-radius: 6px;
+      padding: 1px 8px;
+      font-size: 13px
+    }
+
+    .sec-title .en {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px
+    }
+
+    .g2 {
+      grid-template-columns: repeat(2, 1fr)
+    }
+
+    .g3 {
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    .g4 {
+      grid-template-columns: repeat(4, 1fr)
+    }
+
+    @media(max-width:960px) {
+
+      .g2,
+      .g3,
+      .g4 {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:640px) {
+
+      .g2,
+      .g3,
+      .g4 {
+        grid-template-columns: 1fr
+      }
+
+      .hero h1 {
+        font-size: 25px
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .card h3 .tag {
+      margin-left: auto
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .small {
+      font-size: 13px
+    }
+
+    .mono {
+      font-family: var(--mono)
+    }
+
+    .note {
+      background: var(--navy-l);
+      border-left: 4px solid var(--navy);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-top: 12px
+    }
+
+    .note.warn {
+      background: var(--warn-l);
+      border-color: var(--warn)
+    }
+
+    /* ---------- form ---------- */
+    label.f {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 10px 0 4px
+    }
+
+    input[type=text],
+    input[type=number],
+    input[type=month],
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid var(--navy);
+      outline-offset: -1px
+    }
+
+    .row {
+      display: flex;
+      gap: 10px
+    }
+
+    .row>* {
+      flex: 1
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 4px 11px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #fff;
+      user-select: none
+    }
+
+    .chip input {
+      margin: 0;
+      accent-color: var(--navy)
+    }
+
+    .chip:has(input:checked) {
+      background: var(--navy-l);
+      border-color: var(--navy)
+    }
+
+    .seg {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden
+    }
+
+    .seg label {
+      padding: 7px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      border-right: 1px solid var(--line)
+    }
+
+    .seg label:last-child {
+      border-right: 0
+    }
+
+    .seg input {
+      display: none
+    }
+
+    .seg label:has(input:checked) {
+      background: var(--navy);
+      color: #fff
+    }
+
+    .drop {
+      border: 2px dashed var(--line);
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: .15s
+    }
+
+    .drop:hover,
+    .drop.over {
+      border-color: var(--navy);
+      background: var(--navy-l);
+      color: var(--navy)
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .range-row input[type=range] {
+      flex: 1;
+      accent-color: var(--navy)
+    }
+
+    .range-row output {
+      font-family: var(--mono);
+      min-width: 56px;
+      text-align: right
+    }
+
+    /* ---------- buttons ---------- */
+    .btn {
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 16px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .btn:hover {
+      border-color: var(--navy)
+    }
+
+    .btn.primary {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy)
+    }
+
+    .btn.primary:hover {
+      background: var(--navy-d)
+    }
+
+    .btn.accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    /* ---------- tags ---------- */
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: #eef1f4;
+      color: var(--muted);
+      letter-spacing: .5px
+    }
+
+    .tag.ok {
+      background: var(--ok-l);
+      color: var(--ok)
+    }
+
+    .tag.warn {
+      background: var(--warn-l);
+      color: var(--warn)
+    }
+
+    .tag.bad {
+      background: var(--bad-l);
+      color: var(--bad)
+    }
+
+    .tag.info {
+      background: var(--navy-l);
+      color: var(--navy)
+    }
+
+    /* ---------- sim control ---------- */
+    .sim {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr;
+      gap: 16px
+    }
+
+    @media(max-width:960px) {
+      .sim {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .clock {
+      font-family: var(--mono);
+      font-size: 40px;
+      font-weight: 500;
+      color: var(--navy);
+      line-height: 1
+    }
+
+    .clock small {
+      font-size: 16px;
+      color: var(--muted)
+    }
+
+    .progress {
+      height: 8px;
+      background: #e8edf2;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 12px 0
+    }
+
+    .progress>div {
+      height: 100%;
+      background: var(--navy);
+      width: 0;
+      transition: width .3s
+    }
+
+    .months {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      gap: 3px;
+      margin-top: 6px
+    }
+
+    .months div {
+      height: 22px;
+      border-radius: 3px;
+      background: #e8edf2;
+      position: relative
+    }
+
+    .months div.done {
+      background: #9fbfd4
+    }
+
+    .months div.now {
+      background: var(--navy)
+    }
+
+    .months div.retrain {
+      background: var(--warn)
+    }
+
+    .months div.promote {
+      background: var(--ok)
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px
+    }
+
+    .legend b {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: middle
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px
+    }
+
+    .stat .lbl {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .stat .val {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 500
+    }
+
+    .stat .sub {
+      font-size: 12.5px;
+      color: var(--muted)
+    }
+
+    /* ---------- tables ---------- */
+    .tbl-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: #fff
+    }
+
+    th {
+      background: var(--navy);
+      color: #fff;
+      text-align: left;
+      font-weight: 600;
+      padding: 9px 12px;
+      white-space: nowrap
+    }
+
+    td {
+      padding: 8px 12px;
+      border-top: 1px solid var(--line)
+    }
+
+    tbody tr:nth-child(even) td {
+      background: #f4f8fb
+    }
+
+    td.num {
+      font-family: var(--mono);
+      text-align: right
+    }
+
+    tr.win td {
+      background: var(--ok-l) !important;
+      font-weight: 600
+    }
+
+    tr.champ td:first-child {
+      border-left: 4px solid var(--navy)
+    }
+
+    .empty td {
+      text-align: center;
+      color: var(--muted);
+      padding: 22px
+    }
+
+    /* ---------- charts ---------- */
+    .chart {
+      width: 100%;
+      height: 230px;
+      display: block
+    }
+
+    .chart text {
+      font-family: var(--mono);
+      font-size: 10px;
+      fill: var(--muted)
+    }
+
+    /* ---------- log ---------- */
+    .log {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      max-height: 280px;
+      overflow: auto;
+      background: #0f1c26;
+      color: #cfe0ec;
+      border-radius: 10px;
+      padding: 12px
+    }
+
+    .log div {
+      padding: 2px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .06)
+    }
+
+    .log .t {
+      color: #6f8aa0;
+      margin-right: 8px
+    }
+
+    .log .ok {
+      color: #7be0b0
+    }
+
+    .log .warn {
+      color: #ffc66b
+    }
+
+    .log .bad {
+      color: #ff8f80
+    }
+
+    .log .info {
+      color: #8cc7f0
+    }
+
+    .steps {
+      counter-reset: s;
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none
+    }
+
+    .steps li {
+      counter-increment: s;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 14px
+    }
+
+    .steps li::before {
+      content: counter(s);
+      flex: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--navy-l);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 12px;
+      display: grid;
+      place-items: center
+    }
+
+    .steps li.done::before {
+      content: '✓';
+      background: var(--ok);
+      color: #fff
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: var(--ink);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: .25s;
+      pointer-events: none;
+      max-width: 360px
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: none
+    }
+
+    body {
+      font-size: 16px
+    }
+
+    section[id] {
+      scroll-margin-top: 64px
+    }
+
+    .grid>* {
+      min-width: 0
+    }
+
+    .card {
+      box-shadow: 0 2px 8px #122d3f06
+    }
+
+    .card p {
+      margin: 4px 0
+    }
+
+    .block:last-child {
+      margin-bottom: 2rem
+    }
+
+    .actions {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .actions .btn {
+      min-height: 42px
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--navy-l)
+    }
+
+    .status.error {
+      background: var(--bad-l);
+      color: #8f2923
+    }
+
+    .pill {
+      font-size: .85rem;
+      padding: .15rem .55rem;
+      border-radius: 99px;
+      background: var(--ok-l);
+      color: #176740
+    }
+
+    .pill.alarm {
+      background: var(--warn-l);
+      color: #844800
+    }
+
+    .metric-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap
+    }
+
+    .metric-title select,
+    .actions select {
+      width: auto
+    }
+
+    .g2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    figure {
+      margin: 0
+    }
+
+    figcaption,
+    .small,
+    .legend {
+      font-size: .9rem
+    }
+
+    #monthBar {
+      grid-template-columns: repeat(12, minmax(0, 1fr))
+    }
+
+    #monthBar button {
+      background: #edf1f5;
+      color: #465563;
+      border: 1px solid #d4dee7;
+      border-radius: 5px;
+      min-height: 36px;
+      cursor: pointer;
+      font-family: var(--mono)
+    }
+
+    #monthBar button:disabled {
+      cursor: default;
+      opacity: .55
+    }
+
+    #monthBar button[aria-pressed=true] {
+      color: white;
+      background: var(--navy);
+      border-color: var(--navy)
+    }
+
+    #monthBar button:not(:disabled):hover {
+      border-color: var(--navy)
+    }
+
+    .tbl-wrap:empty {
+      border: 0
+    }
+
+    .tbl-wrap {
+      margin: .5rem 0
+    }
+
+    .chart-wrap {
+      overflow: auto
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      min-width: 340px;
+      height: auto;
+      display: block
+    }
+
+    .chart-wrap svg text {
+      fill: #3e5362;
+      font-family: var(--mono)
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem
+    }
+
+    .legend i {
+      height: 4px;
+      width: 20px
+    }
+
+    .progress {
+      margin: .8rem 0
+    }
+
+    .settings {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 0
+    }
+
+    .settings dt {
+      font-weight: 600;
+      color: var(--navy);
+      font-size: .9rem
+    }
+
+    .settings dd {
+      margin: 3px 0
+    }
+
+    .event {
+      padding: .55rem .7rem;
+      border-bottom: 1px solid #d8e1e7
+    }
+
+    .bin-bar {
+      display: block;
+      height: .5rem;
+      border-radius: 4px;
+      background: #39799c
+    }
+
+    .bin-bar.ref {
+      background: #99aebc
+    }
+
+    .bar-cell {
+      min-width: 78px
+    }
+
+    .note:empty {
+      display: none
+    }
+
+    .summary {
+      margin: .5rem 0;
+      font-size: .95rem
+    }
+
+    .table-numeric td:not(:first-child) {
+      font-variant-numeric: tabular-nums
+    }
+
+    .province-table {
+      max-height: 350px
+    }
+
+    .province-table th {
+      position: sticky;
+      top: 0
+    }
+
+    .chart-wrap:empty {
+      display: none
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .nowrap {
+      white-space: nowrap
+    }
+
+    @media(max-width:760px) {
+
+      .g2,
+      .settings {
+        grid-template-columns: 1fr
+      }
+
+      .top .brand small {
+        display: none
+      }
+
+      header.top .wrap {
+        height: auto;
+        min-height: 50px;
+        flex-wrap: wrap;
+        gap: .3rem;
+        padding-block: 6px
+      }
+
+      nav.tabs {
+        order: 3;
+        width: 100%;
+        margin: 0;
+        gap: 0;
+        flex-wrap: nowrap;
+        overflow: auto
+      }
+
+      nav.tabs a {
+        padding: .2rem .6rem
+      }
+
+      #connBadge {
+        margin-left: auto
+      }
+
+      section[id] {
+        scroll-margin-top: 90px
+      }
+
+      .hero {
+        padding: 25px 0
+      }
+
+      #monthBar {
+        grid-template-columns: repeat(6, minmax(0, 1fr))
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">ML Drift Training Studio<small>CSS 342 · DSDE 2569</small></div>
+      <nav class="tabs" aria-label="เมนูหลัก"><a href="#setup">ข้อมูล</a><a href="#train">Train</a><a
+          href="#monitor">Monitor</a><a href="#registry">Registry</a><a href="/presentation">ห้องทดลอง Drift</a></nav><span class="conn"
+        id="connBadge">กำลังเชื่อมต่อ</span>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker">ONLINE MACHINE LEARNING · 2025</div>
+      <h1>พยากรณ์ผู้เข้าพักรายจังหวัด</h1>
+      <p>ติดตามผล Random Forest และ Linear Regression เมื่อข้อมูลรายเดือนของ 77 จังหวัดทยอยเข้ามา</p>
+      <div class="pipeline"><span>FEATURES</span><i>→</i><span>PREDICT</span><i>→</i><span>MONITOR</span><i>→</i><span>RETRAIN</span><i>→</i><span>COMPARE</span><i>→</i><span>DEPLOY</span></div>
+    </div>
+  </section>
+  <main class="wrap">
+    <section id="setup" class="block">
+      <div class="sec-title">
+        <h2>ข้อมูลและช่วงเวลา</h2>
+      </div>
+      <div class="card">
+        <dl class="settings">
+          <div>
+            <dt>แหล่งข้อมูล</dt>
+            <dd id="source">province_month_unified</dd>
+          </div>
+          <div>
+            <dt>Target</dt>
+            <dd>guest_arrivals_total · คน / จังหวัด / เดือน</dd>
+          </div>
+          <div>
+            <dt>การแบ่งข้อมูล</dt>
+            <dd>เทรน 2019–2022 · เลือกค่าปี 2023 · ทดสอบปี 2024</dd>
+          </div>
+        </dl>
+        <p id="sourceVersion" class="small muted"></p>
+        <p><a id="rawLink" href="http://127.0.0.1:8767/#monitor">เปิดรอบที่อ่านไฟล์ต้นฉบับ MOTS และ HII ทีละเดือน</a></p>
+        <div class="note">สร้าง lag จากประวัติตั้งแต่ปี 2018 เก็บธง COVID ช่วง มี.ค. 2020–ธ.ค. 2022
+          และใช้ข้อมูลจริงถึงเดือนก่อนหน้าตอนพยากรณ์</div>
+      </div>
+    </section>
+    <section id="train" class="block">
+      <div class="sec-title">
+        <h2>เตรียมโมเดลสำหรับปี 2025</h2>
+      </div>
+      <div class="card">
+        <div class="metric-title">
+          <h3>ผล holdout ปี 2024</h3><button class="btn primary" id="btnTrain" disabled>Train ·
+            เตรียมโมเดลตั้งต้น</button>
+        </div>
+        <p>บันทึกคะแนนทดสอบก่อน refit บนข้อมูลปี 2019–2024 เพื่อเริ่ม replay</p>
+        <div class="tbl-wrap" id="baseline"></div>
+      </div>
+    </section>
+    <section id="monitor" class="block">
+      <div class="sec-title">
+        <h2>Monthly replay</h2>
+      </div>
+      <div class="card">
+        <div class="metric-title">
+          <div class="clock"><span id="mNow">0</span><small> / 12 เดือน</small></div>
+          <div class="actions"><button class="btn primary" id="btnStep" disabled>Step Month</button><button class="btn"
+              id="btnAuto" disabled>Auto-run</button><button class="btn" id="btnRefresh">โหลดสถานะล่าสุด</button></div>
+        </div>
+        <div class="progress" aria-hidden="true">
+          <div id="progress"></div>
+        </div>
+        <div class="months" id="monthBar" aria-label="เลือกดูเดือนที่ประมวลผลแล้ว"></div>
+        <div id="status" class="status" role="status" aria-live="polite">กำลังโหลดสถานะจาก backend…</div>
+        <div id="liveStages" class="chips" aria-label="สถานะ pipeline" aria-live="polite"></div>
+        <div id="monthlyStages" class="tbl-wrap" hidden></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="metric-title">
+          <h3>WAPE ระหว่าง replay</h3><label>จังหวัด <select id="province">
+              <option value="">รวมทุกจังหวัด</option>
+            </select></label>
+        </div>
+        <figure>
+          <div id="trend" class="chart-wrap"></div>
+          <figcaption id="legend" class="legend"></figcaption>
+        </figure>
+        <div class="metric-title">
+          <h3 id="monthTitle">คะแนนรายเดือน</h3><button class="btn" id="btnExport" disabled>Export JSON</button>
+        </div>
+        <div id="scores" class="tbl-wrap"></div>
+        <p class="summary" id="dq"></p>
+        <h3 id="overallTitle">คะแนนสะสมของ replay</h3>
+        <div id="summary" class="tbl-wrap"></div>
+        <details>
+          <summary>ดูยอดจริงและคำทำนายรายจังหวัด</summary>
+          <div id="predictions" class="tbl-wrap province-table"></div>
+        </details>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card">
+          <h3>Input drift · PSI</h3>
+          <p class="small muted">เตือนเมื่อ PSI ≥ 0.15 · เทียบเดือนเดียวกันของปี 2023–2024 <span id="rainLagRule"></span></p>
+          <div id="psi" class="tbl-wrap"></div><label class="f" for="feature">การกระจายของ feature</label><select
+            id="feature"></select>
+          <div class="tbl-wrap" id="distribution"></div>
+        </div>
+        <div class="card">
+          <h3>Performance drift · Page-Hinkley</h3>
+          <p class="small muted">วัด WAPE มาตรฐานแยกตามโมเดล · δ = 0.5 · เตือนเมื่อค่าสะสม &gt; 3</p>
+          <div class="tbl-wrap" id="ph"></div>
+          <h3>เหตุการณ์ drift</h3>
+          <div id="events"></div>
+        </div>
+      </div>
+    </section>
+    <section class="block" id="registry">
+      <div class="sec-title">
+        <h2>Champion / Challenger</h2>
+      </div>
+      <div class="card">
+        <p>Champion ปัจจุบัน <b id="champion">—</b></p><label class="f" for="candidate">โมเดลที่จะใช้เป็น
+          Champion</label>
+        <div class="actions"><select id="candidate"></select><button class="btn primary" id="promote" disabled>ยืนยัน
+            Promote</button><button class="btn" id="rollback" disabled>Rollback ไปยังโมเดลที่เลือก</button></div>
+        <p class="small muted">การเปลี่ยน Champion มีผลต่อการตัดสินใจครั้งถัดไป
+          ประวัติคะแนนของแต่ละเดือนเก็บตามรุ่นที่ใช้พยากรณ์</p>
+        <div class="tbl-wrap" id="registryTable"></div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">ML Drift Training Studio · Thailand monthly tourism forecast</div>
+  </footer>
+  <script id="studio-script">
+    const q = id => document.getElementById(id);
+    const names = { rf_fixed: 'Random Forest · คงที่', rf_monthly: 'Random Forest · รายเดือน', linear: 'Linear Regression', seasonal: 'Seasonal naive' };
+    const colors = { rf_fixed: '#17587e', rf_monthly: '#d26a25', linear: '#368458', seasonal: '#8163a0' };
+    const archivedKeys = Object.keys(names);
+    let keys = archivedKeys, learned = keys.slice(0, 3);
+    Object.assign(names, {champion:'Champion', rf_expanding:'Random Forest · ประวัติทั้งหมด', rf_12m:'Random Forest · 12 เดือนล่าสุด', linear_expanding:'Linear Regression · ประวัติทั้งหมด'});
+    colors.champion = '#17587e';
+    const features = ['guest_lag_1', 'guest_lag_12', 'rain_lag_1', 'rain_roll3'];
+    const months = Array.from({ length: 12 }, (_, i) => '2025-' + String(i + 1).padStart(2, '0'));
+    let state = { trained: false, months: [], baseline: {}, registry: [] };
+    let selected = '', stickyError = '';
+    let busy = false, auto = false, online = false;
+    function el(tag, value) {
+        const node = document.createElement(tag);
+        if (value !== undefined)
+            node.textContent = value;
+        return node;
+    }
+    function selectOptions(select, entries) {
+        const previous = select.value;
+        select.replaceChildren(...entries.map(([value, text]) => new Option(text, value)));
+        if (entries.some(([v]) => v === previous))
+            select.value = previous;
+    }
+    function table(id, headers, rows, empty) {
+        const box = q(id);
+        box.replaceChildren();
+        if (!rows.length) {
+            box.append(el('p', empty || 'ยังไม่มีผล'));
+            return;
+        }
+        const t = el('table');
+        t.className = 'table-numeric';
+        const head = t.createTHead().insertRow();
+        for (const title of headers)
+            head.append(el('th', title));
+        const body = t.createTBody();
+        for (const values of rows) {
+            const tr = body.insertRow();
+            for (const v of values) {
+                const td = tr.insertCell();
+                if (v instanceof Node)
+                    td.append(v);
+                else
+                    td.textContent = v ?? '—';
+            }
+        }
+        box.append(t);
+    }
+    function fmt(v, d = 2) {
+        return typeof v === 'number' && Number.isFinite(v) ? v.toLocaleString('th-TH', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—';
+    }
+    function pct(v) {
+        return typeof v === 'number' && Number.isFinite(v) ? fmt(v * 100) + '%' : '—';
+    }
+    function scores(m) {
+        return [pct(m?.wape), fmt(m?.mae), fmt(m?.rmse), fmt(m?.mase, 3)];
+    }
+    function flag(alarm) {
+        const tag = el('span', alarm ? 'เตือน' : 'ปกติ');
+        tag.className = 'pill' + (alarm ? ' alarm' : '');
+        return tag;
+    }
+    function say(text, bad = false) {
+        q('status').textContent = text;
+        q('status').classList.toggle('error', bad);
+    }
+    function rowsFor(month, pid) {
+        return (month?.rows || []).filter(r => !pid || String(r.province_id) === pid);
+    }
+    function provinceScores(month, pid) {
+        if (!pid)
+            return month?.metrics || {};
+        const rows = rowsFor(month, pid), base = rows.find(r => r.model === 'seasonal'), result = {};
+        for (const row of rows) {
+            const err = Math.abs(row.y_true - row.y_pred), den = Math.abs(row.y_true - (base?.y_pred ?? row.y_naive));
+            result[row.model] = { wape: row.y_true ? err / Math.abs(row.y_true) : null, mae: err, rmse: err, mase: den ? err / den : null };
+        }
+        return result;
+    }
+    function drawTrend(pid) {
+        const host = q('trend');
+        host.replaceChildren();
+        q('legend').replaceChildren();
+        if (!state.months.length) {
+            host.append(el('p', 'เริ่ม Step Month เพื่อดูแนวโน้ม WAPE'));
+            return;
+        }
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const make = (tag, attrs, label) => {
+            const n = document.createElementNS(svgNS, tag);
+            for (const [k, v] of Object.entries(attrs))
+                n.setAttribute(k, v);
+            if (label !== undefined)
+                n.textContent = label;
+            return n;
+        };
+        const svg = make('svg', { viewBox: '0 0 800 207', role: 'img', 'aria-label': 'WAPE รายเดือน' });
+        const data = state.months.map(m => provinceScores(m, pid)), all = data.flatMap(g => keys.map(k => g[k]?.wape)).filter(Number.isFinite);
+        const top = Math.max(.01, ...all) * 1.08, xx = i => 60 + 65 * i, yy = v => 170 - 145 * v / top;
+        for (let i = 0; i <= 4; i++) {
+            const v = top * i / 4, y = yy(v);
+            svg.append(make('line', { x1: 55, x2: 775, y1: y, y2: y, stroke: '#d9e4ea' }), make('text', { x: 50, y: y + 4, 'text-anchor': 'end', 'font-size': 12 }, fmt(100 * v, 1) + '%'));
+        }
+        for (let i = 0; i < 12; i++)
+            svg.append(make('text', { x: xx(i), y: 195, 'text-anchor': 'middle', 'font-size': 12 }, String(i + 1).padStart(2, '0')));
+        for (const k of keys) {
+            let path = '', previous = false;
+            data.forEach((g, i) => {
+                const v = g[k]?.wape;
+                if (!Number.isFinite(v)) {
+                    previous = false;
+                    return;
+                }
+                path += (previous ? ' L ' : ' M ') + xx(i) + ' ' + yy(v);
+                previous = true;
+            });
+            svg.append(make('path', { d: path, fill: 'none', stroke: colors[k], 'stroke-width': 2, 'stroke-dasharray': k === 'seasonal' ? '5 3' : 'none' }));
+            data.forEach((g, i) => {
+                const v = g[k]?.wape;
+                if (Number.isFinite(v)) {
+                    const dot = make('circle', { cx: xx(i), cy: yy(v), r: 2.8, fill: colors[k] });
+                    dot.append(make('title', {}, names[k] + ' ' + months[i] + ' ' + pct(v)));
+                    svg.append(dot);
+                }
+            });
+            const label = el('span');
+            const swatch = el('i');
+            swatch.style.background = colors[k];
+            label.append(swatch, document.createTextNode(names[k]));
+            q('legend').append(label);
+        }
+        host.append(svg);
+    }
+    function drawDistribution(month) {
+        const f = month?.psi?.[q('feature').value];
+        const bins = f?.edges || [], ref = f?.reference || [], cur = f?.current || [];
+        const cuts = bins.length === 5 ? bins.slice(1, -1) : bins;
+        function share(v, cls) {
+            const wrap = el('div', pct(v));
+            wrap.className = 'bar-cell';
+            const bar = el('i');
+            bar.className = 'bin-bar ' + cls;
+            bar.style.width = Math.max(0, Math.min(100, 100 * v)) + '%';
+            wrap.append(bar);
+            return wrap;
+        }
+        const ranges = ['≤ ' + fmt(cuts[0]), fmt(cuts[0]) + ' – ' + fmt(cuts[1]), fmt(cuts[1]) + ' – ' + fmt(cuts[2]), '> ' + fmt(cuts[2])];
+        table('distribution', ['ช่วงค่า', 'อ้างอิง', 'เดือนที่เลือก'], Array.from({ length: Math.min(4, ref.length, cur.length) }, (_, i) => [ranges[i], share(ref[i], 'ref'), share(cur[i], '')]));
+    }
+    function updateControls() {
+        const full = state.months.length >= 12;
+        q('btnTrain').disabled = !online || busy || state.trained;
+        q('btnStep').disabled = !online || busy || auto || !state.trained || full;
+        q('btnStep').textContent = state.source?.raw && !full ? 'Step Month · ' + months[state.months.length] : 'Step Month';
+        q('btnAuto').disabled = !auto && (!online || busy || !state.trained || full);
+        q('btnAuto').textContent = auto ? 'หยุดหลังจบเดือนนี้' : 'Auto-run';
+        q('btnRefresh').disabled = busy || auto;
+        q('btnExport').disabled = !online || busy || !state.trained;
+        const available = online && state.trained && state.months.length > 0 && !busy && !auto;
+        const choice = q('candidate').value;
+        q('promote').disabled = !available || choice === state.champion;
+        q('rollback').disabled = !available || choice === state.champion || !(state.registry || []).some(item => item.model === choice);
+        q('connBadge').textContent = online ? 'Backend เชื่อมต่อแล้ว' : 'Backend ออฟไลน์';
+        q('connBadge').classList.toggle('on', online);
+    }
+    function render() {
+        keys = state.triggered ? ['champion'] : archivedKeys;
+        q('rainLagRule').textContent = state.rain_lag_confirmation_months === 2 ? '· เฉพาะ rain_lag_1 ต้องถึงเกณฑ์ 2 เดือนติดกัน' : '';
+        learned = state.triggered ? ['champion'] : keys.slice(0,3);
+        for (const node of [q('candidate').closest('.actions'), document.querySelector('label[for="candidate"]')]) node.hidden=!!state.triggered;
+        if(state.triggered) q('candidate').closest('.card').querySelector('.small').textContent='เมื่อ PSI หรือ Page-Hinkley เตือน ระบบฝึกสาม Challenger และใช้รุ่นที่ชนะ Champion ด้วย WAPE ในเดือนถัดไป';
+        const history = state.months, month = history.find(m => m.month === selected) || history.at(-1);
+        selected = month?.month || '';
+        const count = history.length;
+        q('mNow').textContent = count;
+        q('progress').style.width = (100 * count / 12) + '%';
+        q('source').textContent = state.source?.file || 'province_month_unified';
+        q('rawLink').hidden = Boolean(state.source?.raw);
+        const pipeline = month?.pipeline;
+        q('monthlyStages').hidden = !pipeline;
+        if (pipeline) {
+            const alerts = Object.entries(pipeline.monitor.psi).filter(([,v]) => v.alarm).map(([f]) => f);
+            const ph = Object.entries(pipeline.monitor.ph).filter(([,v]) => v.alarm).map(([m]) => names[m]);
+            table('monthlyStages', ['ขั้นตอน · ' + month.month, 'ผลจากการรัน'], [
+                ['FEATURES', pipeline.features.rows + ' จังหวัด · ใช้ข้อมูลถึง ' + pipeline.features.cutoff],
+                ['PREDICT', 'Champion ที่ใช้พยากรณ์ ' + names[month.champion] + ' · ' + pipeline.predict[month.champion]],
+                ['MONITOR', 'PSI: ' + (alerts.join(', ') || 'ไม่เตือน') + ' · Page-Hinkley: ' + (ph.join(', ') || 'ไม่เตือน')],
+                ['RETRAIN', month.competition ? (pipeline.retrain.map(k=>names[k]).join(' / ') || 'ข้าม · ไม่มีสัญญาณเตือน') : Object.values(pipeline.retrain).join(' / ')],
+                ['COMPARE', pipeline.compare.map(k => names[k] + ' ' + pct((month.competition?.scores[k] ?? month.metrics[k]).wape)).join(' · ') || 'ข้าม · ใช้ Champion เดิม'],
+                ['DEPLOY', (month.competition?.decision || '') + ' ' + pipeline.deploy.version + ' · ใช้ตั้งแต่ ' + pipeline.deploy.effective_from]
+            ]);
+        }
+        q('sourceVersion').textContent = state.source?.sha256 ? 'Snapshot ' + state.source.sha256.slice(0, 12) + ' · ' + fmt(state.source.rows, 0) + ' แถว · reference ' + state.source.reference : '';
+        if (state.source?.raw) q('sourceVersion').textContent =
+            'ต้นฉบับ MOTS 6 ไฟล์และ HII 1 ไฟล์ · เมื่อกด Step Month ระบบอ่านเฉพาะข้อมูลของเดือนที่เลือก' +
+            (state.trained ? ' · ประวัติตั้งต้น ' + fmt(state.source.rows, 0) + ' แถว ถึง ธ.ค. 2024' : '');
+        q('monthBar').replaceChildren(...months.map((label, i) => {
+            const b = el('button', label.slice(5));
+            b.type = 'button';
+            b.disabled = i >= count;
+            b.title = label;
+            b.setAttribute('aria-label', 'ดู ' + label);
+            b.setAttribute('aria-pressed', String(label === selected));
+            b.onclick = () => {
+                selected = label;
+                render();
+            };
+            return b;
+        }));
+        const data = state.baseline || {};
+        table('baseline', ['โมเดล', 'WAPE', 'MAE (คน)', 'RMSE (คน)', 'MASE'], keys.filter(k => data[k]).map(k => [names[k], ...scores(data[k].overall)]), 'กด Train เพื่อประเมินและเตรียมโมเดล');
+        const provinces = new Map((month?.rows || []).map(r => [String(r.province_id), r.province_th || String(r.province_id)]));
+        selectOptions(q('province'), [['', 'รวมทุกจังหวัด'], ...Array.from(provinces).sort(([a], [b]) => a.localeCompare(b)).map(([id, name]) => [id, id + ' · ' + name])]);
+        const pid = q('province').value, m = provinceScores(month, pid);
+        drawTrend(pid);
+        q('monthTitle').textContent = 'คะแนน' + (month ? ' ' + selected : 'รายเดือน') + (pid ? ' · ' + provinces.get(pid) : ' · รวม 77 จังหวัด');
+        table('scores', ['โมเดล', 'รุ่นที่ทำนาย', 'WAPE', 'MAE (คน)', 'RMSE (คน)', 'MASE'], keys.filter(k => m[k]).map(k => [names[k], month.versions?.[k] || '—', ...scores(m[k])]));
+        q('dq').textContent = month?.dq ? 'คุณภาพข้อมูล ' + selected + ' · ' + fmt(month.dq.n_rows, 0) + ' แถว · ' + fmt(month.dq.n_warnings, 0) + ' คำเตือน' : '';
+        q('overallTitle').textContent = 'คะแนนสะสม' + (history.length ? ' ม.ค. ถึง ' + history.at(-1).month : '') + (pid ? ' · ' + provinces.get(pid) : ' · รวม 77 จังหวัด');
+        const cumulative = state.summary || {};
+        table('summary', ['โมเดล', 'WAPE', 'MAE (คน)', 'RMSE (คน)', 'MASE'], keys.filter(k => cumulative[k]).map(k => {
+            const item = pid ? cumulative[k].per_province.find(p => String(p.province_id) === pid) : cumulative[k].overall;
+            return [names[k], ...scores(item)];
+        }));
+        const byProv = new Map();
+        for (const r of rowsFor(month, pid)) {
+            const id = String(r.province_id);
+            if (!byProv.has(id))
+                byProv.set(id, { name: provinces.get(id), actual: r.y_true });
+            byProv.get(id)[r.model] = r.y_pred;
+        }
+        table('predictions', ['จังหวัด', 'ยอดจริง (คน)', ...keys.map(k => names[k])], Array.from(byProv, ([id, r]) => [id + ' · ' + r.name, fmt(r.actual, 0), ...keys.map(k => fmt(r[k], 0))]));
+        table('psi', ['Feature', 'PSI', 'สถานะ'], features.filter(f => month?.psi?.[f]).map(f => {
+            const event = month.psi[f];
+            return [f, fmt(event.value, 4), event.pending_confirmation ? 'ถึงเกณฑ์เดือนแรก · รอยืนยัน' : flag(event.alarm)];
+        }));
+        drawDistribution(month);
+        table('ph', ['โมเดล', 'ค่าสะสม', 'สถานะ'], learned.filter(k => month?.ph?.[k]).map(k => [names[k], fmt(month.ph[k].value, 3), flag(month.ph[k].alarm)]));
+        const events = [];
+        for (const item of history) {
+            for (const [f, event] of Object.entries(item.psi || {}))
+                if (event.alarm)
+                    events.push(item.month + ' · PSI · ' + f + ' = ' + fmt(event.value, 3));
+            for (const [k, event] of Object.entries(item.ph || {}))
+                if (event.alarm)
+                    events.push(item.month + ' · Page-Hinkley · ' + names[k] + ' = ' + fmt(event.value, 3));
+        }
+        q('events').replaceChildren(...(events.length ? events.reverse() : ['ยังไม่มีสัญญาณเตือน']).map(t => {
+            const n = el('div', t);
+            n.className = 'event';
+            return n;
+        }));
+        q('champion').textContent = state.triggered ? (state.deployment?.version || '—') : (names[state.champion] || '—');
+        table('registryTable', ['เดือนที่ตัดสินใจ', 'การตัดสินใจ', 'Champion', 'เวอร์ชัน'], (state.registry || []).map(r => [r.effective_from || r.month || 'ตั้งต้น', r.action || '—', names[r.model] || r.model, r.version || '—']));
+        if (!busy) {
+            if (stickyError)
+                say(stickyError, true);
+            else if (state.halt)
+                say('หยุดที่เดือน ' + state.halt.month + ' · ' + state.halt.reason, true);
+            else
+                say(fullStatus());
+        }
+        updateControls();
+    }
+    function fullStatus() {
+        const n = state.months.length;
+        if (n === 12) {
+            return state.triggered ? 'ครบ 12 เดือน · 924 คำทำนายที่ให้บริการโดย Champion'
+                                   : 'ครบ 12 เดือนแล้ว · 2,772 คำทำนายจากสามโมเดล และ 924 คำทำนาย seasonal naive';
+        }
+        if (!online)
+            return 'ยังเชื่อมต่อ backend ไม่ได้';
+        if (!state.trained)
+            return 'พร้อมตรวจข้อมูลและฝึกโมเดลตั้งต้น';
+        return 'บันทึกแล้ว ' + n + ' / 12 เดือน · รอบถัดไป ' + months[n];
+    }
+    async function api(endpoint, payload) {
+        const init = { cache: 'no-store' };
+        if (payload !== undefined) {
+            init.method = 'POST';
+            init.headers = { 'Content-Type': 'application/json' };
+            init.body = JSON.stringify(payload);
+        }
+        const r = await fetch('/api/' + endpoint, init);
+        const type = r.headers.get('content-type') || '';
+        if (!type.includes('application/json'))
+            throw new Error('กรุณาเปิด Studio ผ่านเซิร์ฟเวอร์ ML ของโครงการ');
+        const value = await r.json();
+        if (!r.ok) {
+            const issues = (value.checks || []).filter(c => c.passed === false).map(c => c.name + ' · ' + c.detail);
+            throw new Error([value.error || value.detail || 'Backend ตอบกลับ ' + r.status, ...issues].join(' / '));
+        }
+        return value;
+    }
+    async function action(endpoint, payload, message) {
+        if (busy)
+            return false;
+        busy = true;
+        stickyError = '';
+        updateControls();
+        say(message);
+        const live = endpoint==='step' && state.triggered;
+        let watching=live;
+        if(live){
+            q('liveStages').replaceChildren();
+            async function poll(){
+                try{
+                    const p=await api('progress');
+                    if(watching && p.month===payload.month){
+                        const stages=['FEATURES','PREDICT','MONITOR','RETRAIN','COMPARE','DEPLOY'];
+                        q('liveStages').replaceChildren(...stages.map(name=>{
+                            const active=p.stage===name, done=p.events.some(e=>e.stage===name);
+                            const tag=el('span',name+' · '+(active?'กำลังทำ':done?'เสร็จ':p.stage==='DONE'?'ข้าม':'รอ'));
+                            tag.className='tag '+(active?'warn':done?'ok':'');return tag;
+                        }));
+                        if(p.stage!=='DONE')say(payload.month+' · '+p.stage+' '+(names[p.detail]||p.detail||''));
+                    }
+                }finally{if(watching)setTimeout(()=>poll().catch(()=>{}),250)}
+            }
+            poll().catch(()=>{});
+        }
+        try {
+            const fresh = await api(endpoint, payload);
+            state = fresh;
+            if (endpoint === 'step')
+                selected = state.months.at(-1)?.month || '';
+            online = true;
+            return true;
+        }
+        catch (err) {
+            auto = false;
+            stickyError = String(err.message || err);
+            if (endpoint === 'state')
+                online = false;
+            return false;
+        }
+        finally {
+            watching=false;
+            if(live) q('liveStages').replaceChildren();
+            busy = false;
+            render();
+        }
+    }
+    const advance = () => {
+        const month = months[state.months.length];
+        return action('step', { month }, (state.source?.raw ? 'กำลังอ่านไฟล์ต้นฉบับ MOTS และ HII · ' : '') + 'กำลังประมวลผลเดือน ' + month + '…');
+    };
+    selectOptions(q('feature'), features.map(f => [f, f]));
+    selectOptions(q('candidate'), learned.map(k => [k, names[k]]));
+    q('btnTrain').onclick = () => action('train', {}, 'กำลังประเมิน holdout และเตรียมโมเดล…');
+    q('btnStep').onclick = advance;
+    q('btnAuto').onclick = async () => {
+        if (auto) {
+            auto = false;
+            updateControls();
+            return;
+        }
+        auto = true;
+        updateControls();
+        while (auto && state.months.length < 12) {
+            if (!await advance())
+                break;
+        }
+        auto = false;
+        updateControls();
+    };
+    q('btnRefresh').onclick = () => action('state', undefined, 'กำลังโหลดสถานะ…');
+    q('btnExport').onclick = () => {
+        const a = el('a');
+        a.href = '/api/export';
+        a.download = 'tourism-replay-2025.json';
+        document.body.append(a);
+        a.click();
+        a.remove();
+    };
+    q('province').onchange = render;
+    q('feature').onchange = () => drawDistribution(state.months.find(m => m.month === selected));
+    q('candidate').onchange = updateControls;
+    for (const id of ['promote', 'rollback'])
+        q(id).onclick = () => action(id, { model: q('candidate').value }, 'กำลังบันทึกการตัดสินใจ…');
+    action('state', undefined, 'กำลังโหลดสถานะ…');
+  </script>
+</body>
+
+</html>

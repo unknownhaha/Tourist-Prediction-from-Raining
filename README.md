@@ -34,9 +34,39 @@ python -m pytest tests/
 
 **Feature rules (Thai, for data scientists):** [docs/feature_rules_for_modeling.md](docs/feature_rules_for_modeling.md) — lags through t−1 only, no quarter total that contains the month being predicted.
 
-**2025 replay design (Thai, not built yet):** [docs/stream_2025_replay_pipeline.md](docs/stream_2025_replay_pipeline.md) — month-by-month feeder for the online model.
+**2025 replay design (Thai):** [docs/stream_2025_replay_pipeline.md](docs/stream_2025_replay_pipeline.md) — month-by-month feeder for the online model.
 
 **Next-build handoff (English):** [docs/HANDOFF_NEXT_STEPS.md](docs/HANDOFF_NEXT_STEPS.md) — frozen 2024 baseline, then refit through 2024 as the 2025 warm start.
+
+### Interactive 2025 training studio
+
+For monthly replay from the original 2025 sources use:
+
+```powershell
+python -m src.stream.studio_server --raw-2025 --port 8767
+```
+
+Open <http://127.0.0.1:8767/>. Train pins history through December 2024. Each Step Month reads the selected month's guest grid from the six MOTS workbooks and the matching HII rain records from the original CSV. These are annual/multi-year containers. File downloads are cached under `data/raw`; `config/raw_stream_2025.json` pins exact revisions and province sheets. Missing files are fetched from their source URLs. A checksum mismatch or incomplete batch halts the month. Previously accepted months and model checkpoints are committed together in `outputs/studio_2025_raw_rain_lag_2m/`.
+
+The raw Studio uses a Champion-only policy in `outputs/studio_2025_raw_rain_lag_2m/`. The earlier raw replay remains in its original directory. Each month the deployed Champion makes 77 official forecasts. For rain_lag_1, PSI must reach 0.15 in two consecutive months to raise an alarm. A month below threshold resets the count. Other features raise an alarm immediately at 0.15. Any PSI alarm or Champion Page-Hinkley > 3 starts a competition among an expanding random forest, a 12-month random forest and expanding linear regression. All three fit through the preceding month. Their WAPE on the newly revealed month is compared to the Champion's already recorded WAPE. A strictly better candidate is deployed as fitted for the next month; ties keep the incumbent. Only the Champion is scored in months without alarms. Seasonal lag remains a predictor and the scale for MASE. A new Champion starts a fresh Page-Hinkley accumulator with its model family's historical WAPE calibration. Step Month displays progress from the backend and records the comparison and deployment version. This reconstructs historical months from the available releases; original publication dates are not simulated.
+
+Run from the repository root. The Studio serves `site/studio.html` by default. To use a different location, pass `--page PATH`.
+
+```powershell
+python -m src.stream.studio_server
+```
+
+Open <http://127.0.0.1:8765>. Train evaluates the frozen 2024 holdout before refitting through December 2024. Step Month and Auto-run use the same transaction for each batch of 77 provinces. A fixed random forest, a monthly expanding-window random forest, and monthly linear regression run alongside the seasonal-naive benchmark. The UI offers province and nationwide scores, drift events, a manual Champion strategy registry, and JSON export.
+
+Open the [presentation lab](http://127.0.0.1:8765/presentation) to play the observed stream or compare nine simulated streams. Select a change in March, June, or September, then step through the months or pause automatically on the selected model's first alarm. The self-contained `site/drift-lab.html` also opens offline. Rebuild it with `python -m src.stream.build_drift_lab` after changing the data or models.
+
+The studio compares four features with calendar-month quartiles from 2023–2024 (PSI ≥ 0.15). Each learned model has an upward Page-Hinkley detector on standardized monthly WAPE (2023 calibration, δ = 0.5, λ = 3). PSI and performance alarms are recorded independently. Rollback reselects a previously promoted model strategy for future months. It preserves completed predictions and the learning history of all three strategies.
+
+The pinned source snapshot, SQLite checkpoint, quality reports, feature tables, and lineage are under `outputs/studio_2025/`. Reloading or restarting resumes that run. For a separate exercise starting in January, keep the completed run and launch:
+
+```powershell
+python -m src.stream.studio_server --output-dir outputs/studio_2025_practice --port 8766
+```
 
 Replay 2025 with the shipped seasonal-naive baseline (no extra packages; the real model implements `predict` / `learn` in `src/stream/model.py`):
 

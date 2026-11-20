@@ -154,21 +154,8 @@ def replay(
     return metrics
 
 
-def _replay_month(
-    *,
-    panel: pd.DataFrame,
-    year_month: str,
-    replay_index: int,
-    output_dir: Path,
-    source_hash: str,
-    staging_rain: pd.DataFrame | None,
-    online,
-    hook,
-    seed: int,
-    reference_version: str,
-    logs: list[pd.DataFrame],
-    feature_frames: dict[str, pd.DataFrame],
-) -> None:
+def prepare_month(panel, year_month, output_dir, source_hash, staging_rain):
+    """Shared DQ and feature boundary for the CLI and interactive replay."""
     working = panel.loc[panel["year_month"].astype(str) <= year_month].copy()
     validate_working_set(working, year_month)
     raw_month = _month_slice(working, year_month)
@@ -210,12 +197,37 @@ def _replay_month(
         raise StreamHalt("features include the target", year_month=year_month)
 
     feature_hash = _write_feature_table(output_dir, year_month, features)
+    audit = dict(input_hash=sha256_frame(raw_month),
+                 checks=checks_before + checks_after + feature_checks + report["checks"],
+                 actions=actions, feature_hash=feature_hash)
+    return features, y_true, audit, report
+
+
+def _replay_month(
+    *,
+    panel: pd.DataFrame,
+    year_month: str,
+    replay_index: int,
+    output_dir: Path,
+    source_hash: str,
+    staging_rain: pd.DataFrame | None,
+    online,
+    hook,
+    seed: int,
+    reference_version: str,
+    logs: list[pd.DataFrame],
+    feature_frames: dict[str, pd.DataFrame],
+) -> None:
+    features, y_true, audit, _ = prepare_month(
+        panel, year_month, output_dir, source_hash, staging_rain
+    )
+    feature_alarm = hook.update_features(features)
     y_hat = online.predict(features).astype(float).reset_index(drop=True)
     actual = y_true["guest_arrivals_total"].astype(float).reset_index(drop=True)
     error = actual - y_hat
     error.attrs["y_true"] = actual.to_numpy()
     error.attrs["y_pred"] = y_hat.to_numpy()
-    alarm = bool(hook.update_errors(error) or hook.update_features(features))
+    alarm = bool(hook.update_errors(error) or feature_alarm)
     log = pd.DataFrame(
         {
             "province_id": features["province_id"].to_numpy(),
@@ -235,18 +247,9 @@ def _replay_month(
     )
     logs.append(log)
     feature_frames[year_month] = features
-    _write_lineage(
-        output_dir,
-        year_month,
-        source_hash,
-        sha256_frame(raw_month),
-        checks_before + checks_after + feature_checks + report["checks"],
-        actions,
-        feature_hash,
-        online.model_version,
-        reference_version,
-        f"dq/{year_month}.json",
-    )
+    _write_lineage(output_dir, year_month, source_hash, **audit,
+                   model_version=online.model_version, reference_version=reference_version,
+                   dq_report=f"dq/{year_month}.json")
     online.learn(features, actual)
 
 

@@ -19,7 +19,9 @@ def _finding(report, issue_id: str):
     return matches[0]
 
 
-def test_audit_flags_structural_gaps_without_rewriting_data(tmp_path: Path):
+def test_audit_flags_structural_gaps_without_rewriting_data(tmp_path: Path, monkeypatch):
+    # Exercise the missing-raw checkout even after a local raw replay has downloaded its sources.
+    monkeypatch.setattr("src.qa.data_quality_audit.RAW", tmp_path / "absent_raw")
     province_month = CORE / "province_month.parquet"
     if not province_month.exists():
         pytest.skip("core tables not built")

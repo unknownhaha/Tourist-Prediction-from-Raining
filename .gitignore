@@ -12,3 +12,6 @@ outputs/stream_2025/
 data/stream/snapshots/
 data/stream/lineage/
 reports/stream_dq/
+outputs/studio_2025*/
+outputs/pytest-studio-*/
+outputs/studio-test-deps/

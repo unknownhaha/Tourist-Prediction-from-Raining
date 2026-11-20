@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drift Lab · ทดลองพยากรณ์นักท่องเที่ยว</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7f8;color:#172f39;font:17px/1.48 system-ui,sans-serif}main{max-width:1260px;margin:auto;padding:20px clamp(12px,3vw,40px)}header,.toolbar,.grid,.buttons,.timeline{display:flex;gap:12px;align-items:center;flex-wrap:wrap}header{justify-content:space-between;border-bottom:1px solid #bccdd2;padding-bottom:12px}h1,h2,h3,p{margin:0}h1{font-size:clamp(23px,3vw,38px)}h2{font-size:21px}.muted,small{color:#49606a}.panel{border:1px solid #cbd8dc;border-radius:14px;padding:16px;background:white;margin-top:12px}label{font-size:14px;color:#405864}select,button{font:inherit;color:inherit;border:1px solid #a4b7be;background:white;border-radius:7px;padding:7px 12px;cursor:pointer}select{display:block;margin-top:3px}button:disabled{opacity:.4;cursor:default}button:focus-visible,select:focus-visible{outline:3px solid #ec995a}.primary{background:#145b67;color:white;border-color:#145b67}#stamp{font-size:20px;font-weight:700;color:#145b67}.toolbar{align-items:end}.buttons{margin:12px 0}.timeline{gap:3px;flex-wrap:nowrap}.timeline button{padding:6px 0;flex:1;min-width:0;font-size:13px}.timeline .past{background:#d6e9ea}.timeline [aria-current=true]{background:#145b67;color:white}.grid{display:grid;grid-template-columns:1fr 1fr;align-items:stretch}.graph{width:100%;height:auto;display:block}.graph text{font:12px system-ui;fill:#38515c}.stat{font-weight:700;font-size:20px}.alert{color:#a83c1a}.events{margin:6px 0 0;padding-left:1.3rem}.note{padding-top:8px;font-size:15px}.badge{font-weight:650;color:#145b67}.legend{font-size:14px;color:#455b64}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td,th{padding:6px;border-bottom:1px solid #e6edef;text-align:left}a{color:#166478}footer{margin:14px 0;font-size:14px}.check{align-self:center} @media(max-width:750px){.grid{grid-template-columns:1fr}.timeline button{font-size:10px}.panel{padding:10px}.toolbar{gap:8px}select,button{padding:5px 8px}}
+</style>
+<main>
+<header><div><div class="muted">ML Drift Training Studio · 77 จังหวัด · 2025</div><h1>ห้องทดลอง Drift</h1></div><button id="full">เต็มจอ</button></header>
+<section class="panel"><div class="toolbar">
+<label>สถานการณ์<select id="mode"><option value="sudden">ยอดผู้เข้าพักเพิ่มทันที</option><option value="gradual" selected>ยอดผู้เข้าพักเพิ่มทีละเดือน</option><option value="rain">ปริมาณฝนเพิ่ม</option><option value="observed">ข้อมูลจริงปี 2025</option></select></label>
+<label>เดือนเริ่มเปลี่ยน<select id="start"><option value="3">มีนาคม</option><option value="6" selected>มิถุนายน</option><option value="9">กันยายน</option></select></label>
+<label>โมเดลที่ติดตาม<select id="model"><option value="rf_fixed">Random Forest คงที่</option><option value="rf_monthly">Random Forest รายเดือน</option><option value="linear">Linear Regression รายเดือน</option></select></label>
+<label>จังหวะการเล่น<select id="speed"><option value="2200">2.2 วินาที / เดือน</option><option value="900">0.9 วินาที / เดือน</option><option value="4000">4 วินาที / เดือน</option></select></label>
+</div><p class="note" id="description"></p></section>
+<section class="panel"><div class="buttons"><span id="stamp"></span><button class="primary" id="play">เล่น</button><button id="step">เดือนถัดไป</button><button id="reset">เริ่มใหม่</button><label class="check"><input type="checkbox" id="autoPause" checked> หยุดเมื่อโมเดลเตือนครั้งแรก</label></div><div id="timeline" class="timeline" aria-label="เลือกเดือน"></div><p id="status" role="status" class="note"></p></section>
+<div class="grid">
+<section class="panel"><h2>โมเดลเริ่มพลาดมากขึ้นเมื่อไร?</h2><div id="phTitle" class="stat"></div><svg id="phGraph" class="graph" viewBox="0 0 540 174" role="img" aria-label="กราฟ Page-Hinkley รายเดือน"></svg><p class="legend">Page-Hinkley · เส้นประคือเกณฑ์ &gt; 3 · เส้นตั้งคือจุดเริ่มสถานการณ์</p></section>
+<section class="panel"><h2>ข้อมูลเข้าเริ่มเปลี่ยนเมื่อไร?</h2><label>Feature <select id="feature"><option>guest_lag_1</option><option>guest_lag_12</option><option>rain_lag_1</option><option>rain_roll3</option></select></label><div class="stat" id="psiTitle"></div><svg id="psiGraph" class="graph" viewBox="0 0 540 174" role="img" aria-label="กราฟ PSI รายเดือน"></svg><p class="legend">PSI · เส้นประคือเกณฑ์ ≥ 0.15 · จุดสีส้มคือเดือนที่เตือน</p></section>
+</div>
+<div class="grid"><section class="panel"><h2>ความผิดพลาดของเดือนนี้</h2><table><thead><tr><th>โมเดล</th><th>WAPE ข้อมูลจริง</th><th>WAPE รอบนี้</th></tr></thead><tbody id="scores"></tbody></table></section><section class="panel"><h2>เหตุการณ์ที่เห็นแล้ว</h2><ol id="events" class="events"></ol></section></div>
+<footer>เส้นประสีเทาบนกราฟคือผลจากข้อมูลจริง · เล่นผลที่คำนวณล่วงหน้า โดยพยากรณ์ก่อนเปิดยอดจริงทุกเดือน แล้วฝึกโมเดลรายเดือนด้วยประวัติของสถานการณ์นั้น · <a href="https://warin.me/Courses/Data-Science-and-Engineering/ml-drift-lab/?lang=th">แล็บต้นแบบ</a></footer>
+</main>
+<script type="application/json" id="data">__REPLAY_DATA__</script>
+<script>
+const runs=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
+const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const names={rf_fixed:'Random Forest คงที่',rf_monthly:'Random Forest รายเดือน',linear:'Linear Regression รายเดือน',seasonal:'Seasonal naive'};
+const descriptions={observed:'ข้อมูลจริงปี 2025 • ดูเดือนที่ตัวตรวจเตือนจาก replay จริง',sudden:'สถานการณ์จำลอง • เพิ่มยอดผู้เข้าพัก 80% ทุกจังหวัดตั้งแต่เดือนที่เลือก',gradual:'สถานการณ์จำลอง • เพิ่มยอดผู้เข้าพักจากค่าจริง 20%, 40%, 60% แล้วคงที่ที่ 80% ตั้งแต่เดือนที่สี่',rain:'สถานการณ์จำลอง • เพิ่มฝนเป็นสองเท่าตั้งแต่เดือนที่เลือก ยอดผู้เข้าพักเท่าเดิม ฝนเดือนนั้นเริ่มเข้า feature ในเดือนถัดไป'};
+let count=0,timer=null;
+function chart(id,values,limit,alarms,onset,color,observed){
+ const svg=$(id), left=43,right=522,bottom=145,top=10,high=Math.max(limit*1.4,...values,...observed)*1.1;
+ const x=i=>left+i*(right-left)/11,y=v=>bottom-v/high*(bottom-top);
+ const line=(a,b,c,d,style)=>'<line x1="'+a+'" y1="'+b+'" x2="'+c+'" y2="'+d+'" '+style+'/>';
+ let html=line(left,bottom,right,bottom,'stroke="#bdcbd0"')+line(left,y(limit),right,y(limit),'stroke="#a14423" stroke-dasharray="5 4"');
+ html+='<text x="4" y="'+(y(limit)+4)+'">'+limit+'</text><text x="10" y="'+bottom+'">0</text>';
+ if(onset && onset<=count)html+=line(x(onset-1),top,x(onset-1),bottom,'stroke="#7650a4" stroke-width="2" stroke-dasharray="3 3"');
+ if(onset)html+='<polyline fill="none" stroke="#798a93" stroke-width="2" stroke-dasharray="5 4" points="'+observed.map((v,i)=>x(i)+','+y(v)).join(' ')+'"/>';
+ html+='<polyline fill="none" stroke="'+color+'" stroke-width="3" points="'+values.map((v,i)=>x(i)+','+y(v)).join(' ')+'"/>';
+ values.forEach((v,i)=>html+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="'+(alarms[i]?5:3)+'" fill="'+(alarms[i]?'#bd4b1c':color)+'"><title>'+months[i]+' '+v.toFixed(3)+'</title></circle>');
+ months.forEach((m,i)=>html+='<text text-anchor="middle" x="'+x(i)+'" y="166">'+m+'</text>');svg.innerHTML=html;
+}
+function render(){
+ const mode=$('mode').value,start=Number($('start').value),sim=mode!=='observed',model=$('model').value,f=$('feature').value;
+ const rows=runs[sim?mode+'-'+start:'observed'].slice(0,count),now=rows.at(-1),onset=sim?start:0;
+ $('start').disabled=!sim;$('description').textContent=descriptions[mode];$('stamp').textContent=count?months[count-1]+' 2025':'ก่อนเริ่มปี 2025';
+ $('play').textContent=timer?'พัก':count===12?'เล่นซ้ำ':'เล่น';$('step').disabled=count===12;
+ [...$('timeline').children].forEach((b,i)=>{b.className=i<count?'past':'';b.setAttribute('aria-current',String(i+1===count))});
+ const hit=rows.findIndex(r=>r.ph[model].alarm),after=rows.findIndex((r,i)=>i+1>=start&&r.ph[model].alarm);
+ $('phTitle').textContent=now?'ค่าสะสม '+now.ph[model].value.toFixed(2)+(now.ph[model].alarm?' · เตือน':' · อยู่ในเกณฑ์'):'รอคำทำนายเดือนแรก';
+ $('phTitle').classList.toggle('alert',!!now?.ph[model].alarm);
+ $('psiTitle').textContent=now?'PSI '+now.psi[f].value.toFixed(3)+(now.psi[f].alarm?' · เตือน':' · อยู่ในเกณฑ์'):'รอข้อมูลเดือนแรก';
+ $('psiTitle').classList.toggle('alert',!!now?.psi[f].alarm);
+ $('status').textContent=sim?(count<start?'ยังไม่ถึงจุดเริ่มสถานการณ์':('เริ่มเปลี่ยน '+months[start-1]+' · '+(after<0?'ยังไม่พบสัญญาณ Page-Hinkley หลังจุดเริ่ม':'Page-Hinkley เตือน '+months[after]+' · ระยะตรวจพบ '+(after+1-start)+' เดือน'))):('ข้อมูลจริง · '+(hit<0?'ยังไม่มีสัญญาณ Page-Hinkley ของโมเดลที่เลือก':'Page-Hinkley เตือนครั้งแรก '+months[hit]));
+ const original=runs.observed.slice(0,count);
+ chart('phGraph',rows.map(r=>r.ph[model].value),3,rows.map(r=>r.ph[model].alarm),onset,'#145b67',original.map(r=>r.ph[model].value));
+ chart('psiGraph',rows.map(r=>r.psi[f].value),0.15,rows.map(r=>r.psi[f].alarm),onset,'#4269a1',original.map(r=>r.psi[f].value));
+ $('scores').innerHTML=Object.entries(names).map(([key,label])=>'<tr><td>'+label+'</td><td>'+percent(runs.observed[count-1]?.metrics[key].wape)+'</td><td>'+percent(now?.metrics[key].wape)+'</td></tr>').join('');
+ const events=[];rows.forEach((r,i)=>{if(i+1===onset)events.push(months[i]+' · เริ่มเปลี่ยนข้อมูลจำลอง');if(r.psi[f].alarm)events.push(months[i]+' · '+f+' เตือน PSI '+r.psi[f].value.toFixed(2));if(r.ph[model].alarm)events.push(months[i]+' · '+names[model]+' เตือน Page-Hinkley '+r.ph[model].value.toFixed(2))});
+ $('events').innerHTML=events.reverse().map(e=>'<li>'+e+'</li>').join('')||'<li>ยังไม่มีเหตุการณ์ของโมเดลและ feature ที่เลือก</li>';
+ if(timer && (count===12||($('autoPause').checked&&hit===count-1))){stop();$('play').textContent=count===12?'เล่นซ้ำ':'เล่น'}
+}
+function percent(n){return n===undefined?'—':(100*n).toFixed(2)+'%'}
+function stop(){clearInterval(timer);timer=null}
+function reset(){stop();count=0;render()}
+function advance(){if(count<12)count++;render()}
+months.forEach((m,i)=>{const b=document.createElement('button');b.textContent=m;b.onclick=()=>{stop();count=i+1;render()};$('timeline').append(b)});
+$('play').onclick=()=>{if(timer){stop();render();return}if(count===12)count=0;timer=setInterval(advance,Number($('speed').value));advance()};
+$('step').onclick=()=>{stop();advance()};$('reset').onclick=reset;
+$('mode').onchange=()=>{$('feature').value=['rain','observed'].includes($('mode').value)?'rain_lag_1':'guest_lag_1';reset()};
+$('start').onchange=reset;for(const id of ['model','feature','speed'])$(id).onchange=()=>{stop();render()};
+$('full').onclick=async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()};
+document.addEventListener('fullscreenchange',()=>{$('full').textContent=document.fullscreenElement?'ออกจากเต็มจอ':'เต็มจอ'});
+render();
+</script></html>

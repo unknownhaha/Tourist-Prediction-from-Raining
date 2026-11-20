@@ -33,10 +33,11 @@ class NullDrift:
 class PageHinkley:
     """Page-Hinkley on a scalar stream. Deterministic. No extra dependency."""
 
-    def __init__(self, delta: float = 0.01, threshold: float = 0.5) -> None:
+    def __init__(self, delta: float = 0.01, threshold: float = 0.5, *, initial_count: int = 0) -> None:
         self.delta = delta
         self.threshold = threshold
-        self._n = 0
+        # The studio supplies the count of centered historical WAPEs (mean zero).
+        self._n = initial_count
         self._mean = 0.0
         self._cumsum = 0.0
         self._min_cumsum = 0.0
@@ -46,7 +47,11 @@ class PageHinkley:
         self._mean += (value - self._mean) / self._n
         self._cumsum += value - self._mean - self.delta
         self._min_cumsum = min(self._min_cumsum, self._cumsum)
-        return (self._cumsum - self._min_cumsum) > self.threshold
+        return self.statistic > self.threshold
+
+    @property
+    def statistic(self) -> float:
+        return self._cumsum - self._min_cumsum
 
 
 class PageHinkleyOnError:
