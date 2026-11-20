@@ -1,6 +1,6 @@
 # Handoff: next modeling steps
 
-สรุปภาษาไทย: PR #4 และ #5 อยู่บน `main` แล้ว (ตาราง unified ถึง 2025-12 และกฎ leakage) การตัดสินวันที่ 2026-11-20 คือ (1) ให้คะแนน test ปี 2024 ด้วยโมเดลที่เทรน 2019-01..2022-12 และเลือก hyperparameter จากปี 2023 แล้วแช่แข็งคะแนนนั้น (2) refit configuration เดิมบน 2019-01..2024-12 โดยไม่จูนเพิ่ม (3) ใช้โมเดลที่ refit เป็น warm start ของสาย 2025 (4) เทียบ metric ปี 2025 กับ baseline ปี 2024 ห้ามจูนบนปี 2024 หรือ 2025 ห้ามใช้ข้อมูลเดือน `t` ทำนายเดือน `t` สาย replay ยังไม่ถูกสร้าง รอทีมสั่งให้ลงมือ อย่า merge เข้า `main` โดยไม่มีการรีวิว
+สรุปภาษาไทย: PR #4 และ #5 อยู่บน `main` แล้ว (ตาราง unified ถึง 2025-12 และกฎ leakage) การตัดสินวันที่ 2026-11-20 คือ (1) ให้คะแนน test ปี 2024 ด้วยโมเดลที่เทรน 2019-01..2022-12 และเลือก hyperparameter จากปี 2023 แล้วแช่แข็งคะแนนนั้น (2) refit configuration เดิมบน 2019-01..2024-12 โดยไม่จูนเพิ่ม (3) ใช้โมเดลที่ refit เป็น warm start ของสาย 2025 (4) เทียบ metric ปี 2025 กับ baseline ปี 2024 ตัวป้อนที่ยังไม่สร้างต้องเรียง validate → data quality → clean → re-validate → feature → model ใช้ครบ 77 แถว ไม่สุ่มตัวอย่าง เดือนที่หายให้หยุด reference set คือ 2023-01..2024-12 และไม่รวมโควิด DE ส่งข้อมูล drift แต่ DS/MLE เลือกตัวตรวจ ห้ามจูนบนปี 2024 หรือ 2025 ห้ามใช้ข้อมูลเดือน `t` ทำนายเดือน `t` รอทีมสั่งให้ลงมือ อย่า merge เข้า `main` โดยไม่มีการรีวิว
 
 This file is the instruction sheet for the next coding assistant. Read it before editing models or the replay feeder. The decision below is closed.
 
@@ -74,18 +74,42 @@ Path: `reports/baseline_test_2024.json`. Do not put predictions for 2025 in this
 - Do not shuffle, and do not use random K-fold.
 - Do not implement the 2025 replay until the team gives a go-ahead.
 - Do not merge to `main` without review.
+- Do not sample or shuffle the 77 provinces. Use every row, ordered by `year_month` then `province_id`.
+- Do not skip or impute a missing stream month. Halt and alert.
+- Do not clip negative guest arrivals or rain. That is a hard failure.
+- Do not change `guest_arrivals_total` except by a type cast that preserves the numeric value. Log every cleaning action.
+- Do not refresh `data/model/reference_2023_2024.parquet` because a drift alarm fired. Only a team decision after a confirmed retrain may cut a new version.
+- Do not choose ADWIN, Page-Hinkley, DDM, PSI, KS, or their thresholds in the data-engineering feeder. Deliver the hooks and the reference set. DS/MLE own the choice.
 
 ## Next build item
 
 Build the 2025 replay feeder described in `docs/stream_2025_replay_pipeline.md`. It is not in the repo. Wait for the team to say to build it.
 
-When that go-ahead arrives, the feeder replays 2025-01 .. 2025-12 one month at a time: features through `t-1`, `predict` all 77 provinces, reveal `y_t`, log, then `learn`. The model loaded at the start is the step-2 refit (2019-01 .. 2024-12). Proposed command, not implemented:
+When that go-ahead arrives, the feeder replays 2025-01 .. 2025-12 one month at a time. Per month the order is fixed: validate, data-quality report, clean, re-validate, features through `t-1`, `predict` all 77 provinces, reveal `y_t`, log, then `learn`. The model loaded at the start is the step-2 refit (2019-01 .. 2024-12). Proposed command, not implemented:
 
 ```powershell
 python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --model-path models/warm_start.joblib --log data/stream/replay_2025.parquet
 ```
 
-Proposed modules, also not created: `src/stream/replay.py`, `contracts.py`, `metrics.py`, `drift.py`, and `tests/test_stream_replay.py`. Call `build_forecast_features` and `assert_no_future_leakage` from `src/model/leakage.py`. Do not copy the lag formulas.
+Proposed modules, also not created: `src/stream/replay.py`, `contracts.py`, `quality.py`, `clean.py`, `reference.py`, `lineage.py`, `metrics.py`, `drift.py`, and `tests/test_stream_replay.py`. Call `build_forecast_features` and `assert_no_future_leakage` from `src/model/leakage.py`. Do not copy the lag formulas.
+
+## Feeder stages to implement with the design
+
+These rules are specified in `docs/stream_2025_replay_pipeline.md`. Follow them. Do not invent a second policy.
+
+**Validate, then clean, then re-validate.** Hard fail (halt, non-zero exit, no predict, no learn, no impute) on: missing columns, `year_month` not `YYYY-MM`, not 77 rows, duplicate keys with conflicting values, any working-set `year_month > t`, `guest_arrivals_total < 0`, any `rain_* < 0`, `rain_min_mm > rain_avg_mm` or `rain_avg_mm > rain_max_mm`, null target or rain after clean, `is_covid` not equal to the calendar flag (2020-03 .. 2022-12). Warn only, and keep the row, for a robust z-score above 3.5 or a month-over-month change above 100% versus that province's history through `t-1`, and for a zero arrival.
+
+**Data-quality report.** Write `reports/stream_dq/{year_month}.json` and row flags at `reports/stream_dq/{year_month}_rows.parquet` every month. Include completeness, freshness against the pinned snapshot, the outlier warns, zero-arrival flags, duplicates, and Thai+foreign versus total where both splits are non-null. 2018 Thai/foreign nulls are by design, not a defect.
+
+**Clean.** Deterministic and logged: cast types, pad `province_id` to two digits, drop exact duplicate rows only. If unified rain is null, copy that same province-month from `data/staging/hii/fact_rainfall.parquet` when all three rain columns exist there, and log `rain_from_staging_exact_month`. If staging is also missing, halt. No forward fill, no neighbor fill, no zero fill, no clipping.
+
+**No sampling.** 77 provinces is the whole population. Emit every row.
+
+**Snapshot and lineage.** Pin one unified-table snapshot per replay, for example `data/stream/snapshots/unified_{sha256}.parquet`. MOTS revisions of past months start a new replay. They do not change the current run. A missing month halts and alerts. Write `data/stream/lineage/{year_month}.json` with the input hash, check results, cleaning actions, feature-table hash, model version, and reference version.
+
+**Reference set.** `data/model/reference_2023_2024.parquet` plus `data/model/reference_2023_2024_stats.json`, version `2023-2024-v1`, window 2023-01 .. 2024-12 (1,848 rows). Exclude COVID 2020-03 .. 2022-12 so input-drift detectors are not compared to the depressed level. DS/MLE compare rain and lags to this set (PSI or KS). DE does not auto-refresh it.
+
+**Drift handoff.** DE passes errors, the feature frame, the reference set, and two hooks: `update_errors` and `update_features`. DS/MLE choose among ADWIN, Page-Hinkley, and DDM on error, and PSI or KS on inputs, including thresholds and whether an alarm retrains. Any retrain happens after that month's log. It does not rewrite the reference set.
 
 ## Files to read first
 
@@ -100,5 +124,8 @@ Proposed modules, also not created: `src/stream/replay.py`, `contracts.py`, `met
 | `config/sources.yaml` | `date_window` 2018-01 .. 2025-12, `covid_window` 2020-03 .. 2022-12. |
 | `docs/project_spec.md` | Online model and streaming replay are in scope. The batch pipeline does not train. |
 | `reports/baseline_test_2024.json` | Create only after the frozen 2024 score exists. |
+| `reports/stream_dq/{year_month}.json` | Per-month data-quality report. Not created until the feeder exists. |
+| `data/stream/lineage/{year_month}.json` | Input hash, checks, cleaning actions, feature hash, model version. |
+| `data/model/reference_2023_2024.parquet` | Reference window 2023-01 .. 2024-12. Stats JSON beside it. Do not build until the go-ahead. |
 
 Rebuild commands, if the table must be regenerated, are in the feature-rules doc: `python -m src.core.build_core` then `python scripts/build_unified_province_month.py`, from the repo root. Paths in code use `pathlib`.

@@ -1,21 +1,16 @@
 # แบบตัวป้อนสาย replay ปี 2025
 
-สถานะ: **แบบ (design) เท่านั้น ยังไม่สร้างโค้ด** ทีมจะรีวิวเอกสารนี้ก่อน แล้วค่อยสั่งให้ลงมือสร้าง
+สถานะ: **แบบที่ทีมอนุมัติแล้ว ยังไม่สร้างโค้ด** รอคำสั่งให้ลงมือสร้าง อย่า merge เข้า `main` ก่อนรีวิว
 
-เอกสารนี้กำหนดตัวป้อนข้อมูล (data feeder) ที่เล่น `2025-01 .. 2025-12` ทีละเดือนให้โมเดลออนไลน์ ราวกับแต่ละเดือนเพิ่งมาถึง อ่านคู่กับ [กฎ feature](feature_rules_for_modeling.md) การตัดสิน split วันที่ 2026-11-20 อยู่ในเอกสารนั้นและใน `TIME_SPLIT` ของ `src/model/leakage.py`
+เอกสารนี้กำหนดตัวป้อนข้อมูล (data feeder) ที่เล่น `2025-01 .. 2025-12` ทีละเดือนให้โมเดลออนไลน์ ราวกับแต่ละเดือนเพิ่งมาถึง อ่านคู่กับ [กฎ feature](feature_rules_for_modeling.md) และ [HANDOFF_NEXT_STEPS.md](HANDOFF_NEXT_STEPS.md) การตัดสิน split และ warm start วันที่ 2026-11-20 อยู่ในเอกสารนั้นและใน `TIME_SPLIT` ของ `src/model/leakage.py`
 
-ขอบเขตของแบบนี้คือตัวป้อน การตรวจสัญญา บันทึกผล และจุดเกี่ยว drift ไม่รวมอัลกอริทึมของโมเดล และไม่แก้ไปป์ไลน์ ingest / staging / core
+ขอบเขตคือตัวป้อน: validate, data quality, clean, reference set, feature, log, และจุดส่งต่อ drift ให้ data scientist / ML engineer ไม่รวมอัลกอริทึมของโมเดล และไม่แก้ไปป์ไลน์ ingest / staging / core
 
 ## 1. วัตถุประสงค์
 
 โมเดลที่ล็อกตัวเลข test ปี 2024 แล้ว ต้องถูกทดสอบต่อแบบ online บนปี 2025 โดยไม่เห็น `guest_arrivals_total` ของเดือน `t` ก่อน `predict`
 
-ตัวป้อนทำสี่อย่างต่อเดือน:
-
-1. สร้าง feature จากข้อมูลถึง `t-1` เท่านั้น
-2. ให้โมเดล `predict` ทั้ง 77 จังหวัด
-3. เปิดค่าจริง `y_t` หลัง predict ครบ
-4. ให้โมเดล `learn` แล้วเขียน log
+ลำดับตายตัวต่อเดือนคือ **validate → data quality → clean → re-validate → feature → model** ห้ามข้ามขั้น หรือให้โมเดลเห็นแถวก่อน re-validate ผ่าน
 
 ห้ามเทรนบนทั้งปี 2025 แล้วค่อยให้คะแนนย้อนหลัง สายนี้มี 12 เดือน สัญญาณ drift จึงสั้น นี่เป็นข้อแลกเปลี่ยนที่ยอมรับแล้ว เพราะปี 2024 ถูกใช้เป็น held-out test
 
@@ -37,33 +32,42 @@
 
 ## 3. ลูปต่อเดือน
 
-เรียงเดือนจาก `2025-01` ถึง `2025-12` ภายในเดือนเรียง `province_id` จากน้อยไปมาก
+เรียงเดือนจาก `2025-01` ถึง `2025-12` ภายในเดือนเรียง `province_id` จากน้อยไปมาก ไม่สุ่มและไม่สุ่มตัวอย่าง (หัวข้อ 11)
 
-สำหรับเดือน `t`:
+สำหรับเดือน `t` ใช้เฉพาะแถวที่ `year_month <= t` แถวที่ `year_month > t` ถูกกันออกจากก้อนงานของเดือนนี้และบันทึกใน lineage ว่าถูกกันไว้ ไม่ใช่การลบออกจาก snapshot
 
-1. ตัดแผงที่ใช้สร้าง feature ให้เหลือ `year_month <= t` ค่า `y_t` ถูกแยกไว้ต่างหาก ไม่ใส่ในเฟรมที่ส่งเข้า `predict`
-2. เรียก `build_forecast_features(panel, t)` แล้ว `assert_no_future_leakage` กับเดือนที่ฟังก์ชันนั้นอ่าน ทุกเดือนต้อง `< t`
-3. ตรวจสัญญาก่อนส่ง (หัวข้อ 9) ไม่ผ่านให้หยุดเดือนนั้น ไม่ predict และไม่ learn
-4. `predict` ครบ 77 จังหวัดก่อน จังหวัดหนึ่งห้าม `learn` จาก `y_t` ของตัวเองหรือของจังหวัดอื่นในเดือนเดียวกัน
-5. เปิด `y_t` คำนวณ error เขียน log
-6. `learn` ด้วย feature ชุดเดิมบวก `y_t`
-7. อัปเดต metric สะสม และส่ง error เข้า drift hook ถ้า hook สั่ง retrain ให้เกิดหลัง log ของเดือน `t` แล้วเท่านั้น
+1. **Validate** ก้อนก่อน clean (หัวข้อ 8) hard fail แล้วหยุด
+2. **Data quality** เขียนรายงานรายเดือน (หัวข้อ 9) warn ไม่หยุด hard fail หยุด
+3. **Clean** ตามกฎที่บันทึกทุกการเปลี่ยน (หัวข้อ 10) ไม่แก้ target เงียบ ๆ
+4. **Re-validate** ก้อนที่ clean แล้วด้วยกฎเดียวกับหัวข้อ 8 ถ้ายังไม่ผ่านให้ hard fail ห้ามส่งต่อ
+5. แยก `y_t` ออกจากเฟรม feature เรียก `build_forecast_features` แล้ว `assert_no_future_leakage` ทุกเดือนต้นทางต้อง `< t`
+6. `predict` ครบ 77 จังหวัดก่อน จังหวัดหนึ่งห้าม `learn` จาก `y_t` ของเดือนเดียวกัน
+7. เปิด `y_t` เขียน prediction log และ lineage (หัวข้อ 12)
+8. `learn` ด้วย feature ชุดเดิมบวก `y_t`
+9. ส่ง error และ feature ให้ drift hook ของ DS/MLE ถ้า hook สั่ง retrain ให้เกิดหลัง log ของเดือน `t` แล้วเท่านั้น และห้ามรีเฟรช reference set เอง
 
 ```mermaid
 flowchart TD
-  load[โหลด province_month_unified] --> checkAll[ตรวจแผงทั้งก้อน]
-  checkAll --> warm[warm start โมเดล]
+  load[โหลด snapshot ที่ปักไว้] --> ver[บันทึก data version และ hash]
+  ver --> ref[โหลด reference set 2023-01 ถึง 2024-12]
+  ref --> warm[warm start จาก refit 2019-2024]
   warm --> month{เดือน t ใน 2025}
-  month --> feats[build_forecast_features จากเดือนน้อยกว่า t]
+  month --> val1[validate ก่อน clean]
+  val1 -->|hard fail| halt[หยุดและ alert]
+  val1 --> dq[เขียน DQ report]
+  dq -->|hard fail| halt
+  dq --> clean[clean ตามกฎที่บันทึก]
+  clean --> val2[re-validate]
+  val2 -->|hard fail| halt
+  val2 --> feats[build_forecast_features จากเดือนน้อยกว่า t]
   feats --> leak[assert_no_future_leakage]
-  leak --> gate[ตรวจ 77 แถว ไม่มี null ใน target และฝน]
-  gate --> pred[predict ครบ 77 จังหวัด]
+  leak --> pred[predict ครบ 77 แถว ไม่สุ่ม]
   pred --> reveal[เปิด y_t]
-  reveal --> log[เขียน log]
+  reveal --> log[prediction log และ lineage]
   log --> learn[learn]
-  learn --> metrics[อัปเดต WAPE และ drift hook]
-  metrics --> alarm{hook สั่ง retrain หรือไม่}
-  alarm -->|ใช่ หลัง log แล้ว| refit[retrain แล้วเปลี่ยน model_version]
+  learn --> hook[ส่ง error และ feature ให้ DS/MLE]
+  hook --> alarm{hook สั่ง retrain หรือไม่}
+  alarm -->|ใช่ หลัง log| refit[retrain ไม่รีเฟรช reference เอง]
   alarm -->|ไม่| month
   refit --> month
 ```
@@ -139,99 +143,213 @@ learn(features, y_true) -> None
 
 **MAPE ไม่ใช่ตัวหลัก** แถว `guest_arrivals_total = 0` ทำให้หารด้วยศูนย์ แถวศูนย์ 27 แถวที่รู้แล้วอยู่ใน 2020-04, 2020-05, 2021-01 ไม่ได้อยู่ในปี 2025 แต่กฎทั้งโปรเจกต์ยังไม่ใช้ MAPE เป็นตัวเทียบระหว่าง validation, test และ stream
 
-## 8. จุดเกี่ยว drift
+## 8. Validate
 
-ตัวป้อนไม่ฝังอัลกอริทึมเดียว ให้มีอินเทอร์เฟซ `update(errors) -> alarm` ทางเลือกที่เสนอ มีสองแบบ ยังไม่เลือก:
+รันสองครั้ง: ก่อน clean และหลัง clean ชุดกฎเดียวกัน ขั้นแรกจับ schema ที่พัง ขั้นหลังยืนยันว่า clean ไม่ได้ทำให้สัญญายังเสียอยู่
 
-| ตัวเลือก | สิ่งที่ดู | เมื่อไหร่ถือว่าเตือน |
+คอลัมน์ที่ต้องมีในก้อนเดือน `t`: `province_id`, `year_month`, `guest_arrivals_total`, `guest_arrivals_thai`, `guest_arrivals_foreign`, `rain_avg_mm`, `rain_min_mm`, `rain_max_mm`, `is_covid`
+
+| การตรวจ | เกณฑ์ | เมื่อไม่ผ่าน |
 |---|---|---|
-| ADWIN | error รายจังหวัด หรือ WAPE รายเดือน | หน้าต่างตรวจพบค่าเฉลี่ย error เปลี่ยน |
-| Page-Hinkley | error สะสม | ค่าสะสมเกินเกณฑ์ที่ตั้งตอน warm start |
+| ชื่อคอลัมน์ | ครบชุดด้านบน ไม่มีชื่อแปลกที่โมเดลจะอ่านเป็น target | **hard fail** |
+| `province_id` | ก่อน clean ยอมรับเลข 1–2 หลักที่ pad ได้ หลัง clean ต้องเป็นสตริง `\d{2}` | **hard fail** ถ้า pad ไม่ได้หรือยังไม่เป็น `\d{2}` หลัง clean |
+| `year_month` | สตริง `YYYY-MM` เดือน 01–12 | **hard fail** |
+| จำนวนแถว | 77 แถวของเดือน `t` | **hard fail** |
+| คีย์ | `province_id` + `year_month` ไม่ซ้ำหลัง dedupe | **hard fail** ถ้าค่าขัดกัน หรือยังซ้ำหลัง clean |
+| อนาคต | ก้อนงานของเดือน `t` ไม่มี `year_month > t` | **hard fail** ถ้าหลุดเข้า feature หรือเข้าเฟรม predict |
+| ช่วงค่า | `guest_arrivals_total >= 0` และฝนทั้งสามคอลัมน์ `>= 0` | **hard fail** ห้าม clip |
+| ลำดับฝน | `rain_min_mm <= rain_avg_mm <= rain_max_mm` | **hard fail** |
+| null | ไม่มี null ใน target และฝนทั้งสามคอลัมน์หลัง clean | **hard fail** |
+| `is_covid` | ตรง `calendar.is_covid` ของเดือนนั้น (2020-03 .. 2022-12) | **hard fail** ห้ามเขียนทับให้ตรงเงียบ ๆ |
 
-สิ่งที่กระตุ้น retrain เป็นทางเลือกเช่นกัน:
+`is_covid_lag12` ของ feature ปี 2025 ต้องเป็นเท็จ เพราะ `t-12` อยู่ในปี 2024 ถ้าไม่เป็นเท็จให้ hard fail หลังสร้าง feature เช่นกัน feature ที่เข้า `predict` ต้องไม่มี null ใน `guest_lag_1`, `guest_lag_12`, `rain_lag_1`, `rain_roll3`
 
-- เตือนครั้งเดียวแล้ว refit บนประวัติถึงเดือน `t` (หลัง `y_t` ถูกเปิดแล้ว) ด้วยชุดเดียวกับ warm start
-- เตือนแล้วสลับไป `partial_fit` ต่อ โดยไม่ refit ทั้งก้อน
-- บันทึกธงอย่างเดียว ยังไม่ retrain จนกว่าทีมจะกำหนดเกณฑ์
+Hard fail หมายถึงหยุดโปรเซส exit code ไม่เป็นศูนย์ ไม่ `predict` ไม่ `learn` ไม่เติมค่า และเขียน lineage ว่าขั้นไหนล้ม Warn อยู่ในรายงาน DQ เท่านั้น ไม่หยุดสาย
 
-ทุกทางต้องเกิดหลัง log ของเดือนนั้น `model_version` ของเดือนถัดไปจึงเปลี่ยนได้ เดือนที่เพิ่ง predict ยังผูกกับรุ่นเดิม
+ตอนโหลด snapshot ครั้งแรก ตรวจว่าทั้งไฟล์มี 7,392 แถว ช่วง 2018-01 .. 2025-12 และไม่มีคีย์ซ้ำก่อนเริ่มเดือนแรก
 
-เพราะสายมีแค่ 12 จุด ตัวตรวจที่ sensitive เกินจะเตือนจากฤดูเดียว รายงานต้องโชว์จำนวนครั้งที่เตือน ไม่ใช่แค่ธงท้ายปี
+## 9. Data quality
 
-## 9. สัญญาข้อมูลก่อนส่งแต่ละเดือน
+ขั้นนี้อยู่ระหว่าง validate รอบแรกกับ clean เขียนไฟล์ทุกเดือนแม้จะมีแค่ warn ถ้ามี hard fail จากหัวข้อ 8 ให้เขียนรายงานแล้วหยุด
 
-ตรวจก่อน `predict` ถ้าข้อใดไม่ผ่าน ให้หยุดด้วย exit code ไม่เป็นศูนย์ และอย่าเติมค่าแทน
+ไฟล์: `reports/stream_dq/{year_month}.json` และแถวธง `reports/stream_dq/{year_month}_rows.parquet`
 
-- แถวของเดือน `t` มี 77 แถว `province_id` ไม่ซ้ำ และตรงรูปแบบ `\d{2}`
-- `guest_arrivals_total`, `rain_avg_mm`, `rain_min_mm`, `rain_max_mm` ของเดือน `t` ไม่มี null (ค่าจริงถูกกันไว้คนละก้อน แต่ยังต้องมีครบก่อนเปิด)
-- feature ที่ส่งเข้า `predict` ไม่มี null ใน `guest_lag_1`, `guest_lag_12`, `rain_lag_1`, `rain_roll3` สำหรับปี 2025 ประวัติครบ ถ้ามี null แสดงว่าแผงถูกตัดผิด
-- ไม่มีแถว `year_month > t` ในก้อนที่สร้าง feature
-- เดือนต้นทางของ feature ทุกตัว `< t` ผ่าน `assert_no_future_leakage`
-- `is_covid` และ `is_covid_lag12` ของปี 2025 เป็นเท็จทั้ง 77 จังหวัด ถ้าไม่เป็นเท็จให้หยุด เพราะคนละสัญญากับ split
+| การตรวจ | วิธี | severity |
+|---|---|---|
+| ความครบ | มีครบ 77 จังหวัด และมีเดือนประวัติที่ lag ต้องใช้ (`t-1`, `t-3`, `t-12`) | hard fail ถ้าขาด |
+| ความสด | snapshot ที่ปักไว้มีเดือน `t` อยู่แล้ว | hard fail ถ้าเดือน `t` ยังไม่มีใน snapshot (ดูหัวข้อ 12) |
+| outlier รายจังหวัด | robust z ของ `guest_arrivals_total` เทียบประวัติจังหวัดนั้นถึง `t-1` เท่านั้น: `(x - median) / (1.4826 * MAD)` ถ้า MAD เป็น 0 ให้ข้าม z | **warn** ถ้า \|z\| > 3.5 ไม่ทิ้งแถว |
+| MoM | `\|y_t - y_{t-1}\| / y_{t-1}` เมื่อ `y_{t-1} > 0` | **warn** ถ้ามากกว่า 1.0 ไม่ทิ้งแถว |
+| แถวศูนย์ | `guest_arrivals_total = 0` | **warn** เก็บค่าไว้ เป็นยอดจริงได้ แถวศูนย์ 27 แถวที่รู้แล้วอยู่ใน 2020-04, 2020-05, 2021-01 |
+| คีย์ซ้ำ | แถวซ้ำทั้งแถว หรือซ้ำคีย์แต่ค่าต่าง | exact duplicate ส่งต่อให้ clean ส่วนค่าขัดกันเป็น hard fail |
+| thai + foreign | เมื่อทั้งคู่ไม่เป็น null ถ้า \|total − (thai + foreign)\| > max(1, 0.001 × \|total\|) | **warn** ปี 2018 ทั้งคู่เป็น null โดยตั้งใจ ไม่นับเป็นผิด และห้ามแก้ total |
 
-ตอนโหลดไฟล์ครั้งแรก ตรวจเพิ่มว่าทั้งแผงมี 7,392 แถว ช่วง `2018-01 .. 2025-12` และไม่มีคีย์จังหวัด-เดือนซ้ำ
+สคีมา JSON:
 
-## 10. ความคงที่ของการรันซ้ำ
+```json
+{
+  "year_month": "2025-01",
+  "data_version": "sha256:...",
+  "n_rows": 77,
+  "hard_fail": false,
+  "checks": [
+    {"name": "row_count", "severity": "hard", "passed": true, "detail": "77"}
+  ]
+}
+```
 
-รันซ้ำด้วยไฟล์อินพุตเดิม seed เดิม และ `model_version` เริ่มต้นเดิม ต้องได้ `y_pred`, `error` และลำดับแถวเดิม
+Parquet ของธงมี `province_id` (สตริง 2 หลัก), `year_month`, `check`, `severity`, `value`, `detail` เปรียบเทียบ outlier ใช้เฉพาะเดือน `< t` จึงไม่นำเดือนที่กำลังทำนายของจังหวัดอื่นในอนาคตเข้ามา
 
-กติกา:
+## 10. Clean
 
-- เรียง `year_month` แล้ว `province_id` ภายในตัวป้อน อย่าพึ่งลำดับแถวใน parquet
-- seed เดียวทั้งรอบ ค่าเริ่มต้นที่เสนอคือ `2025` ส่งเข้าโมเดลถ้าโมเดลสุ่ม
-- นาฬิกาเครื่องไม่อยู่ในอินพุตของ `predict` หรือ `learn`
-- เขียน log ทับไฟล์เดิมเมื่อ rerun โดยไม่มี `--run-id` ถ้ามี `--run-id` ให้เขียนคนละไฟล์ แต่เนื้อทำนายต้องเหมือนกันเมื่อ seed ตรงกัน
-- retrain ถ้าเปิดใช้ ต้องอ่านประวัติถึง `t` ในลำดับเดิม ไม่สุ่มแถว
+กฎ deterministic รันหลัง DQ และก่อน re-validate ทุกการเปลี่ยนลง lineage การเปลี่ยนที่ทำให้ค่า target ไม่เท่าเดิมแบบเงียบ ๆ ห้ามทำ
 
-ถ้าโมเดลที่ห่อมาไม่ deterministic ให้ถือว่าไม่ผ่านสัญญานี้ และห้ามใช้ในสายจนกว่าจะรับ seed ได้
+| กฎ | ทำอะไร | บันทึก |
+|---|---|---|
+| cast ชนิด | นับคนและฝนเป็น float, `year_month` เป็นสตริง, `is_covid` เป็น bool | `cast` ถ้าค่าตัวเลขไม่คงเดิมให้ hard fail |
+| `province_id` | ตัดช่องว่าง ถ้าเป็นเลข 1–2 หลักให้เติมศูนย์เป็น `\d{2}` | `pad_province_id` เมื่อสตริงเปลี่ยน |
+| dedupe | แถวที่ซ้ำทุกคอลัมน์ เก็บแถวเดียว | `dedupe_exact` |
+| คีย์เดียวกันแต่ค่าต่าง | ไม่เลือกแถว ไม่เฉลี่ย | hard fail |
+| ฝนขาด | ไม่ carry forward ไม่เติม 0 ไม่ใช้ค่าจังหวัดข้างเคียง ถ้า unified เป็น null ให้คัดลอกเดือนเดียวกันจาก `data/staging/hii/fact_rainfall.parquet` เมื่อมีครบสามคอลัมน์ | `rain_from_staging_exact_month` ถ้า staging ก็ไม่มีให้ hard fail |
+| ค่าติดลบ | ไม่ clip | hard fail |
+| target | `guest_arrivals_total` / `_thai` / `_foreign` เปลี่ยนได้แค่ cast ที่ค่าเท่าเดิม | ห้ามแก้เป็นอย่างอื่น |
 
-## 11. การรันบน Windows
+`is_covid` ที่ไม่ตรงปฏิทินไม่ถูกเขียนทับในขั้น clean ให้ไปตายที่ re-validate
+
+## 11. ไม่มีการสุ่มตัวอย่าง
+
+สายนี้ใช้ครบ 77 แถวทุกเดือน ไม่ sample ไม่ bootstrap ไม่ถ่วงด้วยการดึงแกรงเทพฯ ออก เหตุผลคือ 77 จังหวัดคือประชากรทั้งชุดของ grain นี้ ไม่ใช่ตัวอย่างจากประชากรที่ใหญ่กว่า การตัดจังหวัดจะทำให้ WAPE ของสาย 2025 เทียบกับ baseline ปี 2024 ไม่ได้ และกรุงเทพฯ ประมาณ 19.5% ของปริมาณจะหายหรือถูกขยายโดยไม่ตั้งใจ
+
+ลำดับคงที่คือ `year_month` แล้ว `province_id` จากน้อยไปมาก ห้าม shuffle
+
+## 12. Snapshot เดือนที่มาสาย และ lineage
+
+MOTS อาจแก้เดือนเก่าในไฟล์รุ่นหลัง สาย replay หนึ่งรอบผูกกับ snapshot เดียวของตาราง unified ที่คัดลอกไว้ เช่น `data/stream/snapshots/unified_{sha256}.parquet` ระหว่างรอบห้ามสลับไปอ่านไฟล์ที่ถูก rebuild ทับ ถ้าต้องรับตัวเลขที่ MOTS แก้ ให้เริ่มรอบใหม่ด้วย snapshot ใหม่และ `data_version` ใหม่ ห้ามปน hash ในรอบเดียว
+
+เดือน `t` ที่ไม่มีใน snapshot: **halt และ alert** ห้ามข้ามเดือน เพราะ lag 1 ของเดือนถัดไปจะขาด ห้าม impute ทั้ง target และฝน
+
+Lineage หนึ่งไฟล์ต่อเดือน `data/stream/lineage/{year_month}.json`:
+
+| ฟิลด์ | ความหมาย |
+|---|---|
+| `data_version` | sha256 ของ snapshot ทั้งไฟล์ |
+| `input_hash` | sha256 ของก้อน `year_month <= t` ก่อน clean |
+| `checks` | รายการผ่านหรือล้ม พร้อม severity |
+| `cleaning_actions` | รายการกฎที่เกิดจริง รวมจำนวนแถว |
+| `feature_table_hash` | sha256 ของเฟรมที่เข้า `predict` |
+| `model_version` | รุ่นที่ predict เดือนนี้ |
+| `reference_version` | รุ่นของ reference set |
+| `dq_report` | พาธของรายงาน DQ |
+
+นาฬิกาเครื่องเขียนได้เป็น `logged_at` แต่ไม่เข้า hash และไม่เข้าโมเดล
+
+## 13. Reference set
+
+ความรับผิดชอบของ data engineer ใช้เทียบ feature drift ไม่ใช้เป็นแถวเทรนของสาย
+
+หน้าต่างคือ **2023-01 .. 2024-12** (24 เดือน × 77 = 1,848 แถว) เป็นช่วงหลังโควิดเดียวกับที่โมเดลถูก validate และ test **ไม่รวม** COVID 2020-03 .. 2022-12 และไม่ใช้ปี 2018–2022 เป็นฐาน เพราะระดับผู้เข้าพักช่วงนั้นต่ำกว่าหลังฟื้นตัว ตัวตรวจจะติดตลอด
+
+ไฟล์:
+
+- `data/model/reference_2023_2024.parquet` แถวจริงของช่วงนี้ พร้อมคอลัมน์ feature ที่ `build_forecast_features` สร้างได้จากประวัติก่อนแต่ละเดือน (`guest_lag_1`, `guest_lag_12`, `rain_lag_1`, `rain_roll3`, `rain_avg_mm`, `guest_arrivals_total`, `province_id`, `year_month`)
+- `data/model/reference_2023_2024_stats.json` มี `version` (ค่าเริ่ม `2023-2024-v1`), `window`, `n_rows` = 1848, `source_hash`, `excludes_covid_window: true` และสถิติรายจังหวัดต่อคอลัมน์ (median, MAD, quantiles) สำหรับ PSI / KS
+
+รีเฟรชได้เฉพาะเมื่อทีมตัดสินใจ เช่นหลังยืนยัน retrain แล้วให้ตัดชุดใหม่และขึ้น version alarm จาก drift hook **ไม่**เขียนไฟล์นี้ทับเอง
+
+## 14. Drift ส่งต่อให้ DS / ML engineer
+
+Data engineer ส่งของและจุดเกี่ยว ไม่เลือกตัวตรวจและไม่ตั้ง threshold
+
+ของที่ DE ส่งทุกเดือนหลัง `predict`:
+
+- แถว error ใน prediction log (`y_true`, `y_pred`, `error`) ครบ 77 จังหวัด
+- เฟรม feature ที่เข้า `predict` (`rain_lag_1`, `rain_roll3`, `guest_lag_1`, `guest_lag_12`)
+- reference set และ stats ตามหัวข้อ 13
+- อินเทอร์เฟซที่ DS ทำให้ครบ: `update_errors(errors) -> alarm` และ `update_features(features) -> alarm`
+
+DS / MLE เป็นเจ้าของตัวเลือกและเกณฑ์ ตัวเลือกที่แบบนี้รองรับ:
+
+| กลุ่ม | ตัวเลือก | สิ่งที่ดู |
+|---|---|---|
+| error | ADWIN | ค่าเฉลี่ย error เปลี่ยนหน้าต่าง |
+| error | Page-Hinkley | error สะสมเกินเกณฑ์ |
+| error | DDM | อัตรา error เปลี่ยนแบบ Drift Detection Method |
+| input | PSI | การกระจายของฝนและ lag เทียบ reference |
+| input | KS | การกระจายเดียวกันแบบสองตัวอย่าง |
+
+Retrain ยังเป็นทางเลือกของทีม: refit ถึงเดือน `t` หลังเปิด `y_t` แล้ว, หรือ `partial_fit` ต่อ, หรือบันทึกธงอย่างเดียว ทุกทางเกิดหลัง lineage ของเดือนนั้น `model_version` ของเดือนถัดไปจึงเปลี่ยนได้ สายมี 12 จุด ตัวตรวจที่ไวเกินจะติดฤดูเดียว รายงานต้องโชว์จำนวนครั้งที่เตือน
+
+## 15. ความคงที่ของการรันซ้ำ
+
+รันซ้ำด้วย snapshot เดิม seed เดิม reference version เดิม และ `model_version` เริ่มต้นเดิม ต้องได้ `y_pred`, error, รายงาน DQ และ lineage เดิม
+
+- เรียง `year_month` แล้ว `province_id` อย่าพึ่งลำดับแถวใน parquet
+- seed เริ่มต้น `2025` ส่งเข้าโมเดลถ้าโมเดลสุ่ม
+- นาฬิกาเครื่องไม่อยู่ใน `predict`, `learn` หรือ hash
+- ไม่มี `--run-id` ให้เขียนทับ log เดิม ถ้ามี `--run-id` ให้คนละไฟล์ แต่ตัวเลขทำนายต้องตรงกันเมื่อ seed ตรงกัน
+- retrain ถ้าเปิดใช้ อ่านประวัติถึง `t` ตามลำดับเดิม ไม่สุ่มแถว
+
+โมเดลที่สุ่มโดยไม่รับ seed ใช้ในสายนี้ไม่ได้
+
+## 16. การรันบน Windows
 
 ยังไม่มียูนิตรัน คำสั่งที่เสนอ รันจาก root ของ repo ใน PowerShell โมดูลต่อ path ด้วย `pathlib` อาร์กิวเมนต์ในตัวอย่างใช้ `/` ซึ่ง Python บน Windows รับได้
 
 ```powershell
-python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --model-path models/warm_start.joblib --log data/stream/replay_2025.parquet
+python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --model-path models/warm_start.joblib --log data/stream/replay_2025.parquet --snapshot data/stream/snapshots/unified_PINNED.parquet --reference data/model/reference_2023_2024.parquet
 ```
 
-`--start` และ `--end` ต้องเท่ากับ `TIME_SPLIT["online_stream"]` ในรุ่นแรก ถ้าส่งช่วงอื่นให้ปฏิเสธ เพื่อไม่ให้มีคนเล่นปี 2024 เป็น stream โดยไม่ตั้งใจ `--model-path` คือไฟล์ที่ได้จาก refit 2019-01 .. 2024-12 ในหัวข้อ 4 ไม่ใช่โมเดลที่ fit แค่ถึง 2022-12
+`--start` และ `--end` ต้องเท่ากับ `TIME_SPLIT["online_stream"]` ถ้าส่งช่วงอื่นให้ปฏิเสธ `--model-path` คือไฟล์ refit 2019-01 .. 2024-12 ในหัวข้อ 4 Python 3.11 ขึ้นไป ตาม README
 
-Python 3.11 ขึ้นไป ตาม README
-
-## 12. โครงไฟล์ที่เสนอ
+## 17. โครงไฟล์ที่เสนอ
 
 ยังไม่สร้างไฟล์เหล่านี้
 
 | พาธ | หน้าที่ |
 |---|---|
-| `src/stream/__init__.py` | แพ็กเกจ |
-| `src/stream/replay.py` | ลูป, CLI `python -m src.stream.replay` |
-| `src/stream/contracts.py` | ตรวจแผงและเฟรมก่อน predict |
-| `src/stream/metrics.py` | WAPE, MAE, RMSE, MASE, WAPE รายจังหวัด, หน้าต่าง 3 เดือน |
-| `src/stream/drift.py` | อินเทอร์เฟซ hook ไม่เลือก ADWIN หรือ Page-Hinkley ให้ทีม |
-| `tests/test_stream_replay.py` | เทสตามหัวข้อ 13 |
+| `src/stream/replay.py` | ลูปและ CLI |
+| `src/stream/contracts.py` | validate / re-validate |
+| `src/stream/quality.py` | DQ และรายงาน |
+| `src/stream/clean.py` | กฎ clean |
+| `src/stream/reference.py` | สร้างและโหลด reference set |
+| `src/stream/lineage.py` | hash และ audit รายเดือน |
+| `src/stream/metrics.py` | WAPE, MAE, RMSE, MASE |
+| `src/stream/drift.py` | จุดเกี่ยวที่ DS ทำให้ครบ ไม่เลือกตัวตรวจ |
+| `tests/test_stream_replay.py` | เทสตามหัวข้อ 18 |
+| `reports/stream_dq/` | รายงาน DQ |
+| `data/stream/lineage/` | audit รายเดือน |
+| `data/stream/snapshots/` | snapshot ที่ปัก hash |
+| `data/model/reference_2023_2024.parquet` | reference set |
+| `data/model/reference_2023_2024_stats.json` | สถิติและ version |
 
-ตัวป้อนเรียก `build_forecast_features` และ `assert_no_future_leakage` จาก `src/model/leakage.py` ที่มีอยู่แล้ว ไม่คัดลอกสูตร lag ไปไว้ใน `src/stream`
+เรียก `build_forecast_features` และ `assert_no_future_leakage` จาก `src/model/leakage.py` ห้ามคัดลอกสูตร lag
 
-## 13. แผนเทส
+## 18. แผนเทส
 
-เทสเหล่านี้ยังไม่ถูกเขียน จนกว่าจะมีการสร้างโมดูล ควรเป็นเทสเบา ไม่ต้องมีโมเดลจริง
+เทสเหล่านี้ยังไม่ถูกเขียน จนกว่าจะมีโมดูล ใช้เฟรมเล็กได้ ไม่ต้องมีโมเดลจริง
 
-- เฟรมของ `2025-03` ไม่มีค่าจาก `2025-03` หรือเดือนถัดไป และ `assert_no_future_leakage` ผ่าน
-- `predict` ถูกเรียกครบ 77 แถวก่อน `learn` ครั้งแรกของเดือนนั้น mock ตรวจว่าเฟรมไม่มี `guest_arrivals_total`
-- สัญญาล้มเมื่อมี 76 แถว, target เป็น null, ฝนเป็น null, หรือมีเดือนในอนาคต
+- validate เป็น hard fail เมื่อคอลัมน์หาย, `year_month` ผิดรูปแบบ, ไม่ครบ 77 แถว, มี `year_month > t` ในก้อนงาน, target หรือฝนติดลบ, `rain_min > rain_avg`, target หรือฝนเป็น null หลัง clean, `is_covid` ไม่ตรงปฏิทิน
+- robust z และแถวศูนย์เป็น warn แถวไม่ถูกลบ และสายไม่หยุด
+- clean เติม `province_id` เป็นสองหลักแล้วบันทึก action ค่า `guest_arrivals_total` เท่าเดิม
+- คีย์ซ้ำที่ค่าต่างกันเป็น hard fail แถวที่ซ้ำทุกคอลัมน์เหลือหนึ่งแถว
+- ฝน null ถูกเติมจาก staging เฉพาะเดือนเดียวกัน ถ้า staging ไม่มีให้หยุด และไม่มีการ carry forward
+- เดือน `t` หายจาก snapshot แล้วหยุด ไม่ skip ไม่ impute
+- เอาต์พุตทุกเดือนมี 77 แถวเรียง `province_id` ไม่มีการสุ่มตัวอย่าง
+- reference set คือ 2023-01 .. 2024-12 จำนวน 1,848 แถว และไม่มีเดือนในช่วง 2020-03 .. 2022-12
+- lineage มี `input_hash`, ผลตรวจ, cleaning actions, `feature_table_hash`, `model_version`
+- เฟรมของ `2025-03` ไม่มีค่าจากเดือนนั้นหรือเดือนถัดไป และ `assert_no_future_leakage` ผ่าน
+- `predict` ครบ 77 แถวก่อน `learn` และเฟรมไม่มี `guest_arrivals_total`
 - lag 12 ของ `2025-01` คือ `2024-01` และ `is_covid_lag12` เป็นเท็จ
-- รันสองครั้งด้วย seed เดิมได้ log `y_pred` ตรงกัน
-- สลับลำดับแถวใน parquet แล้วผลไม่เปลี่ยน
-- ช่วง `--start` / `--end` ที่ไม่ใช่ `2025-01` .. `2025-12` ถูกปฏิเสธ
-- WAPE จาก log ตรงกับสูตรที่คำนวณมือ และรายงานไม่มี MAPE เป็นตัวหลัก
-- `TIME_SPLIT["online_stream"]` คือ 2025-01 .. 2025-12
+- รันสองครั้งด้วย snapshot และ seed เดิมได้ `y_pred` ตรงกัน
+- `--start` / `--end` ที่ไม่ใช่ 2025-01 .. 2025-12 ถูกปฏิเสธ
+- WAPE ตรงสูตร และรายงานไม่มี MAPE เป็นตัวหลัก
 
-## 14. คำถามที่ยังเปิด
+## 19. คำถามที่ยังเปิด
 
-Warm start ถูกตัดสินแล้วในหัวข้อ 4 ไม่ได้อยู่ในรายการนี้
+ตัดสินแล้วและไม่อยู่ในรายการนี้: warm start (หัวข้อ 4), ไม่สุ่มตัวอย่าง (หัวข้อ 11), เดือนหายให้ halt (หัวข้อ 12), หน้าต่าง reference (หัวข้อ 13), hard fail กับ warn (หัวข้อ 8–9)
 
-1. เลือก ADWIN, Page-Hinkley หรือบันทึกธงอย่างเดียวในรุ่นแรก
-2. Retrain ระหว่างสายคือ refit ทั้งก้อน หรือ `partial_fit` อย่างเดียว
-3. ไฟล์โมเดลอยู่ที่ใด และใครเป็นเจ้าของ `model_version`
+1. DS / MLE เลือก ADWIN, Page-Hinkley, DDM, PSI, KS และ threshold เอง DE ไม่เลือกให้
+2. Retrain ระหว่างสายเป็น refit ทั้งก้อน, `partial_fit` หรือบันทึกธงอย่างเดียว
+3. พาธไฟล์โมเดลและเจ้าของสตริง `model_version`
 4. ฝนเดือนเดียวกันยังเป็น nowcast ที่ยังไม่ตัดสิน สายนี้สมมติว่าเป็น forecast
-5. ต้องเขียน log รายจังหวัดลงที่ที่ analyst เปิดบน Windows ได้ทันทีหรือไม่ นอกจาก parquet
+5. ต้องเขียน prediction log เป็น CSV สำหรับ Excel นอกจาก parquet หรือไม่
