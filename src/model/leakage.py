@@ -1,9 +1,13 @@
-"""Forecast features that are allowed to read only months strictly before t.
+"""Forecast features that read only months strictly before t.
 
-The modeling table is one row per province × month. A forecast of month t may
-use lags and rolling windows that end at t-1. Same-month values, and any
-aggregate that includes t, are leakage. `docs/feature_rules_for_modeling.md`
-is the rule sheet this module enforces.
+The documented set is guest-arrival lags 1 and 12, rain lag 1, and a
+3-month rain mean ending at t-1, plus the calendar flags `is_covid` and
+`is_covid_lag12`. Same-month guest arrivals, rain, and visitors are leakage.
+`docs/feature_rules_for_modeling.md` is the rule sheet this module enforces.
+
+Lags are computed from the unified panel at feature-build time. They are not
+stored as a separate table. Pass the full panel, including 2018 and COVID
+rows, and drop rows only after the lags exist.
 """
 
 from __future__ import annotations
@@ -13,10 +17,22 @@ from collections.abc import Iterable, Sequence
 
 import pandas as pd
 
+from src.common.calendar import is_covid as calendar_is_covid
 from src.common.calendar import month_range
 from src.common.calendar import year_month as format_year_month
 
-DEFAULT_LAGS: tuple[int, ...] = (1, 3, 12)
+GUEST_LAGS: tuple[int, ...] = (1, 12)
+RAIN_ROLLING_MONTHS = 3
+DEFAULT_LAGS = GUEST_LAGS
+
+# Single time split. 2018 is lag history only and is not a training row.
+TIME_SPLIT: dict[str, tuple[str, str]] = {
+    "lag_history": ("2018-01", "2018-12"),
+    "train": ("2019-01", "2022-12"),
+    "validation": ("2023-01", "2023-12"),
+    "online_stream": ("2024-01", "2025-12"),
+}
+
 _YEAR_MONTH = re.compile(r"\d{4}-\d{2}$")
 _QUARTER = re.compile(r"\d{4}-Q[1-4]$")
 
@@ -45,6 +61,7 @@ def assert_no_future_leakage(feature_months: Iterable[str], target_month: str) -
 
     Same-month rain, visitors, and the Thai/foreign split of t count as
     leakage. Pass the YYYY-MM months a forecast of `target_month` would read.
+    `is_covid` of t is a calendar flag and is not one of these months.
     """
     target = _require_year_month(target_month)
     months = [_require_year_month(month) for month in feature_months]
@@ -74,6 +91,22 @@ def rolling_source_months(target_month: str, window: int) -> list[str]:
     months = month_range(start, end)
     assert_no_future_leakage(months, target_month)
     return months
+
+
+def forecast_source_months(target_month: str) -> dict[str, str]:
+    """Observed months read by the documented forecast features. All are < t."""
+    roll = rolling_source_months(target_month, RAIN_ROLLING_MONTHS)
+    sources = {
+        "guest_lag_1": shift_year_month(target_month, 1),
+        "guest_lag_12": shift_year_month(target_month, 12),
+        "rain_lag_1": shift_year_month(target_month, 1),
+        "is_covid_lag12": shift_year_month(target_month, 12),
+        "rain_roll3_m3": roll[0],
+        "rain_roll3_m2": roll[1],
+        "rain_roll3_m1": roll[2],
+    }
+    assert_no_future_leakage(sources.values(), target_month)
+    return sources
 
 
 def quarter_label(year_month: str) -> str:
@@ -110,8 +143,8 @@ def build_allowed_lag_frame(
 ) -> pd.DataFrame:
     """One row per province with lag columns taken only from months before t.
 
-    History that does not exist yet (lag 12 of 2018-01, for example) stays
-    null. The value at `target_month` is never copied into a feature.
+    History that does not exist yet stays null. The value at `target_month`
+    is never copied into a feature. Default lags are the guest lags 1 and 12.
     """
     sources = source_months_for_lags(target_month, lags)
     assert_no_future_leakage(sources.values(), target_month)
@@ -129,4 +162,64 @@ def build_allowed_lag_frame(
             out[name] = wide[month].to_numpy()
         else:
             out[name] = pd.NA
+    return out.reset_index(drop=True)
+
+
+def build_forecast_features(
+    panel: pd.DataFrame,
+    target_month: str,
+    *,
+    province_col: str = "province_id",
+    month_col: str = "year_month",
+) -> pd.DataFrame:
+    """Documented forecast features for month t, built from the full panel.
+
+    Columns: `guest_lag_1`, `guest_lag_12`, `rain_lag_1`, `rain_roll3`,
+    `is_covid`, `is_covid_lag12`. `rain_roll3` is the mean of rain at t-3, t-2,
+    and t-1, and is null if any of those months is missing. `is_covid` is the
+    calendar flag of t. `is_covid_lag12` is the calendar flag of t-12.
+
+    Compute this on the unified table before dropping any rows. Dropping
+    COVID rows first makes lag 1 of 2023-01 skip back to 2020-02.
+    """
+    target = _require_year_month(target_month)
+    required = ["guest_arrivals_total", "rain_avg_mm"]
+    missing = [column for column in required if column not in panel.columns]
+    if missing:
+        raise ValueError(f"panel missing columns: {missing}")
+    if panel.duplicated([province_col, month_col]).any():
+        raise ValueError("panel has duplicate province-month keys")
+
+    sources = forecast_source_months(target)
+    roll_months = [sources["rain_roll3_m3"], sources["rain_roll3_m2"], sources["rain_roll3_m1"]]
+    assert_no_future_leakage(sources.values(), target)
+
+    provinces = pd.Index(panel[province_col].drop_duplicates(), name=province_col)
+    needed = set(sources.values())
+    hist = panel.loc[
+        panel[month_col].isin(needed),
+        [province_col, month_col, "guest_arrivals_total", "rain_avg_mm"],
+    ]
+    guest_wide = (
+        hist.pivot(index=province_col, columns=month_col, values="guest_arrivals_total").reindex(provinces)
+    )
+    rain_wide = hist.pivot(index=province_col, columns=month_col, values="rain_avg_mm").reindex(provinces)
+
+    def _at(wide: pd.DataFrame, month: str) -> pd.Series:
+        if month in wide.columns:
+            return wide[month]
+        return pd.Series(pd.NA, index=wide.index, dtype="Float64")
+
+    rain_roll = rain_wide.reindex(columns=roll_months).mean(axis=1, skipna=False)
+    out = pd.DataFrame(
+        {
+            province_col: provinces.astype(panel[province_col].dtype),
+            "guest_lag_1": _at(guest_wide, sources["guest_lag_1"]).to_numpy(),
+            "guest_lag_12": _at(guest_wide, sources["guest_lag_12"]).to_numpy(),
+            "rain_lag_1": _at(rain_wide, sources["rain_lag_1"]).to_numpy(),
+            "rain_roll3": rain_roll.to_numpy(),
+            "is_covid": calendar_is_covid(target),
+            "is_covid_lag12": calendar_is_covid(sources["is_covid_lag12"]),
+        }
+    )
     return out.reset_index(drop=True)

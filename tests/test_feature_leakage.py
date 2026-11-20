@@ -10,11 +10,14 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from src.common.calendar import month_range
-from src.common.paths import DATA, STAGING
+from src.common.calendar import COVID_END, month_range
+from src.common.paths import DATA, ROOT, STAGING
 from src.model.leakage import (
+    TIME_SPLIT,
     assert_no_future_leakage,
     build_allowed_lag_frame,
+    build_forecast_features,
+    forecast_source_months,
     quarter_allowed_as_of,
     quarter_label,
     rolling_source_months,
@@ -38,11 +41,25 @@ def test_allowed_lags_and_rolling_windows_stay_before_every_target_month():
         sources = source_months_for_lags(target)
         assert sources == {
             "lag_1": shift_year_month(target, 1),
-            "lag_3": shift_year_month(target, 3),
             "lag_12": shift_year_month(target, 12),
         }
         assert all(month < target for month in sources.values())
         assert_no_future_leakage(sources.values(), target)
+
+        forecast = forecast_source_months(target)
+        assert set(forecast) == {
+            "guest_lag_1",
+            "guest_lag_12",
+            "rain_lag_1",
+            "is_covid_lag12",
+            "rain_roll3_m3",
+            "rain_roll3_m2",
+            "rain_roll3_m1",
+        }
+        assert all(month < target for month in forecast.values())
+        assert forecast["rain_roll3_m1"] == shift_year_month(target, 1)
+        assert target not in forecast.values()
+        assert_no_future_leakage(forecast.values(), target)
 
         window = rolling_source_months(target, 3)
         assert window[-1] == shift_year_month(target, 1)
@@ -81,12 +98,12 @@ def test_builder_does_not_copy_the_target_month_or_the_future():
                 }
             )
     out = build_allowed_lag_frame(pd.DataFrame(rows), "2024-05")
-    assert list(out.columns) == ["province_id", "lag_1", "lag_3", "lag_12"]
+    assert list(out.columns) == ["province_id", "lag_1", "lag_12"]
     bangkok = out.set_index("province_id").loc["10"]
     assert bangkok["lag_1"] == 1001.0
-    assert bangkok["lag_3"] == 1003.0
     assert bangkok["lag_12"] == 1000.0
-    values = out[["lag_1", "lag_3", "lag_12"]].to_numpy()
+    values = out[["lag_1", "lag_12"]].to_numpy()
+    assert 1003.0 not in values
     assert 999_999.0 not in values
     assert 888_888.0 not in values
 
@@ -101,7 +118,6 @@ def test_builder_leaves_missing_history_null_and_rejects_lag_zero():
     )
     out = build_allowed_lag_frame(panel, "2018-01")
     assert out["lag_1"].isna().all()
-    assert out["lag_3"].isna().all()
     assert out["lag_12"].isna().all()
     with pytest.raises(ValueError):
         shift_year_month("2018-01", 0)
@@ -169,3 +185,95 @@ def test_staging_quarter_guest_arrivals_equal_sum_of_three_months():
     assert (both["quoted"] == both["summed"]).all()
     exposed = monthly.merge(quarterly[keys].drop_duplicates(), on=keys, how="inner")
     assert len(exposed) == len(monthly)
+
+
+def test_forecast_features_use_only_months_before_t():
+    rows = []
+    for province_id in ("10", "50"):
+        for year_month, guests, rain in (
+            ("2024-02", 10.0, 1.0),
+            ("2024-03", 20.0, 2.0),
+            ("2024-04", 30.0, 3.0),
+            ("2023-05", 40.0, 4.0),
+            ("2024-05", 999_999.0, 999.0),
+        ):
+            rows.append(
+                {
+                    "province_id": province_id,
+                    "year_month": year_month,
+                    "guest_arrivals_total": guests,
+                    "rain_avg_mm": rain,
+                }
+            )
+    out = build_forecast_features(pd.DataFrame(rows), "2024-05")
+    assert list(out.columns) == [
+        "province_id",
+        "guest_lag_1",
+        "guest_lag_12",
+        "rain_lag_1",
+        "rain_roll3",
+        "is_covid",
+        "is_covid_lag12",
+    ]
+    bangkok = out.set_index("province_id").loc["10"]
+    assert bangkok["guest_lag_1"] == 30.0
+    assert bangkok["guest_lag_12"] == 40.0
+    assert bangkok["rain_lag_1"] == 3.0
+    assert bangkok["rain_roll3"] == 2.0  # mean of 1, 2, 3; not the 999 at t
+    assert bool(bangkok["is_covid"]) is False
+    assert bool(bangkok["is_covid_lag12"]) is False
+    assert 999_999.0 not in out[["guest_lag_1", "guest_lag_12"]].to_numpy()
+    assert 999.0 not in out[["rain_lag_1", "rain_roll3"]].to_numpy()
+
+
+def test_lags_are_computed_before_rows_are_excluded():
+    """A shift after dropping COVID rows makes 2023-01 read 2020-02."""
+    full = pd.DataFrame(
+        {
+            "province_id": ["10", "10", "10"],
+            "year_month": ["2020-02", "2022-12", "2023-01"],
+            "guest_arrivals_total": [5.0, 80.0, 100.0],
+            "rain_avg_mm": [1.0, 2.0, 3.0],
+            "is_covid": [False, True, False],
+        }
+    )
+    built = build_forecast_features(full, "2023-01")
+    assert built.loc[0, "guest_lag_1"] == 80.0
+    assert bool(built.loc[0, "is_covid_lag12"]) is True
+
+    dropped = full.loc[~full["is_covid"]].sort_values("year_month")
+    shifted = dropped.groupby("province_id")["guest_arrivals_total"].shift(1)
+    leaked = dropped.assign(lag_1=shifted).loc[dropped["year_month"] == "2023-01", "lag_1"].item()
+    assert leaked == 5.0
+    assert leaked != built.loc[0, "guest_lag_1"]
+
+
+def test_time_split_boundaries_match_the_doc():
+    doc = (ROOT / "docs" / "feature_rules_for_modeling.md").read_text(encoding="utf-8")
+    for start, end in TIME_SPLIT.values():
+        assert start in doc
+        assert end in doc
+    assert "build_forecast_features" in doc
+    assert "is_covid_lag12" in doc
+
+    history = month_range(*TIME_SPLIT["lag_history"])
+    train = month_range(*TIME_SPLIT["train"])
+    validation = month_range(*TIME_SPLIT["validation"])
+    stream = month_range(*TIME_SPLIT["online_stream"])
+    assert history == month_range("2018-01", "2018-12")
+    assert train == month_range("2019-01", "2022-12")
+    assert validation == month_range("2023-01", "2023-12")
+    assert stream == month_range("2024-01", "2025-12")
+    assert len(stream) == 24
+    assert train[-1] == COVID_END
+    assert validation[0] > COVID_END
+    covered = history + train + validation + stream
+    assert covered == month_range("2018-01", "2025-12")
+    assert len(covered) == len(set(covered))
+
+    covid = set(month_range("2020-03", "2022-12"))
+    assert covid <= set(train)
+    assert covid.isdisjoint(validation)
+    assert covid.isdisjoint(history)
+    for month in month_range("2019-01", "2019-12"):
+        assert shift_year_month(month, 12) in history
