@@ -1,10 +1,12 @@
 # Can a leakage-safe model beat seasonal naive?
 
-Seasonal naive predicts `guest_lag_12`. This run asks whether another model beats it on WAPE. Hyperparameters and the winning configuration are chosen on 2023 only. 2024 is scored after that choice. 2025 uses a refit of the 2023 winner.
+Seasonal naive predicts `guest_lag_12`. Two selection protocols are recorded. Protocol A chooses on 2023 and keeps its 2024 score as the official test number. Protocol B, approved for the 2025 stream, trains through 2023 and chooses on 2024, then scores 2025 once.
 
 `python experiments/beat_seasonal_naive/run.py` rewrites the result files. It needs the packages in the repo plus LightGBM 4.7.0 (used here with scikit-learn 1.9.1).
 
-## Protocol
+`python experiments/beat_seasonal_naive/run.py protocol-b` writes the Protocol B files and does not rewrite `results.json`.
+
+## Protocol A
 
 | Role | Months | What happens |
 |---|---|---|
@@ -75,6 +77,54 @@ The lowest 2024 WAPE in the file was not selected. It is `rf|logdiff|ext|d10_lea
 
 16 of the 32 family winners beat 2024 seasonal naive. Ridge on the log targets with a small penalty produced WAPEs above 10 and was not selected.
 
+## Protocol B
+
+Train 2019-01 .. 2023-12. Select the variant, hyperparameters, and blend alpha by 2024 WAPE. Refit that configuration on 2019-01 .. 2024-12 and score 2025 once, frozen and monthly. The same 88 candidates and the same leakage rules are used. Rain anomaly and the scaler are fit inside each training window only. This does not replace the Protocol A 2024 test WAPE of `0.09206712099170007`.
+
+2024 seasonal naive on these rows is WAPE `0.11152113853639248`. The five lowest 2024 validation scores:
+
+| Rank | Config | Blend | Alpha | WAPE | MAE | RMSE | MASE |
+|---|---|---|---|---|---|---|---|
+| 1 | `rf\|logdiff\|ext\|d10_leaf3` | no | 1 | 0.06309623983770205 | 11909.480072755445 | 30604.439471250524 | 0.5657782969738241 |
+| 2 | `rf\|logdiff\|ext\|d16_leaf1` | no | 1 | 0.06508154453828106 | 12284.20837400939 | 31962.310653190427 | 0.583580345326578 |
+| 3 | `rf\|log1p\|ext\|d16_leaf1` | yes | 0.8 | 0.0653815986326132 | 12340.84389248702 | 30720.035601693125 | 0.5862709033523483 |
+| 4 | `rf\|ratio\|ext\|d6_leaf3` | yes | 0.45 | 0.06693726829371087 | 12634.478138779496 | 32952.18799982379 | 0.6002204530208177 |
+| 5 | `rf\|log1p\|ext\|d10_leaf3` | yes | 0.75 | 0.06731761270396523 | 12706.26853685012 | 31464.048700425774 | 0.6036309670744403 |
+
+The selected configuration is rank 1: random forest, log-difference target, extended features, depth 10, leaf 3. The 2024 blend search kept alpha at 1.
+
+| 2025 mode | WAPE | MAE | RMSE | MASE | Beats naive `0.05480419201387209` |
+|---|---|---|---|---|---|
+| Frozen | 0.04788460348726727 | 9136.952348350851 | 19797.47950344812 | 0.8737397948526759 | yes |
+| Monthly | 0.04829016837105007 | 9214.338955891064 | 20876.888872928965 | 0.8811400478055913 | yes |
+| Protocol A forest, frozen | 0.06274370496490428 | 11972.245788267925 | 31782.61704576488 | 1.1448705410896767 | no |
+| Protocol A forest, monthly | 0.05961592738032414 | 11375.428593067638 | 29015.019625879766 | 1.0877986735984373 | no |
+
+Frozen improves 49 of 77 provinces on total absolute error. Monthly improves 52 of 77. January frozen and monthly match, because both fits stop at 2024-12.
+
+Per-month 2025 WAPE, 77 provinces each month:
+
+| Month | Frozen | Monthly | Seasonal naive |
+|---|---|---|---|
+| 2025-01 | 0.04465073560535522 | 0.04465073560535522 | 0.06123703341180149 |
+| 2025-02 | 0.04441309846003542 | 0.04510397067773263 | 0.047233847282790585 |
+| 2025-03 | 0.06265644376239807 | 0.0656205981142112 | 0.059521535872140374 |
+| 2025-04 | 0.054964210995049445 | 0.05619193943182779 | 0.059211731559480604 |
+| 2025-05 | 0.02787143320060826 | 0.026717262521231827 | 0.056546329271376615 |
+| 2025-06 | 0.05793754937771296 | 0.05696375987088142 | 0.07776265108954325 |
+| 2025-07 | 0.06684951294370736 | 0.07332630544957626 | 0.04721169464766233 |
+| 2025-08 | 0.03972160096677285 | 0.03940751170359358 | 0.04930610533668116 |
+| 2025-09 | 0.054507494690251235 | 0.05410075985201961 | 0.06744558012965428 |
+| 2025-10 | 0.04860183947829597 | 0.046464523927117585 | 0.0452240276535178 |
+| 2025-11 | 0.03681032903200419 | 0.03750831765003393 | 0.044058379479706686 |
+| 2025-12 | 0.038371020768902774 | 0.036438883662675586 | 0.04532800304643122 |
+
+March, July, and October are months where the selected forecast loses to seasonal naive. July is the largest gap.
+
+Sanity check, not used for selection. The previous run's lowest 2024 score was this same forest blended at alpha 0.55, fit only through 2022-12. Refitting that blend on 2019-01 .. 2024-12 and scoring 2025 gives frozen WAPE `0.04411923949121837` (MAE `8418.476076217932`, RMSE `19650.787673023104`, MASE `0.8050340287847115`) and monthly WAPE `0.04456836631015275` (MAE `8504.174819532387`, RMSE `19986.708955633956`, MASE `0.8132291467570865`). Both beat seasonal naive. Protocol B did not select that alpha: with training extended through 2023, the unblended forest won 2024.
+
 ## Caveats
 
-2023 is a poor year for choosing a model that has to work in 2025. Lag 12 of 2023 is 2022, inside the COVID window, so seasonal naive looks much worse than it does in 2024 (lag 12 is 2023) or 2025 (lag 12 is 2024, WAPE `0.05480419201387209`). The selection rule therefore prefers a level forest over models that stay close to the lag. Training itself includes COVID months. 2024 and 2025 are one year each. The 2025 scores above are only the 2023 winner and the seasonal naive, not the configurations that scored better on 2024.
+2023 is a poor year for choosing a model that has to work in 2025. Lag 12 of 2023 is 2022, inside the COVID window, so seasonal naive looks much worse than it does in 2024 (lag 12 is 2023) or 2025 (lag 12 is 2024, WAPE `0.05480419201387209`). Protocol A therefore prefers a level forest over models that stay close to the lag. Training itself includes COVID months. 2024 and 2025 are one year each.
+
+Protocol B spends 2024 on selection, so that year is no longer an untouched test. The official untouched test number remains the Protocol A forest's 2024 WAPE, `0.09206712099170007`. Protocol B's 2025 result is one year, and three of the twelve months still lose to seasonal naive. The alpha-0.55 sanity score is lower still, and it was not the selected configuration.

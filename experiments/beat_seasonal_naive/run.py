@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -29,7 +30,7 @@ from src.model.leakage import (
     build_forecast_features,
     shift_year_month,
 )
-from src.stream.metrics import _block
+from src.stream.metrics import _block, wape
 
 HERE = Path(__file__).resolve().parent
 PANEL_PATH = ROOT / "data" / "model" / "province_month_unified.parquet"
@@ -583,5 +584,221 @@ def main() -> None:
                       "improved": payload["provinces_improved_2024"]}, indent=2), flush=True)
 
 
+def _prepare():
+    panel = pd.read_parquet(PANEL_PATH)
+    panel["province_id"] = panel["province_id"].astype(str).str.zfill(2)
+    table = build_feature_table(panel)
+    leakage_self_check(panel, table)
+    return table, _rain_history(panel), specs()
+
+
+def _rank_candidates(catalog, raw_scores, blend_scores, blend_choice):
+    """One row per raw model and per blend whose alpha is not 1."""
+    ranked = []
+    for spec in catalog:
+        ranked.append((raw_scores[spec.name]["wape"], False, spec.name, 1.0, raw_scores[spec.name]))
+        alpha = blend_choice[spec.name]
+        if alpha != 1.0:
+            ranked.append((blend_scores[spec.name]["wape"], True, spec.name, alpha, blend_scores[spec.name]))
+    ranked.sort(key=lambda item: (item[0], item[1], item[2]))
+    return ranked
+
+
+def _forecast_2025(table, history, spec: Spec, alpha: float, use_blend: bool):
+    """Refit on 2019-01..2024-12, then score 2025 frozen and month by month."""
+    stream_end = TIME_SPLIT["test"][1]
+    stream = table["year_month"].between(*TIME_SPLIT["online_stream"])
+    stream_table = table.loc[stream]
+    naive = stream_table["guest_lag_12"].to_numpy(dtype=float)
+    frozen_model = fit_spec(spec, table, matrix_for(table, history, spec.feature_set, stream_end), stream_end)
+    frozen = predict_split(frozen_model, table, history, stream)
+    if use_blend:
+        frozen = blend(frozen, naive, alpha)
+    monthly_parts = []
+    by_month = []
+    cursor = 0
+    for month in _months(*TIME_SPLIT["online_stream"]):
+        end = shift_year_month(month, 1)
+        model = fit_spec(spec, table, matrix_for(table, history, spec.feature_set, end), end)
+        mask = table["year_month"] == month
+        pred = predict_split(model, table, history, mask)
+        lag = table.loc[mask, "guest_lag_12"].to_numpy(dtype=float)
+        if use_blend:
+            pred = blend(pred, lag, alpha)
+        monthly_parts.append(pred)
+        part = table.loc[mask]
+        y = part["guest_arrivals_total"].to_numpy(dtype=float)
+        frozen_month = frozen[cursor:cursor + len(part)]
+        cursor += len(part)
+        by_month.append(
+            {
+                "year_month": month,
+                "n": int(len(part)),
+                "wape_frozen": wape(y, frozen_month),
+                "wape_monthly": wape(y, pred),
+                "wape_naive": wape(y, lag),
+            }
+        )
+    monthly = np.concatenate(monthly_parts)
+    if cursor != len(frozen):
+        raise RuntimeError("2025 month blocks do not cover the frozen prediction")
+    return stream_table, frozen, monthly, by_month
+
+
+def protocol_b() -> None:
+    """Train through 2023-12, select on 2024, score 2025 once.
+
+    Does not rewrite the Protocol A files. The 2024 score of the 2023-selected
+    forest remains the official test number in results.json.
+    """
+    print("PROTOCOL B load", flush=True)
+    table, history, catalog = _prepare()
+    train_end = TIME_SPLIT["validation"][1]
+    score_mask = table["year_month"].between(*TIME_SPLIT["test"])
+    score_table = table.loc[score_mask]
+    y = score_table["guest_arrivals_total"].to_numpy(dtype=float)
+    naive = score_table["guest_lag_12"].to_numpy(dtype=float)
+    matrices = {
+        feature_set: matrix_for(table, history, feature_set, train_end)
+        for feature_set in ("base", "ext")
+    }
+    raw_pred = {}
+    for index, spec in enumerate(catalog, start=1):
+        print(f"B FIT {index}/{len(catalog)} {spec.name}", flush=True)
+        model = fit_spec(spec, table, matrices[spec.feature_set], train_end)
+        raw_pred[spec.name] = model.predict(
+            matrices[spec.feature_set].loc[score_mask],
+            score_table["guest_lag_12"].to_numpy(dtype=float),
+        )
+    raw_scores = {name: score_frame(score_table, pred) for name, pred in raw_pred.items()}
+    groups: dict[tuple, list[str]] = {}
+    for spec in catalog:
+        groups.setdefault((spec.family, spec.target, spec.feature_set), []).append(spec.name)
+    selected_hyper = set()
+    for names in groups.values():
+        selected_hyper.add(min(names, key=lambda name: raw_scores[name]["wape"]))
+    blend_choice = {}
+    blend_pred = {}
+    blend_scores = {}
+    for spec in catalog:
+        alpha, _ = best_alpha(y, raw_pred[spec.name], naive)
+        blend_choice[spec.name] = alpha
+        blended = blend(raw_pred[spec.name], naive, alpha)
+        blend_pred[spec.name] = blended
+        blend_scores[spec.name] = score_frame(score_table, blended)
+    ranked = _rank_candidates(catalog, raw_scores, blend_scores, blend_choice)
+    selected_wape, selected_blend, selected_name, selected_alpha, _ = ranked[0]
+    selected_spec = next(spec for spec in catalog if spec.name == selected_name)
+    print("B SELECT", selected_name, "blend" if selected_blend else "raw", selected_alpha, selected_wape, flush=True)
+
+    rows = [record(None, "2024_validation", score_frame(score_table, naive), alpha=None,
+                   selected_overall=False, selected_hyperparams=False, blend=False, protocol="B")]
+    for spec in catalog:
+        rows.append(record(
+            spec, "2024_validation", raw_scores[spec.name], alpha=1.0,
+            selected_overall=spec.name == selected_name and not selected_blend,
+            selected_hyperparams=spec.name in selected_hyper, blend=False, protocol="B",
+        ))
+        if blend_choice[spec.name] != 1.0:
+            rows.append(record(
+                spec, "2024_validation", blend_scores[spec.name], alpha=blend_choice[spec.name],
+                selected_overall=spec.name == selected_name and selected_blend,
+                selected_hyperparams=False, blend=True, protocol="B",
+            ))
+
+    print("B 2025 selected", flush=True)
+    stream_table, frozen, monthly, by_month = _forecast_2025(
+        table, history, selected_spec, selected_alpha, selected_blend,
+    )
+    frozen_metrics = score_frame(stream_table, frozen)
+    monthly_metrics = score_frame(stream_table, monthly)
+    for split, metrics, pred in (
+        ("2025_frozen", frozen_metrics, frozen),
+        ("2025_monthly", monthly_metrics, monthly),
+    ):
+        rows.append(record(
+            selected_spec, split, metrics, alpha=selected_alpha,
+            selected_overall=True, selected_hyperparams=selected_spec.name in selected_hyper,
+            blend=selected_blend, protocol="B",
+        ))
+    provinces_frozen, _ = province_report(stream_table, frozen)
+    provinces_monthly, _ = province_report(stream_table, monthly)
+
+    sanity_name = "rf|logdiff|ext|d10_leaf3"
+    sanity_alpha = 0.55
+    sanity_same = selected_name == sanity_name and selected_blend and math.isclose(selected_alpha, sanity_alpha)
+    sanity = {"name": sanity_name, "blend": True, "alpha": sanity_alpha, "same_as_selected": sanity_same,
+              "label": "not used for selection; best 2024 score from the train-through-2022 grid"}
+    if not sanity_same:
+        print("B 2025 sanity", sanity_name, flush=True)
+        sanity_spec = next(spec for spec in catalog if spec.name == sanity_name)
+        _, sanity_frozen, sanity_monthly, sanity_months = _forecast_2025(
+            table, history, sanity_spec, sanity_alpha, True,
+        )
+        sanity["2025_frozen"] = score_frame(stream_table, sanity_frozen)
+        sanity["2025_monthly"] = score_frame(stream_table, sanity_monthly)
+        sanity["by_month"] = sanity_months
+        for split, pred in (("2025_frozen_sanity", sanity_frozen), ("2025_monthly_sanity", sanity_monthly)):
+            rows.append(record(
+                sanity_spec, split, score_frame(stream_table, pred), alpha=sanity_alpha,
+                selected_overall=False, selected_hyperparams=False, blend=True, protocol="B_sanity",
+            ))
+
+    protocol_a = json.loads((HERE / "results.json").read_text(encoding="utf-8"))
+    side_by_side = [
+        row for row in protocol_a["rows"]
+        if row["name"] == "rf|level|base|d10_leaf3" and row["split"] in {"2025_frozen", "2025_monthly"} and not row["blend"]
+    ]
+    payload = {
+        "protocol": "B",
+        "train": ["2019-01", "2023-12"],
+        "validation": ["2024-01", "2024-12"],
+        "refit_for_2025": ["2019-01", "2024-12"],
+        "stream": ["2025-01", "2025-12"],
+        "selection": "minimum 2024 WAPE among raw models and blends whose alpha is not 1; ties prefer the raw model, then the name",
+        "note": "Does not replace the Protocol A 2024 test score of the 2023-selected forest.",
+        "selected": {
+            "name": selected_name,
+            "blend": selected_blend,
+            "alpha": selected_alpha,
+            "validation_2024": next(item[4] for item in ranked if item[2] == selected_name and item[1] == selected_blend),
+            "2025_frozen": frozen_metrics,
+            "2025_monthly": monthly_metrics,
+        },
+        "top5_2024_validation": [
+            {"name": name, "blend": is_blend, "alpha": alpha, **metrics}
+            for _, is_blend, name, alpha, metrics in ranked[:5]
+        ],
+        "by_month_2025": by_month,
+        "provinces_improved_2025_frozen": int(provinces_frozen["improved"].sum()),
+        "provinces_improved_2025_monthly": int(provinces_monthly["improved"].sum()),
+        "provinces_scored_2025": int(len(provinces_monthly)),
+        "protocol_a_selected_rf_2025": side_by_side,
+        "sanity_previous_best_2024_config": sanity,
+        "rows": rows,
+    }
+    (HERE / "results_protocol_b.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    pd.DataFrame(rows).to_csv(HERE / "results_protocol_b.csv", index=False)
+    pd.DataFrame(by_month).to_csv(HERE / "monthly_2025_protocol_b.csv", index=False)
+    provinces_monthly.to_csv(HERE / "provinces_2025_monthly.csv", index=False)
+    provinces_frozen.to_csv(HERE / "provinces_2025_frozen.csv", index=False)
+    print(json.dumps({
+        "selected": payload["selected"]["name"],
+        "blend": selected_blend,
+        "alpha": selected_alpha,
+        "validation_wape": payload["selected"]["validation_2024"]["wape"],
+        "frozen_wape": frozen_metrics["wape"],
+        "monthly_wape": monthly_metrics["wape"],
+        "beats_frozen": frozen_metrics["beats_naive"],
+        "beats_monthly": monthly_metrics["beats_naive"],
+        "improved_monthly": payload["provinces_improved_2025_monthly"],
+        "improved_frozen": payload["provinces_improved_2025_frozen"],
+        "sanity_same": sanity_same,
+    }, indent=2), flush=True)
+
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "protocol-b":
+        protocol_b()
+    else:
+        main()
