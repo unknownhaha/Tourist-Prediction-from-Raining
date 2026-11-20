@@ -6,6 +6,8 @@ This is the **single source of truth** for monthly modeling (one row per provinc
 
 ตารางนี้เป็น**แหล่งข้อมูลหลัก**สำหรับโมเดลรายเดือน (1 แถวต่อจังหวัดต่อเดือน) ตัวแปรเป้าคือ **`guest_arrivals_total`** (ผู้เข้าพักแรม) ไม่มีคอลัมน์ `visitors_total`
 
+ก่อนสร้าง feature หรือเทรนโมเดล อ่าน [กฎ leakage](../../docs/feature_rules_for_modeling.md) (ภาษาไทย) ห้ามใช้ยอดไตรมาสที่ครอบเดือนที่กำลังทำนาย และ lag ใช้ข้อมูลถึงเดือนก่อนหน้าเท่านั้น
+
 Rebuild from the project root:
 
 ```

@@ -51,4 +51,4 @@ python -m src.ingest.mots_cleanup
 
 ## ไม่มี feature engineering
 
-ไปป์ไลน์นี้ไม่สร้าง lag, ค่าเฉลี่ยเคลื่อนที่ หรือฟีเจอร์โมเดล
+ไปป์ไลน์นี้ไม่สร้าง lag, ค่าเฉลี่ยเคลื่อนที่ หรือฟีเจอร์โมเดล ให้สร้างเองตาม [กฎ feature](../feature_rules_for_modeling.md) lag และ rolling จบที่เดือนก่อนหน้า และยอดไตรมาสที่ครอบเดือนที่ทำนายคือ leakage

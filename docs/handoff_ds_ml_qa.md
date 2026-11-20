@@ -51,4 +51,4 @@ You own the duplicate-month rule, the 2025-12 window, whether resort rows gain a
 
 ## No feature engineering
 
-This pipeline does not add lags, rolling means, or model features.
+This pipeline does not add lags, rolling means, or model features. Build those under [feature rules](feature_rules_for_modeling.md) (Thai): lags and rolling windows end at month t−1, and a quarter total that contains t is leakage.

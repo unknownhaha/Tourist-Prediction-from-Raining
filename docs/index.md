@@ -7,7 +7,7 @@ Province × month datasets (**2018-01** through **2025-12** CE) combining HII ra
 | Role | Start here |
 |------|------------|
 | Pipeline operator | [Operator runbook](pipeline_operators.md) |
-| Data science / ML | [National picture](national_picture.md) then [handoff](handoff_ds_ml_qa.md) and [Data dictionary](data_dictionary.md) |
+| Data science / ML | [Feature rules](feature_rules_for_modeling.md) (Thai) then [National picture](national_picture.md), [handoff](handoff_ds_ml_qa.md), and [Data dictionary](data_dictionary.md) |
 | QA / analyst | [Handoff](handoff_ds_ml_qa.md) plus [Coverage report](coverage_report.md) |
 | Stakeholder / PM | [National picture](national_picture.md) (chart) |
 
@@ -21,7 +21,8 @@ python -m src.docs.build_site
 
 ## Quick reference
 
-- **Modeling table:** `data/core/province_month.parquet`
+- **Modeling table:** `data/model/province_month_unified.parquet` — feature rules: [feature_rules_for_modeling.md](feature_rules_for_modeling.md)
+- **Pipeline table:** `data/core/province_month.parquet`
 - **Run order:** see [Operator runbook](pipeline_operators.md) or [README](../README.md)
 - **Contracts:** `config/data_contracts.yaml`
 - **Sources & dates:** `config/sources.yaml`
