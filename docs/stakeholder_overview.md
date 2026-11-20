@@ -12,7 +12,7 @@ This project builds a **province-by-month** dataset for analyzing tourism and ra
 
 ## The main deliverable for modeling
 
-**`province_month.parquet`** is a complete grid: every province × every month in the window (**2018-01** to **2025-08**), with columns for rainfall, two tourism measures where available, and a COVID-era flag.
+**`data/model/province_month_unified.parquet`** is the modeling table: every province × every month in the window (**2018-01** to **2025-12**, 77 × 96). The target is `guest_arrivals_total`. The pipeline table **`data/core/province_month.parquet`** covers the same window and still carries rainfall, two tourism measures where available, and a COVID-era flag.
 
 - **`guest_arrivals`** — from MOTS domestic quarterly workbooks, spread to months where the pipeline can parse them; coverage is strong across the window when sources publish.
 - **`visitors_total`** — from MOTS monthly province reports; typically populated from **2023-01** onward (see the live [Coverage report](coverage_report.md)).

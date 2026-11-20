@@ -13,7 +13,8 @@ roles:
     title: Data science / ML
     start_page: national
     brief: >
-      Start modeling from province_month.parquet (77 × 92 spine). Use the long table
+      Start modeling from data/model/province_month_unified.parquet (77 × 96 spine,
+      target guest_arrivals_total). Use the long table
       for custom metrics; this pipeline does not build model features.
   qa:
     title: QA / analyst

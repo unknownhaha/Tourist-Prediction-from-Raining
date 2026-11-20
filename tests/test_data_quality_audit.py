@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import pandas as pd
+
 import pytest
 
 from src.common.paths import CORE
@@ -67,7 +69,8 @@ def test_audit_flags_structural_gaps_without_rewriting_data(tmp_path: Path):
 
     leakage = _finding(report, "leakage_same_month_features")
     assert leakage.severity == "high"
-    assert "7084 rows" in leakage.count
+    n_rows = len(pd.read_parquet(province_month))
+    assert f"{n_rows} rows" in leakage.count
     imbalance = _finding(report, "coverage_imbalance_volume")
     assert imbalance.file_path == "data/core/province_month.parquet"
     assert "กรุงเทพมหานคร" in imbalance.count or "19." in imbalance.count

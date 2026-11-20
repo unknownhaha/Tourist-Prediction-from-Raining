@@ -46,7 +46,7 @@ roles:
     brief: Install dependencies, run ingest → staging → core → QA, and know when to rerun only part of the pipeline after downloads or config changes.
   ds_ml:
     title: Data science / ML
-    brief: Start modeling from province_month.parquet (77 × 92 spine). Use the long table for custom metrics; this pipeline does not build model features.
+    brief: Start modeling from data/model/province_month_unified.parquet (77 × 96 spine, target guest_arrivals_total). Use the long table for custom metrics; this pipeline does not build model features.
   qa:
     title: QA / analyst
     brief: Run automated checks and pytest, interpret coverage and manifest status, and review MOTS quarantine CSVs when numbers look low.
