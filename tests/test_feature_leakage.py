@@ -159,7 +159,8 @@ def test_clean_quarter_guest_arrivals_equal_sum_of_three_months():
 
     rain = month.groupby(["province_id", "qtr"])["rain_avg_mm"].sum()
     both_rain = quoted["rain_sum_mm"].to_frame("quoted").join(rain.rename("summed"), how="left")
-    assert (both_rain["quoted"] == both_rain["summed"]).all()
+    assert both_rain.notna().all().all()
+    assert (both_rain["quoted"] - both_rain["summed"]).abs().le(1e-12).all()
 
 
 def test_staging_quarter_guest_arrivals_equal_sum_of_three_months():

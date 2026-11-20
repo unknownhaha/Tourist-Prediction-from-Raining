@@ -154,7 +154,7 @@ def test_year_month_parts_and_csv_roundtrip(unified):
     assert (unified["month"] == unified["year_month"].str.slice(5, 7).astype(int)).all()
     csv_path = OUT / "province_month_unified.csv"
     assert csv_path.exists()
-    csv = pd.read_csv(csv_path, encoding="utf-8-sig", dtype={"province_id": str})
+    csv = pd.read_csv(csv_path, encoding="utf-8-sig", dtype={"province_id": str}, float_precision="round_trip")
     assert len(csv) == len(unified)
     assert (csv["province_id"] == unified["province_id"]).all()
     # 2018 splits stay empty in the CSV as well.
