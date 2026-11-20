@@ -285,7 +285,20 @@ DS / MLE เป็นเจ้าของตัวเลือกและเ�
 | input | PSI | การกระจายของฝนและ lag เทียบ reference |
 | input | KS | การกระจายเดียวกันแบบสองตัวอย่าง |
 
-Retrain ยังเป็นทางเลือกของทีม: refit ถึงเดือน `t` หลังเปิด `y_t` แล้ว, หรือ `partial_fit` ต่อ, หรือบันทึกธงอย่างเดียว ทุกทางเกิดหลัง lineage ของเดือนนั้น `model_version` ของเดือนถัดไปจึงเปลี่ยนได้ สายมี 12 จุด ตัวตรวจที่ไวเกินจะติดฤดูเดียว รายงานต้องโชว์จำนวนครั้งที่เตือน
+### Champion / Challenger
+
+การตัดสินของ data engineer วันที่ **2026-11-20** ตามแนว [ML Drift Teaching Lab](https://warin.me/Courses/Data-Science-and-Engineering/ml-drift-lab/?lang=th) โมเดลออนไลน์ยัง `learn` ทีละเดือนตลอดสาย 2025 ตามที่ออกแบบไว้ เมื่อตัวตรวจ drift เตือน ทีมจึงฝึกโมเดล Challenger หลายตัวแล้วเทียบกับ Champion ปัจจุบัน เลื่อนขั้นเฉพาะตัวที่ดีที่สุด
+
+แล็บต้นทางเป็นงานจำแนก: ตรวจ feature drift ด้วย PSI เทียบ reference แบบ Seasonal-2Y ร่วมกับตัวกระตุ้นด้านผลงาน และย้ำว่า accuracy อย่างเดียวไม่พอ เมื่อถูกกระตุ้นจะฝึก 7 หน้าต่าง (Expanding, Recent 3M, Rolling 6M, Rolling 12M, Tumbling 3M, Seasonal-2Y, Hybrid) แล้ว promote ก็ต่อเมื่อผ่าน guardrail (ΔF1 ≥ +0.02, Balanced Accuracy ลดไม่เกิน 0.010, และมี positive อย่างน้อย 100) การปรับของโปรเจกต์นี้เป็น regression จึงใช้ **WAPE** เป็นตัวเทียบหลัก และใช้ MAE, RMSE, MASE เป็น guardrail ข้อมูลเป็นรายเดือน 77 จังหวัดต่อเดือน reference set คือ **2023-01 .. 2024-12** (`2023-2024-v1`) ไม่ใช่ Seasonal-2Y
+
+ลำดับเมื่อ alarm ดัง เป็นแบบยังไม่ลงโค้ด:
+
+1. Champion ปัจจุบันยังเป็นตัวที่ `predict` / `learn` อยู่จนถึงเดือนที่เตือน
+2. สร้าง Challenger จาก `features/<YYYY-MM>.parquet` รายเดือนและจาก reference set
+3. ให้คะแนนเทียบ Champion ด้วย WAPE บนเดือนประเมินที่ตกลงกัน
+4. Promote เฉพาะเมื่อชนะตามระยะที่ตกลง แล้วบันทึกการตัดสินใจใน lineage (`model_version` ของเดือนถัดไปจึงเปลี่ยน)
+
+ของที่ data engineer มีให้แล้วคือแถว error, ไฟล์ feature รายเดือน, reference set `2023-2024-v1`, hook `update_errors` / `update_features`, และช่อง lineage สำหรับรุ่นโมเดล DS/MLE ยังเป็นเจ้าของว่าจะฝึกหน้าต่างใด เกณฑ์เลื่อนขั้น (WAPE ต้องดีกว่า Champion เท่าไร, guardrail ของ metric อื่น, จำนวนเดือนประเมินขั้นต่ำ) การ rollback / version ของ artifact ที่ถูก promote และว่าจะรีเฟรช reference set หลัง promote หรือไม่ alarm เองยังไม่เขียนทับ reference set สายมี 12 จุด ตัวตรวจที่ไวเกินจะติดฤดูเดียว รายงานต้องโชว์จำนวนครั้งที่เตือน
 
 ## 15. ความคงที่ของการรันซ้ำ
 
@@ -358,7 +371,7 @@ python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --model-pa
 
 1. **โมเดลออนไลน์จริง** แทน baseline seasonal naive (`guest_lag_12`, WAPE ปี 2025 = 5.48%, MASE = 1 เพราะตัวมันคือ seasonal naive) ต้องมี `predict` และ `learn` ตาม `OnlineModel` ใน `src/stream/model.py` รวม learning rate และกฎอัปเดต `--model online-linear` เป็นตัวอย่างการต่อสายเท่านั้น ไม่ใช่โมเดลที่จูนแล้ว
 2. **ตัวตรวจ drift และ threshold** เลือก Page-Hinkley, ADWIN, หรือ DDM บน error และ PSI หรือ KS บน input (`rain_lag_1`, `rain_roll3`, `guest_lag_1`, `guest_lag_12`) เทียบ reference set 2023-01..2024-12 ค่า Page-Hinkley ที่มากับโค้ดคือ `delta=0.01` และ `threshold=0.5` บน WAPE รายเดือน ค่านี้เตือนไม่ได้เมื่อ WAPE อยู่ราว 0.05 `--drift page-hinkley` เป็นตัวอย่างเท่านั้น และไม่ retrain
-3. **เมื่อ alarm ดัง** จะบันทึกอย่างเดียว หรือ retrain และถ้า retrain ใช้หน้าต่างใด alarm ห้ามรีเฟรช reference set เอง ต้องบอกว่าเมื่อไรการ retrain ที่ยืนยันแล้วจึงตัด reference รุ่นใหม่ได้
+3. **รายละเอียด Champion/Challenger** แนวตอบตัดสินแล้ววันที่ 2026-11-20: สายยัง `learn` ทีละเดือน เมื่อตัวตรวจเตือนจึงฝึก Challenger แล้ว promote เฉพาะตัวที่ชนะ Champion ตาม [ML Drift Teaching Lab](https://warin.me/Courses/Data-Science-and-Engineering/ml-drift-lab/?lang=th) แล็บใช้ PSI กับ Seasonal-2Y และตัวกระตุ้นผลงาน (accuracy อย่างเดียวไม่พอ) แล้วฝึก 7 หน้าต่างก่อน promote เมื่อ ΔF1 ≥ +0.02, Balanced Accuracy ลดไม่เกิน 0.010 และมี positive ≥ 100 ของเราใช้ WAPE เป็นตัวเทียบหลัก มี MAE/RMSE/MASE เป็น guardrail และ reference คือ `2023-2024-v1` DS/MLE ยังกำหนด (a) หน้าต่างฝึกของ Challenger (b) เกณฑ์เลื่อนขั้น รวมระยะ WAPE ที่ต้องดีกว่า Champion, guardrail, และจำนวนเดือนประเมินขั้นต่ำ (c) rollback และการเก็บ version (d) จะรีเฟรช reference set หลัง promote หรือไม่ alarm ห้ามรีเฟรชไฟล์นี้เอง
 4. **การทำ warm start** ลำดับตัดสินแล้วและยังต้องลงมือทำ: บันทึก baseline test ปี 2024 จากโมเดลที่เทรน 2019-01..2022-12 ด้วย hyperparameter ที่เลือกจาก 2023 จากนั้น refit configuration เดิมบน 2019-01..2024-12 โดยไม่จูนเพิ่ม แล้วใช้ตัวนั้นเริ่มสาย 2025 เทียบ metric สายกับ baseline ปี 2024
 5. **เป้าที่ยอมรับ** โมเดลจริงต้องดีกว่า WAPE 5.48% ของ seasonal naive บนปี 2025 แค่ไหน ทั้งรวมและรายจังหวัด ก่อนจะแทน baseline
 6. **ฝนเดือนเดียวกันและโควิด** จะอนุญาต nowcast ที่ใช้ฝนเดือน `t` หรือไม่ ตัวป้อนตอนนี้เป็น forecast (ฝนถึง `t-1`) การเทรนที่ตัดสินแล้วเก็บ 2020-03..2022-12 และใช้ `is_covid` น้ำหนักหรือการตัดแถวแบบอื่นยังเป็นทางเลือกของ DS/MLE และต้องคำนวณ lag ก่อนตัดแถว
