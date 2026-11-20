@@ -352,12 +352,34 @@ python -m src.stream.replay --start 2025-01 --end 2025-12 --seed 2025 --model-pa
 - `--start` / `--end` ที่ไม่ใช่ 2025-01 .. 2025-12 ถูกปฏิเสธ
 - WAPE ตรงสูตร และรายงานไม่มี MAPE เป็นตัวหลัก
 
+## Decisions owned by DS/MLE (before going live)
+
+สรุปภาษาไทย: ก่อนขึ้นระบบจริง DS/MLE ต้องตัดสินหกข้อนี้ data engineer ไม่ได้เลือกไว้ในโค้ด
+
+1. **โมเดลออนไลน์จริง** แทน baseline seasonal naive (`guest_lag_12`, WAPE ปี 2025 = 5.48%, MASE = 1 เพราะตัวมันคือ seasonal naive) ต้องมี `predict` และ `learn` ตาม `OnlineModel` ใน `src/stream/model.py` รวม learning rate และกฎอัปเดต `--model online-linear` เป็นตัวอย่างการต่อสายเท่านั้น ไม่ใช่โมเดลที่จูนแล้ว
+2. **ตัวตรวจ drift และ threshold** เลือก Page-Hinkley, ADWIN, หรือ DDM บน error และ PSI หรือ KS บน input (`rain_lag_1`, `rain_roll3`, `guest_lag_1`, `guest_lag_12`) เทียบ reference set 2023-01..2024-12 ค่า Page-Hinkley ที่มากับโค้ดคือ `delta=0.01` และ `threshold=0.5` บน WAPE รายเดือน ค่านี้เตือนไม่ได้เมื่อ WAPE อยู่ราว 0.05 `--drift page-hinkley` เป็นตัวอย่างเท่านั้น และไม่ retrain
+3. **เมื่อ alarm ดัง** จะบันทึกอย่างเดียว หรือ retrain และถ้า retrain ใช้หน้าต่างใด alarm ห้ามรีเฟรช reference set เอง ต้องบอกว่าเมื่อไรการ retrain ที่ยืนยันแล้วจึงตัด reference รุ่นใหม่ได้
+4. **การทำ warm start** ลำดับตัดสินแล้วและยังต้องลงมือทำ: บันทึก baseline test ปี 2024 จากโมเดลที่เทรน 2019-01..2022-12 ด้วย hyperparameter ที่เลือกจาก 2023 จากนั้น refit configuration เดิมบน 2019-01..2024-12 โดยไม่จูนเพิ่ม แล้วใช้ตัวนั้นเริ่มสาย 2025 เทียบ metric สายกับ baseline ปี 2024
+5. **เป้าที่ยอมรับ** โมเดลจริงต้องดีกว่า WAPE 5.48% ของ seasonal naive บนปี 2025 แค่ไหน ทั้งรวมและรายจังหวัด ก่อนจะแทน baseline
+6. **ฝนเดือนเดียวกันและโควิด** จะอนุญาต nowcast ที่ใช้ฝนเดือน `t` หรือไม่ ตัวป้อนตอนนี้เป็น forecast (ฝนถึง `t-1`) การเทรนที่ตัดสินแล้วเก็บ 2020-03..2022-12 และใช้ `is_covid` น้ำหนักหรือการตัดแถวแบบอื่นยังเป็นทางเลือกของ DS/MLE และต้องคำนวณ lag ก่อนตัดแถว
+
+**ของที่ data engineer มีให้แล้ว** อย่าสร้างซ้ำถ้าสัญญายังไม่เปลี่ยน
+
+- validate รวมประวัติ lag 2024-01..2024-12 แล้ว clean แล้ว re-validate การหยุดเขียน DQ กับ lineage ของเดือนที่ล้ม และไม่เขียน predictions หรือ metrics
+- รายงาน DQ ที่ `<output-dir>/dq/`
+- clean ที่บันทึกทุกการเปลี่ยน ไม่แก้ค่า target ฝน null เติมได้เฉพาะเดือนเดียวกันจาก staging
+- ตาราง feature `<output-dir>/features/<YYYY-MM>.parquet` สร้างจากข้อมูลถึง `t-1` และมี `feature_table_hash` ใน lineage
+- reference set `<output-dir>/reference_2023_2024.parquet` กับ `reference_2023_2024_stats.json` (1,848 แถว, 2023-01..2024-12, ไม่รวมโควิด, version `2023-2024-v1`)
+- lineage `<output-dir>/lineage/<YYYY-MM>.json`
+- metric: WAPE, MAE, RMSE, MASE เทียบ seasonal naive บนเดือนเดียวกันนอกตัวอย่าง ทั้งรวมและรายจังหวัด และ WAPE หน้าต่าง 3 เดือน
+- สัญญา `predict` / `learn` และ baseline seasonal naive ที่รันสายได้ครบ
+
+โฟลเดอร์เริ่มต้นคือ `outputs/stream_2025/` และถูก gitignore
+
 ## 19. คำถามที่ยังเปิด
 
 ตัดสินแล้วและไม่อยู่ในรายการนี้: warm start (หัวข้อ 4), ไม่สุ่มตัวอย่าง (หัวข้อ 11), เดือนหายให้ halt (หัวข้อ 12), หน้าต่าง reference (หัวข้อ 13), hard fail กับ warn (หัวข้อ 8–9)
 
-1. DS / MLE เลือก ADWIN, Page-Hinkley, DDM, PSI, KS และ threshold เอง DE ไม่เลือกให้
-2. Retrain ระหว่างสายเป็น refit ทั้งก้อน, `partial_fit` หรือบันทึกธงอย่างเดียว
-3. พาธไฟล์โมเดลและเจ้าของสตริง `model_version`
-4. ฝนเดือนเดียวกันยังเป็น nowcast ที่ยังไม่ตัดสิน สายนี้สมมติว่าเป็น forecast
-5. ต้องเขียน prediction log เป็น CSV สำหรับ Excel นอกจาก parquet หรือไม่
+โมเดลจริง ตัวตรวจ drift ผลของ alarm การรีเฟรช reference เป้าเทียบ WAPE 5.48% ฝนเดือนเดียวกัน และโควิด อยู่ในหัวข้อ **Decisions owned by DS/MLE (before going live)** ไม่ใช่รายการที่ data engineer เลือกเอง
+
+เหลือคำถามฝั่งการส่งไฟล์: ต้องเขียน prediction log เป็น CSV สำหรับ Excel นอกจาก parquet หรือไม่ ตัวป้อนเขียนทั้ง parquet และ CSV อยู่แล้ว
