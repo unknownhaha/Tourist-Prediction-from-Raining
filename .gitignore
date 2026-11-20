@@ -8,3 +8,7 @@ venv/
 *.rar
 playwright-report/
 test-results/
+outputs/stream_2025/
+data/stream/snapshots/
+data/stream/lineage/
+reports/stream_dq/

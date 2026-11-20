@@ -260,21 +260,31 @@ def test_time_split_boundaries_match_the_doc():
     history = month_range(*TIME_SPLIT["lag_history"])
     train = month_range(*TIME_SPLIT["train"])
     validation = month_range(*TIME_SPLIT["validation"])
+    held_out = month_range(*TIME_SPLIT["test"])
     stream = month_range(*TIME_SPLIT["online_stream"])
     assert history == month_range("2018-01", "2018-12")
     assert train == month_range("2019-01", "2022-12")
     assert validation == month_range("2023-01", "2023-12")
-    assert stream == month_range("2024-01", "2025-12")
-    assert len(stream) == 24
+    assert held_out == month_range("2024-01", "2024-12")
+    assert stream == month_range("2025-01", "2025-12")
+    assert len(held_out) == 12
+    assert len(stream) == 12
     assert train[-1] == COVID_END
     assert validation[0] > COVID_END
-    covered = history + train + validation + stream
+    assert held_out[0] > validation[-1]
+    covered = history + train + validation + held_out + stream
     assert covered == month_range("2018-01", "2025-12")
     assert len(covered) == len(set(covered))
 
     covid = set(month_range("2020-03", "2022-12"))
     assert covid <= set(train)
     assert covid.isdisjoint(validation)
+    assert covid.isdisjoint(held_out)
+    assert covid.isdisjoint(stream)
     assert covid.isdisjoint(history)
     for month in month_range("2019-01", "2019-12"):
         assert shift_year_month(month, 12) in history
+    for month in stream:
+        lag12 = shift_year_month(month, 12)
+        assert lag12 in held_out
+        assert lag12 > COVID_END
