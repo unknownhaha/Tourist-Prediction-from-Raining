@@ -1,0 +1,28 @@
+{
+  "status": "team proposal, not a final decision",
+  "champion": "rf|logdiff|ext|d10_leaf3",
+  "challengers": [
+    "logdiff_expanding",
+    "logdiff_12m",
+    "logdiff_seasonal_2y",
+    "yoy3_expanding"
+  ],
+  "promotion_preset": "margin_0005_confirm_2",
+  "psi_reference": "seasonal_2y",
+  "refresh_reference_after_promotion": false,
+  "rain": "lagged only: rain_lag_1 and rain_roll3 through t-1; no same-month nowcast",
+  "covid_flags": ["is_covid", "is_covid_lag12"],
+  "rollback_months": 2,
+  "adwin_delta": 0.002,
+  "psi_gate_months": 2,
+  "trigger_modes_under_primary": [
+    "psi",
+    "adwin",
+    "psi_or_adwin",
+    "psi_and_adwin",
+    "psi_gated"
+  ],
+  "comparison_presets": ["margin_001_confirm_2"],
+  "comparison_references": ["fixed_2023_2024"],
+  "comparison_refresh": [true]
+}

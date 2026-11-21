@@ -1,0 +1,4185 @@
+{
+  "primary": {
+    "status": "team proposal, not a final decision",
+    "champion": "rf|logdiff|ext|d10_leaf3",
+    "challengers": [
+      "logdiff_expanding",
+      "logdiff_12m",
+      "logdiff_seasonal_2y",
+      "yoy3_expanding"
+    ],
+    "promotion_preset": "margin_0005_confirm_2",
+    "psi_reference": "seasonal_2y",
+    "refresh_reference_after_promotion": false,
+    "rain": "lagged only: rain_lag_1 and rain_roll3 through t-1; no same-month nowcast",
+    "covid_flags": [
+      "is_covid",
+      "is_covid_lag12"
+    ],
+    "rollback_months": 2,
+    "adwin_delta": 0.002,
+    "psi_gate_months": 2,
+    "trigger_modes_under_primary": [
+      "psi",
+      "adwin",
+      "psi_or_adwin",
+      "psi_and_adwin",
+      "psi_gated"
+    ],
+    "comparison_presets": [
+      "margin_001_confirm_2"
+    ],
+    "comparison_references": [
+      "fixed_2023_2024"
+    ],
+    "comparison_refresh": [
+      true
+    ]
+  },
+  "delta": 0.002,
+  "gate_months": 2,
+  "rollback_months": 2,
+  "adwin": "local Bifet-Gavalda cut; river is not installed",
+  "adwin_input": "per-province absolute error of the served forecast, in province_id order",
+  "seasonal_2y_matches_fixed_2023_2024_alerts": true,
+  "validation_warnings": 2,
+  "dq_overall": 0.923205266955267,
+  "runs": [
+    {
+      "role": "primary",
+      "config": "primary|psi|seasonal_2y|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "primary",
+      "config": "primary|adwin|seasonal_2y|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "primary",
+      "config": "primary|psi_or_adwin|seasonal_2y|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "primary",
+      "config": "primary|psi_and_adwin|seasonal_2y|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "primary",
+      "config": "primary|psi_gated|seasonal_2y|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|seasonal_2y|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|seasonal_2y|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|seasonal_2y|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|fixed_2023_2024|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|fixed_2023_2024|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|fixed_2023_2024|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi|fixed_2023_2024|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|seasonal_2y|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|seasonal_2y|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|seasonal_2y|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|fixed_2023_2024|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|fixed_2023_2024|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|fixed_2023_2024|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|adwin|fixed_2023_2024|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|seasonal_2y|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|seasonal_2y|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|seasonal_2y|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|fixed_2023_2024|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|fixed_2023_2024|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|fixed_2023_2024|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_or_adwin|fixed_2023_2024|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi_or_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 12,
+      "alerts": [
+        {
+          "month": "2025-01",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-10",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-11",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|seasonal_2y|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|seasonal_2y|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|seasonal_2y|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|fixed_2023_2024|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|fixed_2023_2024|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|fixed_2023_2024|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_and_adwin|fixed_2023_2024|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi_and_adwin",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 7,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|seasonal_2y|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "seasonal_2y",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|seasonal_2y|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|seasonal_2y|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "seasonal_2y",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|fixed_2023_2024|refresh=0|margin_0005_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|fixed_2023_2024|refresh=0|margin_001_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "fixed_2023_2024",
+      "refresh": false,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|fixed_2023_2024|refresh=1|margin_0005_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_0005_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    },
+    {
+      "role": "comparison",
+      "config": "comparison|psi_gated|fixed_2023_2024|refresh=1|margin_001_confirm_2",
+      "trigger_mode": "psi_gated",
+      "reference": "fixed_2023_2024",
+      "refresh": true,
+      "preset": "margin_001_confirm_2",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "below_naive": true,
+      "n_alerts": 9,
+      "alerts": [
+        {
+          "month": "2025-02",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-04",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-05",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-09",
+          "psi": false,
+          "adwin": true,
+          "features": []
+        },
+        {
+          "month": "2025-12",
+          "psi": true,
+          "adwin": true,
+          "features": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "n_promotions": 0,
+      "promotions": [],
+      "n_rollbacks": 0,
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "logdiff_expanding@2024-12",
+          "trained_through": "2024-12",
+          "effective_from": "2025-01",
+          "rolled_back": false
+        }
+      ]
+    }
+  ]
+}
