@@ -1,0 +1,2784 @@
+{
+  "protocol": {
+    "targets": {
+      "2023": "frozen train 2019-01..2022-12",
+      "2024": "frozen train 2019-01..2023-12",
+      "2025": "frozen train 2019-01..2024-12 (recomputed check)"
+    },
+    "monthly": "expanding refit from 2019-01 through t-1",
+    "specs": {
+      "rf_logdiff": "rf|logdiff|ext|d10_leaf3",
+      "rf_level": "rf|level|base|d10_leaf3",
+      "rf_logdiff_yoy3": "rf|logdiff|ext|d10_leaf3 + yoy_3m_log"
+    },
+    "note_2024": "2024 was the selection year for rf_logdiff (Protocol B), so its 2024 score is optimistic."
+  },
+  "known_2025": {
+    "rf_logdiff": {
+      "frozen": 0.04788460348726727,
+      "monthly": 0.04829016837105007
+    },
+    "seasonal_naive": {
+      "frozen": 0.05480419201387209,
+      "monthly": 0.05480419201387209
+    },
+    "rf_level": {
+      "frozen": "about 0.0627",
+      "monthly": "about 0.0596"
+    },
+    "rf_logdiff_yoy3": {
+      "frozen": "0.0469",
+      "monthly": "0.0470"
+    }
+  },
+  "validation": {
+    "n_warnings": 2,
+    "n_hard": 0
+  },
+  "dq_scores": {
+    "completeness": 1.0,
+    "accuracy": 0.5392316017316017,
+    "consistency": 1.0,
+    "uniqueness": 1.0,
+    "timeliness": 1.0,
+    "validity": 1.0,
+    "overall": 0.923205266955267
+  },
+  "results": [
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "wape": 0.2576518581770193,
+      "mae": 43880.40326640175,
+      "rmse": 127412.07260467489,
+      "mase": 0.7875521732292119,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": true,
+      "bias": 0.16254514592535085,
+      "provinces_beating_naive": 37,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "wape": 0.19966991334615072,
+      "mae": 34005.56231105054,
+      "rmse": 107191.30307271762,
+      "mase": 0.6103215218273751,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": true,
+      "bias": 0.06881410425139145,
+      "provinces_beating_naive": 42,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "wape": 0.08568127995763093,
+      "mae": 14592.284113624344,
+      "rmse": 43643.08777079416,
+      "mase": 0.26189789087153326,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": true,
+      "bias": -0.043318175208338805,
+      "provinces_beating_naive": 75,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "wape": 0.07488332904130364,
+      "mae": 12753.297024566684,
+      "rmse": 39752.29530653483,
+      "mase": 0.22889230818043815,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": true,
+      "bias": -0.03356975532904194,
+      "provinces_beating_naive": 75,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "wape": 0.27203115992518256,
+      "mae": 46329.32625831425,
+      "rmse": 132847.27071163166,
+      "mase": 0.8315047005713752,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": true,
+      "bias": 0.18277298241369366,
+      "provinces_beating_naive": 35,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "wape": 0.2023774264489737,
+      "mae": 34466.675875848945,
+      "rmse": 107506.1584220039,
+      "mase": 0.6185974482781356,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": true,
+      "bias": 0.07260263891645757,
+      "provinces_beating_naive": 42,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "wape": 0.32715528816404066,
+      "mae": 55717.455627705625,
+      "rmse": 170728.72135881853,
+      "mase": 1.0,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": false,
+      "bias": -0.3244785501444889,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "wape": 0.32715528816404066,
+      "mae": 55717.455627705625,
+      "rmse": 170728.72135881853,
+      "mase": 1.0,
+      "n": 924,
+      "naive_wape": 0.32715528816404066,
+      "beats_naive": false,
+      "bias": -0.3244785501444889,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2022-12"
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "wape": 0.06309623983770205,
+      "mae": 11909.480072755445,
+      "rmse": 30604.439471250524,
+      "mase": 0.5657782969738241,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true,
+      "bias": -0.028810598975319235,
+      "provinces_beating_naive": 55,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "wape": 0.05936084069568007,
+      "mae": 11204.41964823366,
+      "rmse": 30295.865257899422,
+      "mase": 0.5322833094670115,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true,
+      "bias": -0.01894312147187527,
+      "provinces_beating_naive": 56,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "wape": 0.08539658822314179,
+      "mae": 16118.693734219987,
+      "rmse": 49962.8181275593,
+      "mase": 0.7657435114444647,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true,
+      "bias": -0.03751568673781869,
+      "provinces_beating_naive": 53,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "wape": 0.06997717936881007,
+      "mae": 13208.26447636422,
+      "rmse": 36532.141887275524,
+      "mase": 0.6274790617024999,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true,
+      "bias": -0.0328864684091974,
+      "provinces_beating_naive": 54,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "wape": 0.06110595456851978,
+      "mae": 11533.811684062313,
+      "rmse": 28639.32229331421,
+      "mase": 0.5479315883112078,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true,
+      "bias": -0.026209931529612707,
+      "provinces_beating_naive": 58,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "wape": 0.05673949703156872,
+      "mae": 10709.63833936518,
+      "rmse": 28137.49816337561,
+      "mase": 0.5087779570422251,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true,
+      "bias": -0.014946203096334543,
+      "provinces_beating_naive": 58,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "wape": 0.11152113853639248,
+      "mae": 21049.72943722944,
+      "rmse": 56692.98828924528,
+      "mase": 1.0,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": false,
+      "bias": -0.09770612813213153,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "wape": 0.11152113853639248,
+      "mae": 21049.72943722944,
+      "rmse": 56692.98828924528,
+      "mase": 1.0,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": false,
+      "bias": -0.09770612813213153,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2023-12"
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "wape": 0.04788460348726727,
+      "mae": 9136.952348350851,
+      "rmse": 19797.47950344812,
+      "mase": 0.8737397948526759,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": true,
+      "bias": 0.0007047596632296926,
+      "provinces_beating_naive": 49,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "wape": 0.04829016837105007,
+      "mae": 9214.338955891064,
+      "rmse": 20876.888872928965,
+      "mase": 0.8811400478055913,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": true,
+      "bias": 0.0014497808110907062,
+      "provinces_beating_naive": 52,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "wape": 0.06274370496490428,
+      "mae": 11972.245788267925,
+      "rmse": 31782.61704576488,
+      "mase": 1.1448705410896767,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": false,
+      "bias": 0.0011556754997803509,
+      "provinces_beating_naive": 27,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "wape": 0.05961592738032414,
+      "mae": 11375.428593067638,
+      "rmse": 29015.019625879766,
+      "mase": 1.0877986735984373,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": false,
+      "bias": -0.0015353990656229444,
+      "provinces_beating_naive": 32,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "wape": 0.046857369405632926,
+      "mae": 8940.94385770958,
+      "rmse": 19884.310691296167,
+      "mase": 0.8549960812080275,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": true,
+      "bias": 0.004116731890039915,
+      "provinces_beating_naive": 50,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "wape": 0.04696888340079562,
+      "mae": 8962.222055413498,
+      "rmse": 20009.71408889552,
+      "mase": 0.857030852473964,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": true,
+      "bias": 0.00438052218490137,
+      "provinces_beating_naive": 49,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "wape": 0.05480419201387209,
+      "mae": 10457.292207792209,
+      "rmse": 25420.935258304846,
+      "mase": 1.0,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": false,
+      "bias": -0.010800566335927075,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "wape": 0.05480419201387209,
+      "mae": 10457.292207792209,
+      "rmse": 25420.935258304846,
+      "mase": 1.0,
+      "n": 924,
+      "naive_wape": 0.05480419201387209,
+      "beats_naive": false,
+      "bias": -0.010800566335927075,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "train_window_frozen": "2019-01..2024-12"
+    }
+  ],
+  "monthly_wape": [
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-01",
+      "wape": 0.21858142598156124
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-02",
+      "wape": 0.2689439593733491
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-03",
+      "wape": 0.19080209193480077
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-04",
+      "wape": 0.30443601968041634
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-05",
+      "wape": 0.6921767141107323
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-06",
+      "wape": 0.26426472697505204
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-07",
+      "wape": 0.2755065560416594
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-08",
+      "wape": 0.17139394606352143
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-09",
+      "wape": 0.2967353531587782
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-10",
+      "wape": 0.16695951335111922
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-11",
+      "wape": 0.12720637842891588
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2023-12",
+      "wape": 0.15670999950996953
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-01",
+      "wape": 0.21858142598156124
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-02",
+      "wape": 0.24190023903480465
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-03",
+      "wape": 0.1358530952936375
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-04",
+      "wape": 0.39179440227775814
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-05",
+      "wape": 0.4616076048144718
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-06",
+      "wape": 0.4776712687166126
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-07",
+      "wape": 0.1025840995537547
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-08",
+      "wape": 0.07399757223089816
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-09",
+      "wape": 0.11752053940346442
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-10",
+      "wape": 0.09506277817198622
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-11",
+      "wape": 0.0831891676726138
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2023-12",
+      "wape": 0.042261073411348694
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-01",
+      "wape": 0.15907124341511908
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-02",
+      "wape": 0.09054641455170037
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-03",
+      "wape": 0.1252799919226933
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-04",
+      "wape": 0.12299920131180109
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-05",
+      "wape": 0.07092303876048445
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-06",
+      "wape": 0.06346167243197554
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-07",
+      "wape": 0.05782850555568408
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-08",
+      "wape": 0.0458748306108773
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-09",
+      "wape": 0.07696002223699164
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-10",
+      "wape": 0.07096407631127953
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-11",
+      "wape": 0.055375940301535254
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2023-12",
+      "wape": 0.08609471222831946
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-01",
+      "wape": 0.15907124341511908
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-02",
+      "wape": 0.07904648596559959
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-03",
+      "wape": 0.0959838074642921
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-04",
+      "wape": 0.09565227048586024
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-05",
+      "wape": 0.043751146239494734
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-06",
+      "wape": 0.036952643517184205
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-07",
+      "wape": 0.045030899529277676
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-08",
+      "wape": 0.04727756469753519
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-09",
+      "wape": 0.08192593018594108
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-10",
+      "wape": 0.05544819918681431
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-11",
+      "wape": 0.06249764925410093
+    },
+    {
+      "year": 2023,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2023-12",
+      "wape": 0.08902245744160314
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-01",
+      "wape": 0.24353179752581963
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-02",
+      "wape": 0.2699811685364331
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-03",
+      "wape": 0.191789620850958
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-04",
+      "wape": 0.32016592403433175
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-05",
+      "wape": 0.7350818496139906
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-06",
+      "wape": 0.24209869311950039
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-07",
+      "wape": 0.3083084990631957
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-08",
+      "wape": 0.17717037434985244
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-09",
+      "wape": 0.3264744623799949
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-10",
+      "wape": 0.18134823391752397
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-11",
+      "wape": 0.14625603579954058
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2023-12",
+      "wape": 0.16458977290440155
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-01",
+      "wape": 0.24353179752581963
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-02",
+      "wape": 0.23505904629589566
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-03",
+      "wape": 0.1320911632660913
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-04",
+      "wape": 0.3993674968920281
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-05",
+      "wape": 0.46999400339473885
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-06",
+      "wape": 0.46908353753176624
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-07",
+      "wape": 0.10642965369232016
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-08",
+      "wape": 0.07069035294943068
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-09",
+      "wape": 0.11900383127386906
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-10",
+      "wape": 0.09535932624550103
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-11",
+      "wape": 0.08681972719002114
+    },
+    {
+      "year": 2023,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2023-12",
+      "wape": 0.045490932484587236
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-01",
+      "wape": 0.43685806153201756
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-02",
+      "wape": 0.4084424892927399
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-03",
+      "wape": 0.4145121841876854
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-04",
+      "wape": 0.3982024026920654
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-05",
+      "wape": 0.38178678085831513
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-06",
+      "wape": 0.3614201006356653
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-07",
+      "wape": 0.3130396414579288
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-08",
+      "wape": 0.33487498494720386
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-09",
+      "wape": 0.28820949761357184
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-10",
+      "wape": 0.23686335341995127
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-11",
+      "wape": 0.20480300670220214
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2023-12",
+      "wape": 0.18042733563640861
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-01",
+      "wape": 0.43685806153201756
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-02",
+      "wape": 0.4084424892927399
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-03",
+      "wape": 0.4145121841876854
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-04",
+      "wape": 0.3982024026920654
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-05",
+      "wape": 0.38178678085831513
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-06",
+      "wape": 0.3614201006356653
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-07",
+      "wape": 0.3130396414579288
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-08",
+      "wape": 0.33487498494720386
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-09",
+      "wape": 0.28820949761357184
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-10",
+      "wape": 0.23686335341995127
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-11",
+      "wape": 0.20480300670220214
+    },
+    {
+      "year": 2023,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2023-12",
+      "wape": 0.18042733563640861
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-01",
+      "wape": 0.0539632396172433
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-02",
+      "wape": 0.0779167184704387
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-03",
+      "wape": 0.07805341912606503
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-04",
+      "wape": 0.06776548351933312
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-05",
+      "wape": 0.04460513791348804
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-06",
+      "wape": 0.05619874773564903
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-07",
+      "wape": 0.07349898192100134
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-08",
+      "wape": 0.05524389994233653
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-09",
+      "wape": 0.0851835335472852
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-10",
+      "wape": 0.06436681479821793
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-11",
+      "wape": 0.05833978906070069
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2024-12",
+      "wape": 0.04565838305908199
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-01",
+      "wape": 0.0539632396172433
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-02",
+      "wape": 0.09090431172068357
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-03",
+      "wape": 0.07601550904020929
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-04",
+      "wape": 0.06489584093741729
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-05",
+      "wape": 0.033728512970742995
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-06",
+      "wape": 0.056075569817430455
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-07",
+      "wape": 0.06323451553491961
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-08",
+      "wape": 0.05138339468707486
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-09",
+      "wape": 0.07401925630360588
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-10",
+      "wape": 0.055525157391986206
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-11",
+      "wape": 0.05778105994489137
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2024-12",
+      "wape": 0.03774042766493986
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-01",
+      "wape": 0.09267512081339933
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-02",
+      "wape": 0.10195109163636494
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-03",
+      "wape": 0.11351054988012389
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-04",
+      "wape": 0.09827835925310127
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-05",
+      "wape": 0.06036787918697942
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-06",
+      "wape": 0.055032209063290954
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-07",
+      "wape": 0.079557574887072
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-08",
+      "wape": 0.07320248271646462
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-09",
+      "wape": 0.10878242161427364
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-10",
+      "wape": 0.08406383215202287
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-11",
+      "wape": 0.068870926864987
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2024-12",
+      "wape": 0.08694139952850463
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-01",
+      "wape": 0.09267512081339933
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-02",
+      "wape": 0.0875337400773638
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-03",
+      "wape": 0.09543845079203656
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-04",
+      "wape": 0.07850858438468437
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-05",
+      "wape": 0.032203571050320165
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-06",
+      "wape": 0.06854121530075438
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-07",
+      "wape": 0.06574808583469852
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-08",
+      "wape": 0.04754276251451012
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-09",
+      "wape": 0.07294692112495575
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-10",
+      "wape": 0.06550829725167578
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-11",
+      "wape": 0.0549157971709045
+    },
+    {
+      "year": 2024,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2024-12",
+      "wape": 0.07503505729958944
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-01",
+      "wape": 0.054941958178944796
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-02",
+      "wape": 0.07673902786684875
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-03",
+      "wape": 0.0811652698543716
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-04",
+      "wape": 0.06642101250252326
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-05",
+      "wape": 0.0440035729281582
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-06",
+      "wape": 0.05482586410879789
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-07",
+      "wape": 0.06470351492510511
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-08",
+      "wape": 0.052176476086758856
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-09",
+      "wape": 0.08404582753168399
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-10",
+      "wape": 0.05513348963525446
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-11",
+      "wape": 0.05900668731793283
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2024-12",
+      "wape": 0.04340146888138982
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-01",
+      "wape": 0.054941958178944796
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-02",
+      "wape": 0.08590422910664958
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-03",
+      "wape": 0.08128145218451807
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-04",
+      "wape": 0.058090576526354465
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-05",
+      "wape": 0.03401107763264453
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-06",
+      "wape": 0.054884112812156875
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-07",
+      "wape": 0.05379070737024376
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-08",
+      "wape": 0.05105055749094847
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-09",
+      "wape": 0.07413354245139066
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-10",
+      "wape": 0.046758633010001195
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-11",
+      "wape": 0.053411836807543994
+    },
+    {
+      "year": 2024,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2024-12",
+      "wape": 0.03571226422288603
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-01",
+      "wape": 0.12979175258369455
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-02",
+      "wape": 0.15609218049264753
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-03",
+      "wape": 0.1103353004139184
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-04",
+      "wape": 0.12374235506560001
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-05",
+      "wape": 0.11199785381068883
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-06",
+      "wape": 0.10140863843788347
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-07",
+      "wape": 0.11498938178014409
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-08",
+      "wape": 0.09938086480043037
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-09",
+      "wape": 0.12875479676803897
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-10",
+      "wape": 0.10062785115098968
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-11",
+      "wape": 0.08339772984429665
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2024-12",
+      "wape": 0.08086694156668758
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-01",
+      "wape": 0.12979175258369455
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-02",
+      "wape": 0.15609218049264753
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-03",
+      "wape": 0.1103353004139184
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-04",
+      "wape": 0.12374235506560001
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-05",
+      "wape": 0.11199785381068883
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-06",
+      "wape": 0.10140863843788347
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-07",
+      "wape": 0.11498938178014409
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-08",
+      "wape": 0.09938086480043037
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-09",
+      "wape": 0.12875479676803897
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-10",
+      "wape": 0.10062785115098968
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-11",
+      "wape": 0.08339772984429665
+    },
+    {
+      "year": 2024,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2024-12",
+      "wape": 0.08086694156668758
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape": 0.04465073560535522
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape": 0.04441309846003542
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape": 0.06265644376239807
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape": 0.054964210995049445
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape": 0.02787143320060826
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape": 0.05793754937771296
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape": 0.06684951294370736
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape": 0.03972160096677285
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape": 0.054507494690251235
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape": 0.04860183947829597
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape": 0.03681032903200419
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape": 0.038371020768902774
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-01",
+      "wape": 0.04465073560535522
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-02",
+      "wape": 0.04510397067773263
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-03",
+      "wape": 0.0656205981142112
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-04",
+      "wape": 0.05619193943182779
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-05",
+      "wape": 0.026717262521231827
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-06",
+      "wape": 0.05696375987088142
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-07",
+      "wape": 0.07332630544957626
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-08",
+      "wape": 0.03940751170359358
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-09",
+      "wape": 0.05410075985201961
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-10",
+      "wape": 0.046464523927117585
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-11",
+      "wape": 0.03750831765003393
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff",
+      "mode": "monthly",
+      "year_month": "2025-12",
+      "wape": 0.036438883662675586
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape": 0.05637098520181881
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape": 0.06133759415701428
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape": 0.0826141179795946
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape": 0.06913685494745095
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape": 0.06079248277642407
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape": 0.09961524549168532
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape": 0.05658258711449563
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape": 0.047449681127600826
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape": 0.06319499240480506
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape": 0.043337190742417014
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape": 0.05087571581178426
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape": 0.063231917452621
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-01",
+      "wape": 0.05637098520181881
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-02",
+      "wape": 0.05782214001984841
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-03",
+      "wape": 0.07752482286709228
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-04",
+      "wape": 0.06627346610177462
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-05",
+      "wape": 0.04982475023418126
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-06",
+      "wape": 0.09383424994572503
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-07",
+      "wape": 0.05601948449111866
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-08",
+      "wape": 0.03862476505911454
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-09",
+      "wape": 0.05796164668081902
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-10",
+      "wape": 0.05050036351438689
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-11",
+      "wape": 0.051531008863363696
+    },
+    {
+      "year": 2025,
+      "model": "rf_level",
+      "mode": "monthly",
+      "year_month": "2025-12",
+      "wape": 0.06015073718012188
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape": 0.045230673662132626
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape": 0.05379808422317043
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape": 0.05574147992417274
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape": 0.0514557536452168
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape": 0.02889230483810538
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape": 0.05920907396950318
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape": 0.05687363070621815
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape": 0.03583164649490565
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape": 0.053516306023227274
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape": 0.04499461079947227
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape": 0.03946390447601499
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape": 0.039257158361482775
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-01",
+      "wape": 0.045230673662132626
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-02",
+      "wape": 0.05468451318740326
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-03",
+      "wape": 0.0581078540029258
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-04",
+      "wape": 0.05117418808805446
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-05",
+      "wape": 0.027284277630103874
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-06",
+      "wape": 0.058499399958429336
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-07",
+      "wape": 0.05912519479306843
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-08",
+      "wape": 0.0347779196644527
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-09",
+      "wape": 0.05349205795323851
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-10",
+      "wape": 0.04622108656025182
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-11",
+      "wape": 0.039617733996810574
+    },
+    {
+      "year": 2025,
+      "model": "rf_logdiff_yoy3",
+      "mode": "monthly",
+      "year_month": "2025-12",
+      "wape": 0.03760093223978458
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape": 0.06123703341180149
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape": 0.047233847282790585
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape": 0.059521535872140374
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape": 0.059211731559480604
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape": 0.056546329271376615
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape": 0.07776265108954325
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape": 0.04721169464766233
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape": 0.04930610533668116
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape": 0.06744558012965428
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape": 0.0452240276535178
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape": 0.044058379479706686
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape": 0.04532800304643122
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-01",
+      "wape": 0.06123703341180149
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-02",
+      "wape": 0.047233847282790585
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-03",
+      "wape": 0.059521535872140374
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-04",
+      "wape": 0.059211731559480604
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-05",
+      "wape": 0.056546329271376615
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-06",
+      "wape": 0.07776265108954325
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-07",
+      "wape": 0.04721169464766233
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-08",
+      "wape": 0.04930610533668116
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-09",
+      "wape": 0.06744558012965428
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-10",
+      "wape": 0.0452240276535178
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-11",
+      "wape": 0.044058379479706686
+    },
+    {
+      "year": 2025,
+      "model": "seasonal_naive",
+      "mode": "monthly",
+      "year_month": "2025-12",
+      "wape": 0.04532800304643122
+    }
+  ],
+  "logdiff_2023_analysis": {
+    "actual_log_ratio_2023": {
+      "n": 924,
+      "mean": 0.28372455475069747,
+      "std": 0.25209011906617695,
+      "q01": -0.11882955918322186,
+      "q05": 0.0007490147068728579,
+      "q25": 0.11903961169902733,
+      "q50": 0.22836557718732564,
+      "q75": 0.37357991113862443,
+      "q95": 0.7959788660005898,
+      "q99": 1.1959566423324886,
+      "share_abs_gt_log2": 0.07792207792207792,
+      "share_gt_log2": 0.07792207792207792
+    },
+    "predicted_log_ratio_2023_frozen": {
+      "n": 924,
+      "mean": 0.3699365952965421,
+      "std": 0.2949565911391317,
+      "q01": -0.3067926781475342,
+      "q05": -0.1484406207107767,
+      "q25": 0.1916797780691306,
+      "q50": 0.3631212786347531,
+      "q75": 0.541538561373208,
+      "q95": 0.8551188642034756,
+      "q99": 1.1927303573094228,
+      "share_abs_gt_log2": 0.11147186147186147,
+      "share_gt_log2": 0.11147186147186147
+    },
+    "training_label_2019_2022": {
+      "n": 3642,
+      "mean": -0.0689474574555756,
+      "std": 1.670954914176702,
+      "q01": -5.4867179063490585,
+      "q05": -2.795829683896828,
+      "q25": -0.6196540416848153,
+      "q50": -0.015617459496836794,
+      "q75": 0.39069093511871733,
+      "q95": 2.79499002888507,
+      "q99": 4.362193714606201,
+      "share_abs_gt_log2": 0.4475562877539813,
+      "share_gt_log2": 0.2097748489840747
+    },
+    "by_month": [
+      {
+        "year_month": "2023-01",
+        "median_actual_log_ratio": 0.3688368415725236,
+        "median_pred_log_ratio": 0.5584296254439689,
+        "share_ratio_gt_2x": 0.16883116883116883
+      },
+      {
+        "year_month": "2023-02",
+        "median_actual_log_ratio": 0.3132589142414304,
+        "median_pred_log_ratio": 0.48058678109326003,
+        "share_ratio_gt_2x": 0.16883116883116883
+      },
+      {
+        "year_month": "2023-03",
+        "median_actual_log_ratio": 0.27026000953522455,
+        "median_pred_log_ratio": 0.42152219122461076,
+        "share_ratio_gt_2x": 0.15584415584415584
+      },
+      {
+        "year_month": "2023-04",
+        "median_actual_log_ratio": 0.26728377325925656,
+        "median_pred_log_ratio": 0.5304130112658321,
+        "share_ratio_gt_2x": 0.12987012987012986
+      },
+      {
+        "year_month": "2023-05",
+        "median_actual_log_ratio": 0.24505545701809162,
+        "median_pred_log_ratio": 0.7280592746075456,
+        "share_ratio_gt_2x": 0.11688311688311688
+      },
+      {
+        "year_month": "2023-06",
+        "median_actual_log_ratio": 0.20604222555368956,
+        "median_pred_log_ratio": -0.1432655152506186,
+        "share_ratio_gt_2x": 0.06493506493506493
+      },
+      {
+        "year_month": "2023-07",
+        "median_actual_log_ratio": 0.16450684363843315,
+        "median_pred_log_ratio": 0.29219808635739675,
+        "share_ratio_gt_2x": 0.03896103896103896
+      },
+      {
+        "year_month": "2023-08",
+        "median_actual_log_ratio": 0.22590187804870965,
+        "median_pred_log_ratio": 0.254527962668174,
+        "share_ratio_gt_2x": 0.025974025974025976
+      },
+      {
+        "year_month": "2023-09",
+        "median_actual_log_ratio": 0.1507962331660515,
+        "median_pred_log_ratio": 0.36034296942807487,
+        "share_ratio_gt_2x": 0.025974025974025976
+      },
+      {
+        "year_month": "2023-10",
+        "median_actual_log_ratio": 0.18409392714271178,
+        "median_pred_log_ratio": 0.20359714438922794,
+        "share_ratio_gt_2x": 0.025974025974025976
+      },
+      {
+        "year_month": "2023-11",
+        "median_actual_log_ratio": 0.14872250080951943,
+        "median_pred_log_ratio": 0.1832329146279541,
+        "share_ratio_gt_2x": 0.012987012987012988
+      },
+      {
+        "year_month": "2023-12",
+        "median_actual_log_ratio": 0.14328182802104905,
+        "median_pred_log_ratio": 0.23614908715269678,
+        "share_ratio_gt_2x": 0.0
+      }
+    ],
+    "extreme_ratios": [
+      {
+        "province_id": "83",
+        "province_en": "Phuket",
+        "year_month": "2023-02",
+        "actual": 875685.0,
+        "lag_12": 215692.0,
+        "ratio": 4.059886319381346,
+        "pred": 581585.0301669012
+      },
+      {
+        "province_id": "83",
+        "province_en": "Phuket",
+        "year_month": "2023-03",
+        "actual": 898274.0,
+        "lag_12": 234539.0,
+        "ratio": 3.8299557856049513,
+        "pred": 722348.2247598531
+      },
+      {
+        "province_id": "81",
+        "province_en": "Krabi",
+        "year_month": "2023-03",
+        "actual": 297426.0,
+        "lag_12": 81469.0,
+        "ratio": 3.6507874160723697,
+        "pred": 221023.71531999361
+      },
+      {
+        "province_id": "83",
+        "province_en": "Phuket",
+        "year_month": "2023-01",
+        "actual": 829916.0,
+        "lag_12": 227598.0,
+        "ratio": 3.646411655638451,
+        "pred": 517873.40975618607
+      },
+      {
+        "province_id": "83",
+        "province_en": "Phuket",
+        "year_month": "2023-04",
+        "actual": 946459.0,
+        "lag_12": 264871.0,
+        "ratio": 3.573282843346386,
+        "pred": 1097432.8438770007
+      },
+      {
+        "province_id": "81",
+        "province_en": "Krabi",
+        "year_month": "2023-06",
+        "actual": 265223.0,
+        "lag_12": 75570.0,
+        "ratio": 3.5096334524282122,
+        "pred": 242313.0073574458
+      },
+      {
+        "province_id": "81",
+        "province_en": "Krabi",
+        "year_month": "2023-08",
+        "actual": 260214.0,
+        "lag_12": 75767.0,
+        "ratio": 3.43439756094342,
+        "pred": 196516.9752737882
+      },
+      {
+        "province_id": "81",
+        "province_en": "Krabi",
+        "year_month": "2023-02",
+        "actual": 250514.0,
+        "lag_12": 73699.0,
+        "ratio": 3.3991505990583275,
+        "pred": 109959.24032650837
+      },
+      {
+        "province_id": "81",
+        "province_en": "Krabi",
+        "year_month": "2023-04",
+        "actual": 303549.0,
+        "lag_12": 89994.0,
+        "ratio": 3.3729915327688476,
+        "pred": 331376.9394888189
+      },
+      {
+        "province_id": "81",
+        "province_en": "Krabi",
+        "year_month": "2023-05",
+        "actual": 280703.0,
+        "lag_12": 84440.0,
+        "ratio": 3.3242894362861155,
+        "pred": 356810.3235377554
+      }
+    ],
+    "worst_provinces_by_abs_error": [
+      {
+        "province_id": "10",
+        "province_en": "Bangkok",
+        "actual": 31783492.0,
+        "abs_model": 7697210.002498541,
+        "abs_naive": 14208439.0,
+        "pred": 37327417.30009925,
+        "lag12": 17575053.0,
+        "wape_model": 0.24217634747303854,
+        "wape_naive": 0.4470383241715542,
+        "share_of_total_abs_error": 0.18984132404034298
+      },
+      {
+        "province_id": "20",
+        "province_en": "Chon Buri",
+        "actual": 15914008.0,
+        "abs_model": 4751339.473877216,
+        "abs_naive": 6461997.0,
+        "pred": 19439847.567581996,
+        "lag12": 9452011.0,
+        "wape_model": 0.2985633458194325,
+        "wape_naive": 0.4060571667426584,
+        "share_of_total_abs_error": 0.11718539268036143
+      },
+      {
+        "province_id": "77",
+        "province_en": "Prachuap Khiri Khan",
+        "actual": 5643495.0,
+        "abs_model": 2724231.0980565455,
+        "abs_naive": 838467.0,
+        "pred": 8187865.095277045,
+        "lag12": 4874708.0,
+        "wape_model": 0.48272056554609255,
+        "wape_naive": 0.1485722942963536,
+        "share_of_total_abs_error": 0.06718949313830029
+      },
+      {
+        "province_id": "83",
+        "province_en": "Phuket",
+        "actual": 10729539.0,
+        "abs_model": 2674645.2232251847,
+        "abs_naive": 5811371.0,
+        "pred": 11740116.118359115,
+        "lag12": 4918168.0,
+        "wape_model": 0.24927867108038704,
+        "wape_naive": 0.5416235497163485,
+        "share_of_total_abs_error": 0.06596652427963219
+      },
+      {
+        "province_id": "50",
+        "province_en": "Chiang Mai",
+        "actual": 7720420.0,
+        "abs_model": 2351583.6595334094,
+        "abs_naive": 1961651.0,
+        "pred": 9619647.188232128,
+        "lag12": 5758769.0,
+        "wape_model": 0.3045927112169298,
+        "wape_naive": 0.2540860471321508,
+        "share_of_total_abs_error": 0.05799864566155082
+      },
+      {
+        "province_id": "76",
+        "province_en": "Phetchaburi",
+        "actual": 3956970.0,
+        "abs_model": 1606472.785599996,
+        "abs_naive": 419329.0,
+        "pred": 5381902.458302651,
+        "lag12": 3537641.0,
+        "wape_model": 0.4059855863451065,
+        "wape_naive": 0.10597224644109003,
+        "share_of_total_abs_error": 0.03962148889715694
+      },
+      {
+        "province_id": "57",
+        "province_en": "Chiang Rai",
+        "actual": 4520443.0,
+        "abs_model": 1466595.3004005598,
+        "abs_naive": 844088.0,
+        "pred": 5792671.103097733,
+        "lag12": 3676355.0,
+        "wape_model": 0.32443618919662515,
+        "wape_naive": 0.18672683186139058,
+        "share_of_total_abs_error": 0.03617159900392618
+      },
+      {
+        "province_id": "30",
+        "province_en": "Nakhon Ratchasima",
+        "actual": 4842138.0,
+        "abs_model": 1363174.9474910498,
+        "abs_naive": 1064717.0,
+        "pred": 6027890.250228999,
+        "lag12": 3777421.0,
+        "wape_model": 0.28152335755219077,
+        "wape_naive": 0.2198857199030676,
+        "share_of_total_abs_error": 0.033620875206253016
+      },
+      {
+        "province_id": "84",
+        "province_en": "Surat Thani",
+        "actual": 5541880.0,
+        "abs_model": 1220374.2914827736,
+        "abs_naive": 2569723.0,
+        "pred": 5690458.566619834,
+        "lag12": 2972157.0,
+        "wape_model": 0.22020944002446347,
+        "wape_naive": 0.4636915631518546,
+        "share_of_total_abs_error": 0.03009888923969619
+      },
+      {
+        "province_id": "71",
+        "province_en": "Kanchanaburi",
+        "actual": 3419392.0,
+        "abs_model": 957152.2576989701,
+        "abs_naive": 583287.0,
+        "pred": 4202114.681037243,
+        "lag12": 2836105.0,
+        "wape_model": 0.2799188445486713,
+        "wape_naive": 0.17058208008909187,
+        "share_of_total_abs_error": 0.023606872081025895
+      }
+    ]
+  },
+  "rows_2023": 924
+}
