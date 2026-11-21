@@ -25,7 +25,8 @@ def _next_month(month: str) -> str:
 
 def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tuple[str, ...],
            rule, *, trigger_mode: str, delta: float = 0.002, gate_months: int = 2,
-           rollback_months: int = 2, refresh: bool = False) -> dict:
+           rollback_months: int = 2, refresh: bool = False, error_mode: str = "province_abs",
+           seed: list[float] | None = None) -> dict:
     active = "logdiff_expanding@2024-12"
     registry = [{
         "id": "v001",
@@ -41,16 +42,28 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
     recent_psi: list[bool] = []
     last_rain = None
     reference_end = "2024-12"
+    if error_mode not in {"province_abs", "monthly_wape"}:
+        raise KeyError(error_mode)
     detector = ADWIN(delta)
+    seed_cuts = 0
+    for value in seed or []:
+        seed_cuts += int(detector.update(float(value)))
+    window_after_seed = len(detector.window)
     events = []
     served_rows = []
+    adwin_alarm_months = []
     for month in months:
         pred = np.asarray(predict(active, month), dtype=float)
         actual = np.asarray(y[month], dtype=float)
         lag = np.asarray(naive[month], dtype=float)
-        adwin_hit = False
-        for error in np.abs(actual - pred):
-            adwin_hit = detector.update(float(error)) or adwin_hit
+        if error_mode == "province_abs":
+            adwin_hit = False
+            for error in np.abs(actual - pred):
+                adwin_hit = detector.update(float(error)) or adwin_hit
+        else:
+            adwin_hit = detector.update(float(_block(actual, pred, lag)["wape"]))
+        if adwin_hit:
+            adwin_alarm_months.append(month)
         psi_hit, features, rain_raw = psi(month, reference_end)
         rain_confirmed = bool(rain_raw and last_rain == _previous(month))
         if rain_raw and not rain_confirmed:
@@ -144,6 +157,12 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
         "registry": registry,
         "served": _block(frame_y, frame_p, frame_n),
         "rows": served_rows,
+        "error_mode": error_mode,
+        "delta": delta,
+        "seed_length": 0 if seed is None else len(seed),
+        "seed_cuts": seed_cuts,
+        "window_after_seed": window_after_seed,
+        "adwin_alarm_months": adwin_alarm_months,
     }
 
 

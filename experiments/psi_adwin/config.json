@@ -15,6 +15,16 @@
   "rollback_months": 2,
   "adwin_delta": 0.002,
   "psi_gate_months": 2,
+  "adwin_comparison": {
+    "province_absolute_error": {
+      "deltas": [0.002, 0.001, 0.0001, 0.00001, 0.000001],
+      "seed": "none"
+    },
+    "monthly_wape": {
+      "deltas": [0.002, 0.01, 0.05, 0.1, 0.2, 0.5],
+      "seeds": ["none", "oos_expanding_2019_2024", "oos_expanding_2023_2024"]
+    }
+  },
   "trigger_modes_under_primary": [
     "psi",
     "adwin",

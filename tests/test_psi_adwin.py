@@ -43,6 +43,67 @@ def test_trigger_truth_table_and_two_month_gate():
         trigger_fires("other", True, True, [])
 
 
+def test_smaller_delta_is_stricter_on_the_unit_interval():
+    mild = [0.0] * 48 + [0.55] * 48
+    loose = ADWIN(delta=0.5)
+    tight = ADWIN(delta=1e-6)
+    loose_hit = any(loose.update(value) for value in mild)
+    tight_hit = any(tight.update(value) for value in mild)
+    assert loose_hit
+    assert not tight_hit
+
+
+def test_province_scale_errors_alarm_at_the_compared_deltas():
+    shift = [1000.0] * 40 + [8000.0] * 40
+    for delta in (0.002, 1e-3, 1e-4, 1e-5, 1e-6):
+        detector = ADWIN(delta=delta)
+        assert any(detector.update(value) for value in shift)
+
+
+def test_twelve_monthly_points_never_cut():
+    detector = ADWIN(delta=0.5)
+    assert not any(detector.update(0.9) for _ in range(12))
+    assert len(detector.window) == 12
+
+
+def test_a_seeded_wape_stream_can_alarm_inside_the_replay():
+    months = [f"2025-{n:02d}" for n in range(1, 13)]
+    y = {month: np.array([100.0, 100.0]) for month in months}
+    naive = {month: np.array([80.0, 80.0]) for month in months}
+
+    def predict(key, month):
+        return np.array([20.0, 20.0])
+
+    def psi(month, reference_end):
+        return False, [], False
+
+    unseeded = replay(
+        months, y, naive, predict, psi, ("logdiff_expanding",),
+        promotion_rule("margin_0005_confirm_2"),
+        trigger_mode="adwin", error_mode="monthly_wape", delta=0.5,
+    )
+    seeded = replay(
+        months, y, naive, predict, psi, ("logdiff_expanding",),
+        promotion_rule("margin_0005_confirm_2"),
+        trigger_mode="adwin", error_mode="monthly_wape", delta=0.5,
+        seed=[0.05] * 32,
+    )
+    assert unseeded["adwin_alarm_months"] == []
+    assert seeded["seed_length"] == 32
+    assert seeded["adwin_alarm_months"]
+    assert all(month.startswith("2025") for month in seeded["adwin_alarm_months"])
+
+
+def test_replay_rejects_an_unknown_error_mode():
+    with pytest.raises(KeyError):
+        replay(
+            ["2025-01"], {"2025-01": np.array([1.0])}, {"2025-01": np.array([1.0])},
+            lambda key, month: np.array([1.0]), lambda month, end: (False, [], False),
+            ("logdiff_expanding",), promotion_rule("margin_0005_confirm_2"),
+            trigger_mode="adwin", error_mode="other",
+        )
+
+
 def test_rollback_restores_the_previous_model_after_two_worse_months():
     months = [f"2025-{n:02d}" for n in range(1, 7)]
     y = {month: np.array([10.0, 10.0]) for month in months}
