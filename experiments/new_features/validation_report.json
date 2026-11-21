@@ -1,0 +1,145 @@
+{
+  "hard_fail": false,
+  "n_hard": 0,
+  "n_warnings": 2,
+  "checks": [
+    {
+      "name": "schema_columns",
+      "severity": "hard",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "schema_dtypes",
+      "severity": "hard",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "unique_province_month",
+      "severity": "hard",
+      "passed": true,
+      "detail": "duplicates=0"
+    },
+    {
+      "name": "region_labels",
+      "severity": "hard",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "province_count",
+      "severity": "hard",
+      "passed": true,
+      "detail": "n=77"
+    },
+    {
+      "name": "all_provinces_mapped",
+      "severity": "hard",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "feature_month_coverage",
+      "severity": "hard",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "calendar_coverage_2018_2025",
+      "severity": "hard",
+      "passed": true,
+      "detail": "ok"
+    },
+    {
+      "name": "no_inf",
+      "severity": "hard",
+      "passed": true,
+      "detail": "inf=0"
+    },
+    {
+      "name": "range_holiday_count",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "range_long_weekend_count",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "flag_festival_songkran",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "flag_festival_new_year",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "flag_festival_loy",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "flag_festival_cny",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "flag_festival_province",
+      "severity": "hard",
+      "passed": true,
+      "detail": "outside=0"
+    },
+    {
+      "name": "yoy3_defined_after_warmup",
+      "severity": "warn",
+      "passed": true,
+      "detail": "nan=0"
+    },
+    {
+      "name": "thai_yoy_after_warmup",
+      "severity": "warn",
+      "passed": false,
+      "detail": "nan=42"
+    },
+    {
+      "name": "foreign_yoy_after_warmup",
+      "severity": "warn",
+      "passed": false,
+      "detail": "nan=667"
+    },
+    {
+      "name": "region_yoy_log_after_warmup",
+      "severity": "warn",
+      "passed": true,
+      "detail": "nan=0"
+    },
+    {
+      "name": "thai_plus_foreign_vs_total",
+      "severity": "warn",
+      "passed": true,
+      "detail": "mismatches=0 of 6468"
+    }
+  ],
+  "warmup": {
+    "yoy_3m_log": "NaN allowed before 2019-04 because lag 15 starts at 2018-01",
+    "split_lags": "NaN allowed before 2020-02 because Thai/foreign arrivals start in 2019-01",
+    "region_yoy_log": "NaN allowed before 2019-02 because lag 13 starts at 2018-01",
+    "ratio_fill": "After warm-up, a NaN ratio is a zero denominator. It is not inf. Training median-fills it from rows in the fit window."
+  },
+  "thai_foreign_mismatches": 0,
+  "thai_foreign_examples": [],
+  "split_lag1_finite_after_warmup": {
+    "cells": 10934,
+    "finite": 10934
+  }
+}

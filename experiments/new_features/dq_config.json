@@ -1,0 +1,12 @@
+{
+  "completeness_max_missing_frac_core": 0.0,
+  "completeness_max_missing_frac_splits_from_2019": 0.0,
+  "uniqueness_max_duplicate_keys": 0,
+  "timeliness_max_gap_frac": 0.0,
+  "validity_max_invalid_frac": 0.0,
+  "consistency_max_mismatch_frac": 0.01,
+  "consistency_max_calendar_mismatch": 0,
+  "accuracy_max_flagged_row_frac": 0.5,
+  "holiday_count_max": 31,
+  "notes": "A warning never blocks training. A rate above a max does. DS/ML may edit these numbers."
+}

@@ -1,0 +1,2832 @@
+{
+  "selected_on_2024": {
+    "name": "yoy3|region|holidays",
+    "features": [
+      "yoy_3m_log",
+      "region_yoy_log",
+      "holiday_count",
+      "long_weekend_count"
+    ],
+    "split": false,
+    "wape": 0.058472241482920746,
+    "mae": 11036.69563418394,
+    "rmse": 29549.442131843567,
+    "mase": 0.5243153203985593,
+    "n": 924,
+    "naive_wape": 0.11152113853639248,
+    "beats_naive": true
+  },
+  "baseline_check": {
+    "protocol_b_2025_frozen": 0.04788460348726727,
+    "protocol_b_2025_monthly": 0.04829016837105007,
+    "recomputed_frozen": 0.04788460348726727,
+    "recomputed_monthly": 0.04829016837105007
+  },
+  "selection": [
+    {
+      "name": "yoy3|region|holidays",
+      "features": [
+        "yoy_3m_log",
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.058472241482920746,
+      "mae": 11036.69563418394,
+      "rmse": 29549.442131843567,
+      "mase": 0.5243153203985593,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3|region|holidays|festivals",
+      "features": [
+        "yoy_3m_log",
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.058558929363923096,
+      "mae": 11053.058060756464,
+      "rmse": 29699.269722329554,
+      "mase": 0.5250926428159955,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3|region|festivals",
+      "features": [
+        "yoy_3m_log",
+        "region_yoy_log",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.058759410401998155,
+      "mae": 11090.89906259844,
+      "rmse": 29526.318194612824,
+      "mase": 0.5268903382189136,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3|region",
+      "features": [
+        "yoy_3m_log",
+        "region_yoy_log"
+      ],
+      "split": false,
+      "wape": 0.05881635761296896,
+      "mae": 11101.64790715717,
+      "rmse": 29697.779715019948,
+      "mase": 0.5274009787281316,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "region|holidays|festivals",
+      "features": [
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.059206686900693785,
+      "mae": 11175.322961105376,
+      "rmse": 30290.349757617463,
+      "mase": 0.530901026278287,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "region|holidays",
+      "features": [
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.059263619440102014,
+      "mae": 11186.069036391602,
+      "rmse": 30331.887066965144,
+      "mase": 0.5314115352289255,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "region|festivals",
+      "features": [
+        "region_yoy_log",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.059466547943467535,
+      "mae": 11224.371999820838,
+      "rmse": 30342.353846798054,
+      "mase": 0.5332311768325602,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "region",
+      "features": [
+        "region_yoy_log"
+      ],
+      "split": false,
+      "wape": 0.059549931109950036,
+      "mae": 11240.110658133613,
+      "rmse": 30264.263138604176,
+      "mase": 0.5339788661726872,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3|holidays",
+      "features": [
+        "yoy_3m_log",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.06086389296770017,
+      "mae": 11488.122308296726,
+      "rmse": 28587.952443362374,
+      "mase": 0.545761043749016,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3",
+      "features": [
+        "yoy_3m_log"
+      ],
+      "split": false,
+      "wape": 0.06110595456851978,
+      "mae": 11533.811684062313,
+      "rmse": 28639.32229331421,
+      "mase": 0.5479315883112078,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3|holidays|festivals",
+      "features": [
+        "yoy_3m_log",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.0615212753702005,
+      "mae": 11612.203911937386,
+      "rmse": 28736.586304124834,
+      "mase": 0.551655732515001,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "yoy3|festivals",
+      "features": [
+        "yoy_3m_log",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.0618424628918192,
+      "mae": 11672.828386520576,
+      "rmse": 28803.124827910447,
+      "mase": 0.5545357920789006,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "baseline",
+      "features": [],
+      "split": false,
+      "wape": 0.06309623983770205,
+      "mae": 11909.480072755445,
+      "rmse": 30604.439471250524,
+      "mase": 0.5657782969738241,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "holidays",
+      "features": [
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.0631456113165246,
+      "mae": 11918.79899009049,
+      "rmse": 30562.285494252214,
+      "mase": 0.566221006575524,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "holidays|festivals",
+      "features": [
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.06331811791587065,
+      "mae": 11951.359787891042,
+      "rmse": 30612.47353285126,
+      "mase": 0.5677678577071572,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "festivals",
+      "features": [
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.06346873772348045,
+      "mae": 11979.789431272411,
+      "rmse": 30693.220385103,
+      "mase": 0.5691184519495273,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|region|holidays",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.09278928778209816,
+      "mae": 17514.07336869149,
+      "rmse": 51169.76003287084,
+      "mase": 0.8320331822277659,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|region|holidays|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.09297593853787874,
+      "mae": 17549.3038905459,
+      "rmse": 51146.444124990645,
+      "mase": 0.8337068627356066,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|region|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "region_yoy_log",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.09300220817720702,
+      "mae": 17554.26231194951,
+      "rmse": 51218.01220977617,
+      "mase": 0.8339424202242858,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.09311642848150035,
+      "mae": 17575.82151169556,
+      "rmse": 50741.53092976845,
+      "mase": 0.8349666234004045,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|region|holidays",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "region_yoy_log",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.09366478166709052,
+      "mae": 17679.323738665287,
+      "rmse": 51434.61119202519,
+      "mase": 0.839883657003063,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|region|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "region_yoy_log",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.09379561010642336,
+      "mae": 17704.01774095753,
+      "rmse": 52169.49174376711,
+      "mase": 0.8410567838295089,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|region",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "region_yoy_log"
+      ],
+      "split": false,
+      "wape": 0.09381861554840502,
+      "mae": 17708.360041759453,
+      "rmse": 51710.01049595806,
+      "mase": 0.8412630715547205,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|region",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "region_yoy_log"
+      ],
+      "split": false,
+      "wape": 0.09444372744306617,
+      "mae": 17826.350553901837,
+      "rmse": 52522.13196399693,
+      "mase": 0.8468683935848317,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.09986323087282033,
+      "mae": 18849.28739240295,
+      "rmse": 59842.985050208896,
+      "mase": 0.8954645924838021,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|holidays|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.10017019354361696,
+      "mae": 18907.226911783753,
+      "rmse": 58503.19388510557,
+      "mase": 0.8982170990921924,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3|holidays",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.10072548832529338,
+      "mae": 19012.03937214417,
+      "rmse": 58154.78842826947,
+      "mase": 0.9031963773614436,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|yoy3",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "yoy_3m_log"
+      ],
+      "split": false,
+      "wape": 0.10082421907930231,
+      "mae": 19030.674903365398,
+      "rmse": 59646.37109996133,
+      "mase": 0.9040816871359375,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.10548791147558773,
+      "mae": 19910.951633038818,
+      "rmse": 64827.27186939327,
+      "mase": 0.9459005966045089,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|holidays|festivals",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "holiday_count",
+        "long_weekend_count",
+        "festival_songkran",
+        "festival_new_year",
+        "festival_loy",
+        "festival_cny",
+        "festival_province"
+      ],
+      "split": false,
+      "wape": 0.10568540867823745,
+      "mae": 19948.229432879692,
+      "rmse": 63842.543192284735,
+      "mase": 0.9476715362240435,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split|holidays",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy",
+        "holiday_count",
+        "long_weekend_count"
+      ],
+      "split": false,
+      "wape": 0.10619526607877325,
+      "mae": 20044.46554088307,
+      "rmse": 63413.76289885275,
+      "mase": 0.9522433815910044,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split",
+      "features": [
+        "thai_lag_1",
+        "thai_lag_12",
+        "thai_yoy",
+        "foreign_lag_1",
+        "foreign_lag_12",
+        "foreign_yoy"
+      ],
+      "split": false,
+      "wape": 0.1067646397701948,
+      "mae": 20151.935409917714,
+      "rmse": 64784.270680904585,
+      "mase": 0.957348904175279,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": true
+    },
+    {
+      "name": "split_models",
+      "features": [],
+      "split": true,
+      "wape": 0.2625858513661918,
+      "mae": 49563.3491358156,
+      "rmse": 141947.9998325529,
+      "mase": 2.3545836673869913,
+      "n": 924,
+      "naive_wape": 0.11152113853639248,
+      "beats_naive": false
+    }
+  ],
+  "focus": {
+    "yoy3|region|holidays": {
+      "frozen": {
+        "wape": 0.05361698766137748,
+        "mae": 10230.75948523594,
+        "rmse": 23102.218929112943,
+        "mase": 0.9783373441178713,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      },
+      "monthly": {
+        "wape": 0.04989817046005171,
+        "mae": 9521.164895614327,
+        "rmse": 22619.60472092634,
+        "mase": 0.9104809071434066,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "region": {
+      "frozen": {
+        "wape": 0.053578012414517776,
+        "mae": 10223.322544186256,
+        "rmse": 23255.7500928162,
+        "mase": 0.9776261713876934,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      },
+      "monthly": {
+        "wape": 0.05115494216342848,
+        "mae": 9760.97189682637,
+        "rmse": 23250.122615455424,
+        "mase": 0.9334129431281476,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "yoy3": {
+      "frozen": {
+        "wape": 0.046857369405632926,
+        "mae": 8940.94385770958,
+        "rmse": 19884.310691296167,
+        "mase": 0.8549960812080275,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      },
+      "monthly": {
+        "wape": 0.04696888340079562,
+        "mae": 8962.222055413498,
+        "rmse": 20009.71408889552,
+        "mase": 0.857030852473964,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "baseline": {
+      "frozen": {
+        "wape": 0.04788460348726727,
+        "mae": 9136.952348350851,
+        "rmse": 19797.47950344812,
+        "mase": 0.8737397948526759,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      },
+      "monthly": {
+        "wape": 0.04829016837105007,
+        "mae": 9214.338955891064,
+        "rmse": 20876.888872928965,
+        "mase": 0.8811400478055913,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "holidays": {
+      "frozen": {
+        "wape": 0.04798032124227173,
+        "mae": 9155.216435399194,
+        "rmse": 20047.923403854045,
+        "mase": 0.8754863356096353,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      },
+      "monthly": {
+        "wape": 0.048096165211998804,
+        "mae": 9177.320843792626,
+        "rmse": 20439.05275374947,
+        "mase": 0.8776001149661079,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "festivals": {
+      "frozen": {
+        "wape": 0.048027892405090124,
+        "mae": 9164.293579536827,
+        "rmse": 19877.697369992515,
+        "mase": 0.8763543561217588,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      },
+      "monthly": {
+        "wape": 0.0483204254263261,
+        "mae": 9220.112362208025,
+        "rmse": 20723.195661122496,
+        "mase": 0.881692141617473,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "split|yoy3|region|holidays|festivals": {
+      "frozen": {
+        "wape": 0.06284945984100998,
+        "mae": 11992.425077501059,
+        "rmse": 28437.94842175555,
+        "mase": 1.1468002269808386,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": false
+      },
+      "monthly": {
+        "wape": 0.05134855948956368,
+        "mae": 9797.916387411593,
+        "rmse": 23496.38382895364,
+        "mase": 0.9369458357595397,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "split": {
+      "frozen": {
+        "wape": 0.07221375754593805,
+        "mae": 13779.244549201394,
+        "rmse": 39066.807354071236,
+        "mase": 1.3176685011186593,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": false
+      },
+      "monthly": {
+        "wape": 0.05455009593278017,
+        "mae": 10408.807650841518,
+        "rmse": 27392.69349066128,
+        "mase": 0.9953635648705922,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": true
+      }
+    },
+    "split_models": {
+      "frozen": {
+        "wape": 0.0884787808726898,
+        "mae": 16882.80461357287,
+        "rmse": 52673.90765648513,
+        "mase": 1.6144527931420638,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": false
+      },
+      "monthly": {
+        "wape": 0.07100700743848956,
+        "mae": 13548.982263933522,
+        "rmse": 44277.238135073676,
+        "mase": 1.2956491981583487,
+        "n": 924,
+        "naive_wape": 0.05480419201387209,
+        "beats_naive": false
+      }
+    }
+  },
+  "months": [
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.04579746258622602,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.049423405100133794,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.06489028885197513,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.04664793934683459,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.05739241059318018,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.062259847484288186,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.06113728122877299,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.04041343716438473,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.054324065067583895,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.04554416307812312,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.036956633417835894,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.03740456571985092,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.04579746258622602,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.04898484384042994,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.06512486193115964,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.04759623640949697,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.05458595743183471,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.07650089970475422,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.07046254017130284,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.06509854153308539,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.054866326244539174,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.0454587454300711,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.03669657130722397,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "yoy3|region|holidays",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.037782078581741,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.04658328803281604,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.04842010851078347,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.06554467888113355,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.046969089959643565,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.05928006475023431,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.07124975427141833,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.05936712812610537,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.04299700068992167,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.053487903146092246,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.046181802043372175,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.03682363283866803,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.04053367626513329,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.04658328803281604,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.04774208415548738,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.06429864597046704,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.04852848182623852,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.057931079707072314,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.0844388968306305,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.07522462208944697,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.04284064056906945,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.05383891189052096,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.046667381794679365,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.03573026053917663,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "region",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.04388529122606415,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.045230673662132626,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.05468451318740326,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.0581078540029258,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.05117418808805446,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.027284277630103874,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.058499399958429336,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.05912519479306843,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.0347779196644527,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.05349205795323851,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.04622108656025182,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.039617733996810574,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.03760093223978458,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.045230673662132626,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.05379808422317043,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.05574147992417274,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.0514557536452168,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.02889230483810538,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.05920907396950318,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.05687363070621815,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.03583164649490565,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.053516306023227274,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.04499461079947227,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.03946390447601499,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "yoy3",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.039257158361482775,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.04465073560535522,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.04510397067773263,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.0656205981142112,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.05619193943182779,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.026717262521231827,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.05696375987088142,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.07332630544957626,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.03940751170359358,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.05410075985201961,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.046464523927117585,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.03750831765003393,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.036438883662675586,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.04465073560535522,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.04441309846003542,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.06265644376239807,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.054964210995049445,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.02787143320060826,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.05793754937771296,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.06684951294370736,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.03972160096677285,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.054507494690251235,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.04860183947829597,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.03681032903200419,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "baseline",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.038371020768902774,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.04644027605989031,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.044965604365521473,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.06510851509316941,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.05707952577465802,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.029373269286176923,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.05282329476448479,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.06852554315118001,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.040140249290700786,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.05412729075566973,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.04776534848924142,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.03722515871486106,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.03604270624007967,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.04644027605989031,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.044747167596737976,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.062078782549452385,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.055508126636694376,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.029146332599714088,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.057240326412569605,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.0651530206359263,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.039932279783898066,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.054844757366500144,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.05163297929831542,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.03670117220213376,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "holidays",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.03528700893345647,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.0446264710356828,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.04554571216276629,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.06596468943140839,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.05781897812019771,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.025965127933912622,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.05715872593418916,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.07130069050090787,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.03976504409607224,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.053981848031535155,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.0465769977196645,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.03748404607626835,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.03651700284663384,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.0446264710356828,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.04453938316207223,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.06293004812271323,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.05694520628036933,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.027402426654313257,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.058076650565360426,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.0669438242082357,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.039228905094287565,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.05440275831408917,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.048669389277477285,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.036784331063096705,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "festivals",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.038433230322161144,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.048263539614464876,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.049508536965487696,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.07734810495546238,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.04648960992198249,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.0534664934791003,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.061622532555923405,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.05846189300821518,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.04732429254745397,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.05399987966216349,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.04651745260614995,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.03631555853171041,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.03970104817654522,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.048263539614464876,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.04900660576425846,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.0808640777409787,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.04716890507929734,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.055606034088654596,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.07576624463347277,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.07456399536301815,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.08361021493709547,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.054496768647453106,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.05856270179764622,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.05944388860229527,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "split|yoy3|region|holidays|festivals",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.06924451083579372,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.05368388812369951,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.039812337451304886,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.1230875706177719,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.060804267556681606,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.033528041142649415,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.04749757292988124,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.07914370748444585,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.0392809895531601,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.05356871216174149,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.04941962806706002,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.03695735562917593,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.039021233653731204,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.05368388812369951,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.04278741938466593,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.13494708692298737,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.08786391797591768,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.06235445871217141,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.0457506886477153,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.09458925884943174,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.06848616553624373,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.07071781903625701,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.0731127304314769,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.05903484125098351,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "split",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.07311497433945152,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-01",
+      "wape_model": 0.10690283643779092,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-02",
+      "wape_model": 0.10262142084477749,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-03",
+      "wape_model": 0.09947620091094882,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-04",
+      "wape_model": 0.08661670376578981,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-05",
+      "wape_model": 0.05534756612638718,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-06",
+      "wape_model": 0.10337024090489558,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-07",
+      "wape_model": 0.07276455328555667,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-08",
+      "wape_model": 0.044818815417530404,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-09",
+      "wape_model": 0.052399783473527015,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-10",
+      "wape_model": 0.04339233659070787,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-11",
+      "wape_model": 0.0493932397822007,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "monthly_model_vs_naive",
+      "year_month": "2025-12",
+      "wape_model": 0.03419907177361619,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-01",
+      "wape_model": 0.10690283643779092,
+      "wape_naive": 0.06123703341180149,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-02",
+      "wape_model": 0.1048902487649167,
+      "wape_naive": 0.047233847282790585,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-03",
+      "wape_model": 0.09711811365956312,
+      "wape_naive": 0.059521535872140374,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-04",
+      "wape_model": 0.10911545281687947,
+      "wape_naive": 0.059211731559480604,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-05",
+      "wape_model": 0.08472376725516503,
+      "wape_naive": 0.056546329271376615,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-06",
+      "wape_model": 0.11590269101292534,
+      "wape_naive": 0.07776265108954325,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-07",
+      "wape_model": 0.08132798028394939,
+      "wape_naive": 0.04721169464766233,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-08",
+      "wape_model": 0.06124992220922137,
+      "wape_naive": 0.04930610533668116,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-09",
+      "wape_model": 0.08721792416613203,
+      "wape_naive": 0.06744558012965428,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-10",
+      "wape_model": 0.05633065372332882,
+      "wape_naive": 0.0452240276535178,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-11",
+      "wape_model": 0.08748623503638285,
+      "wape_naive": 0.044058379479706686,
+      "n": 77
+    },
+    {
+      "name": "split_models",
+      "mode": "frozen",
+      "year_month": "2025-12",
+      "wape_model": 0.06900585535589668,
+      "wape_naive": 0.04532800304643122,
+      "n": 77
+    }
+  ],
+  "champion": [
+    {
+      "preset": "legacy",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "promotions": [
+        {
+          "month": "2025-03",
+          "winner": "logdiff_12m",
+          "effective_from": "2025-04"
+        },
+        {
+          "month": "2025-05",
+          "winner": "logdiff_12m",
+          "effective_from": "2025-06"
+        },
+        {
+          "month": "2025-07",
+          "winner": "rf_12m",
+          "effective_from": "2025-08"
+        },
+        {
+          "month": "2025-08",
+          "winner": "rf_12m",
+          "effective_from": "2025-09"
+        },
+        {
+          "month": "2025-12",
+          "winner": "logdiff_12m",
+          "effective_from": "2026-01"
+        }
+      ],
+      "served": {
+        "wape": 0.04988478444511697,
+        "mae": 9518.610684621946,
+        "rmse": 24274.672034559764,
+        "mase": 0.9102366554823047,
+        "n": 924
+      }
+    },
+    {
+      "preset": "margin_0005_confirm_2",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "promotions": [
+        {
+          "month": "2025-06",
+          "winner": "logdiff_12m",
+          "effective_from": "2025-07"
+        },
+        {
+          "month": "2025-08",
+          "winner": "rf_12m",
+          "effective_from": "2025-09"
+        }
+      ],
+      "served": {
+        "wape": 0.05267428349698934,
+        "mae": 10050.880309022303,
+        "rmse": 24332.166958645,
+        "mase": 0.9611360292230268,
+        "n": 924
+      }
+    },
+    {
+      "preset": "margin_001_confirm_2",
+      "triggers": [
+        {
+          "month": "2025-02",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-03",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        },
+        {
+          "month": "2025-05",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-06",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-07",
+          "trigger": [
+            "rain_lag_1",
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-08",
+          "trigger": [
+            "rain_roll3"
+          ]
+        },
+        {
+          "month": "2025-12",
+          "trigger": [
+            "rain_lag_1"
+          ]
+        }
+      ],
+      "promotions": [
+        {
+          "month": "2025-06",
+          "winner": "logdiff_12m",
+          "effective_from": "2025-07"
+        }
+      ],
+      "served": {
+        "wape": 0.049975928570366236,
+        "mae": 9536.002068669975,
+        "rmse": 22432.36601154518,
+        "mase": 0.9118997422262202,
+        "n": 924
+      }
+    }
+  ],
+  "validation_warnings": 2,
+  "dq_scores": {
+    "completeness": 1.0,
+    "accuracy": 0.5392316017316017,
+    "consistency": 1.0,
+    "uniqueness": 1.0,
+    "timeliness": 1.0,
+    "validity": 1.0,
+    "overall": 0.923205266955267
+  }
+}
