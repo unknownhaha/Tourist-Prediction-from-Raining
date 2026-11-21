@@ -23,6 +23,19 @@ The numeric bar is not locked. `src/stream/champion_policy.py` exposes `min_wape
 
 `legacy` is the previous one-month rule, kept so a run can be reproduced. The relative-0 guardrail on the other three presets is an experiment setting, not a second team decision. Pass another preset name, or override the fields, without editing the policy. Rollback and reference refresh stay open in item 3.
 
+## Experiment primary config (2026-11-21)
+
+สรุปภาษาไทย: วันที่ 2026-11-21 การทดลองบน `exp/psi-adwin-rollback` ใช้ค่าหลักนี้ ADWIN อ่าน WAPE รายเดือนที่ delta 0.002 โดยเริ่มจาก WAPE นอกตัวอย่างของ Champion ช่วง 2023-01..2024-12 ฝึก Challenger เฉพาะเมื่อ PSI และ ADWIN เตือนพร้อมกัน PSI อย่างเดียวเป็นสัญญาณเฝ้าดู บันทึกไว้แต่ไม่ฝึกใหม่ preset D, reference Seasonal-2Y, ไม่รีเฟรช reference, ฝนเฉพาะ lag, คง `is_covid`, rollback 2 เดือน ค่าสุดท้ายก่อนขึ้นระบบจริงยังเป็นของทีม DS/ML
+
+On 2026-11-21 the primary config of `experiments/psi_adwin/config.json` was set to:
+
+- ADWIN on monthly aggregate WAPE, delta `0.002`, seeded with the Champion's expanding out-of-sample WAPE for 2023-01..2024-12.
+- Challengers train only when PSI and ADWIN both fire.
+- PSI alone is a watch. Log it. Do not retrain.
+- Preset D (`margin_0005_confirm_2`), Seasonal-2Y PSI reference, no reference refresh, lagged rain only, `is_covid` kept, rollback after 2 served months.
+
+DS/ML still own the final values. This note records the experiment primary. It does not replace the feeder contract above, and it does not choose the production detector inside `src/stream/`.
+
 ## Decisions owned by DS/MLE (before going live)
 
 สรุปภาษาไทย: ก่อนขึ้นระบบจริง ทีม DS/MLE ต้องตัดสินข้อที่ยังเปิด (1) โมเดลออนไลน์จริงที่แทน seasonal naive (2) ตัวตรวจ drift และค่า delta/threshold ที่ยังเป็นตัวอย่าง (3) แนวตอบ drift ตัดสินแล้ววันที่ 2026-11-20: Champion แช่แข็งจนกว่า drift จะเตือนและ Challenger ชนะ ตาม [ML Drift Teaching Lab](https://warin.me/Courses/Data-Science-and-Engineering/ml-drift-lab/?lang=th) ตัวเลขเลื่อนขั้นยังไม่ล็อก เลือกจาก preset `legacy`, `margin_0005_confirm_1`, `margin_0005_confirm_2`, `margin_001_confirm_2` หรือส่งค่าเอง ส่วน rollback และการรีเฟรช reference ยังเปิด (4) warm start ตามที่ตัดสินแล้ว (5) เป้าเทียบกับ WAPE 5.48% ของ seasonal naive (6) nowcast ฝนเดือนเดียวกันและโควิด

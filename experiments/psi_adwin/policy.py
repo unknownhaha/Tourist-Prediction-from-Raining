@@ -72,10 +72,18 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
         last_rain = month if rain_raw else None
         fired = trigger_fires(trigger_mode, psi_hit, adwin_hit, recent_psi, gate_months)
         recent_psi.append(psi_hit)
-        if psi_hit or adwin_hit or fired:
+        if psi_hit and not fired:
+            # PSI by itself is a watch. It is logged and does not train a Challenger.
+            events.append({
+                "month": month, "event": "watch", "psi": True, "adwin": adwin_hit,
+                "trigger": False, "retrain": False, "features": features,
+                "reference_end": reference_end,
+            })
+        elif adwin_hit or fired:
             events.append({
                 "month": month, "event": "alert", "psi": psi_hit, "adwin": adwin_hit,
-                "trigger": fired, "features": features, "reference_end": reference_end,
+                "trigger": fired, "retrain": fired, "features": features,
+                "reference_end": reference_end,
             })
         decision = "KEEP"
         if probation is not None:

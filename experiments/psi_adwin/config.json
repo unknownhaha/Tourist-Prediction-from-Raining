@@ -1,5 +1,7 @@
 {
-  "status": "team proposal, not a final decision",
+  "status": "primary experiment config, approved 2026-11-21; DS/ML still own the final values",
+  "decision_date": "2026-11-21",
+  "owners": "DS/ML still own the final values",
   "champion": "rf|logdiff|ext|d10_leaf3",
   "challengers": [
     "logdiff_expanding",
@@ -13,26 +15,10 @@
   "rain": "lagged only: rain_lag_1 and rain_roll3 through t-1; no same-month nowcast",
   "covid_flags": ["is_covid", "is_covid_lag12"],
   "rollback_months": 2,
+  "adwin_input": "monthly_wape",
   "adwin_delta": 0.002,
-  "psi_gate_months": 2,
-  "adwin_comparison": {
-    "province_absolute_error": {
-      "deltas": [0.002, 0.001, 0.0001, 0.00001, 0.000001],
-      "seed": "none"
-    },
-    "monthly_wape": {
-      "deltas": [0.002, 0.01, 0.05, 0.1, 0.2, 0.5],
-      "seeds": ["none", "oos_expanding_2019_2024", "oos_expanding_2023_2024"]
-    }
-  },
-  "trigger_modes_under_primary": [
-    "psi",
-    "adwin",
-    "psi_or_adwin",
-    "psi_and_adwin",
-    "psi_gated"
-  ],
-  "comparison_presets": ["margin_001_confirm_2"],
-  "comparison_references": ["fixed_2023_2024"],
-  "comparison_refresh": [true]
+  "adwin_seed": "oos_expanding_2023_2024",
+  "challenger_trigger": "psi_and_adwin",
+  "psi_only": "watch",
+  "psi_gate_months": 2
 }

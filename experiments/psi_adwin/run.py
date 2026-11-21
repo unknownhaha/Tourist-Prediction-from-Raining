@@ -1,9 +1,9 @@
-"""2025 replay under the primary config, varying only the ADWIN input.
+"""Primary 2025 replay approved on 2026-11-21.
 
-Province absolute errors are compared at deltas 0.002, 1e-3, 1e-4, 1e-5,
-and 1e-6. Monthly WAPE is compared at deltas 0.002, 0.01, 0.05, 0.1, 0.2,
-and 0.5, with no seed and with two out-of-sample Champion histories.
-``river`` is not installed. ADWIN is the local implementation.
+ADWIN reads monthly WAPE at delta 0.002, seeded with the Champion's
+2023-2024 expanding out-of-sample WAPE. Challengers train only when PSI and
+ADWIN both fire. PSI alone is logged as a watch. DS/ML still own the final
+values. ``river`` is not installed.
 """
 
 from __future__ import annotations
@@ -216,10 +216,15 @@ def main() -> None:
     print("REFERENCE_MATCH", reference_match, flush=True)
 
     config = json.loads((HERE / "config.json").read_text(encoding="utf-8"))
+    if config["challenger_trigger"] != "psi_and_adwin" or config["psi_only"] != "watch":
+        raise RuntimeError("The primary trigger trains Challengers only when PSI and ADWIN both fire")
+    if config["adwin_input"] != "monthly_wape" or config["adwin_seed"] != "oos_expanding_2023_2024":
+        raise RuntimeError("The primary ADWIN input is monthly WAPE seeded with 2023-2024")
     candidates = tuple(config["challengers"])
     gate_months = int(config["psi_gate_months"])
     rollback_months = int(config["rollback_months"])
     preset = config["promotion_preset"]
+    delta = float(config["adwin_delta"])
     feature_names = set(table.columns)
     if "rain_avg_mm" in feature_names or "is_covid" not in feature_names or "rain_lag_1" not in feature_names:
         raise RuntimeError("Champion features must keep lagged rain and the COVID flags, with no same-month rain")
@@ -228,117 +233,98 @@ def main() -> None:
         return models.predict(key, month)
 
     print("OOS_SEED", flush=True)
-    history_wape = champion_oos_wape(models, table, "2019-01", "2024-12")
-    usable = [row for row in history_wape if row["wape"] is not None]
-
-    def seed_values(name: str) -> list[float] | None:
-        if name == "none":
-            return None
-        if name == "oos_expanding_2019_2024":
-            return [float(row["wape"]) for row in usable]
-        if name == "oos_expanding_2023_2024":
-            return [float(row["wape"]) for row in usable if row["month"] >= "2023-01"]
-        raise KeyError(name)
+    history_wape = champion_oos_wape(models, table, "2023-01", "2024-12")
+    seed = [float(row["wape"]) for row in history_wape]
 
     def psi(month, reference_end):
         end = "2024-12" if not config["refresh_reference_after_promotion"] else reference_end
         return _psi_call(store, month, end)
 
-    summaries = []
-    events = []
-
-    def one(error_mode: str, delta: float, seed_name: str):
-        seed = seed_values(seed_name)
-        for mode in config["trigger_modes_under_primary"]:
-            label = f"primary|{error_mode}|delta={delta}|seed={seed_name}|{mode}"
-            print(label, flush=True)
-            result = replay(
-                MONTHS, y, naive, predict, psi, candidates, promotion_rule(preset),
-                trigger_mode=mode, delta=delta, gate_months=gate_months,
-                rollback_months=rollback_months,
-                refresh=bool(config["refresh_reference_after_promotion"]),
-                error_mode=error_mode, seed=seed,
-            )
-            served = result["served"]
-            naive_wape = wape(
-                np.array([value for month in MONTHS for value in y[month]]),
-                np.array([value for month in MONTHS for value in naive[month]]),
-            )
-            alerts = [event for event in result["events"] if event["event"] == "alert" and event["trigger"]]
-            promotions = [event for event in result["events"] if event["event"] == "promote"]
-            rollbacks = [event for event in result["events"] if event["event"] == "rollback"]
-            summary = {
-                "role": "primary",
-                "config": label,
-                "error_mode": error_mode,
-                "delta": delta,
-                "seed": seed_name,
-                "seed_length": result["seed_length"],
-                "seed_cuts": result["seed_cuts"],
-                "window_after_seed": result["window_after_seed"],
-                "trigger_mode": mode,
-                "reference": config["psi_reference"],
-                "refresh": bool(config["refresh_reference_after_promotion"]),
-                "preset": preset,
-                "wape": served["wape"],
-                "mae": served["mae"],
-                "rmse": served["rmse"],
-                "mase": served["mase"],
-                "n": served["n"],
-                "naive_wape": naive_wape,
-                "below_naive": bool(served["wape"] < naive_wape),
-                "adwin_months": result["adwin_alarm_months"],
-                "n_adwin": len(result["adwin_alarm_months"]),
-                "n_alerts": len(alerts),
-                "alert_months": [event["month"] for event in alerts],
-                "alerts": [{"month": event["month"], "psi": event["psi"], "adwin": event["adwin"], "features": event["features"]} for event in alerts],
-                "n_promotions": len(promotions),
-                "promotions": [{"month": event["month"], "winner": event["winner"], "effective_from": event["effective_from"]} for event in promotions],
-                "n_rollbacks": len(rollbacks),
-                "rollbacks": rollbacks,
-                "registry": result["registry"],
-            }
-            summaries.append(summary)
-            for event in result["events"]:
-                events.append({"config": label, **event})
-
-    comparison = config["adwin_comparison"]
-    for delta in comparison["province_absolute_error"]["deltas"]:
-        one("province_abs", float(delta), comparison["province_absolute_error"]["seed"])
-    for seed_name in comparison["monthly_wape"]["seeds"]:
-        for delta in comparison["monthly_wape"]["deltas"]:
-            one("monthly_wape", float(delta), seed_name)
+    label = "primary|monthly_wape|delta=0.002|seed=oos_expanding_2023_2024|psi_and_adwin"
+    print(label, flush=True)
+    result = replay(
+        MONTHS, y, naive, predict, psi, candidates, promotion_rule(preset),
+        trigger_mode=config["challenger_trigger"], delta=delta, gate_months=gate_months,
+        rollback_months=rollback_months,
+        refresh=bool(config["refresh_reference_after_promotion"]),
+        error_mode=config["adwin_input"], seed=seed,
+    )
+    served = result["served"]
+    naive_wape = wape(
+        np.array([value for month in MONTHS for value in y[month]]),
+        np.array([value for month in MONTHS for value in naive[month]]),
+    )
+    watches = [event for event in result["events"] if event["event"] == "watch"]
+    retrains = [event for event in result["events"] if event["event"] == "alert" and event["retrain"]]
+    promotions = [event for event in result["events"] if event["event"] == "promote"]
+    rollbacks = [event for event in result["events"] if event["event"] == "rollback"]
+    summary = {
+        "role": "primary",
+        "config": label,
+        "decision_date": config["decision_date"],
+        "error_mode": config["adwin_input"],
+        "delta": delta,
+        "seed": config["adwin_seed"],
+        "seed_length": result["seed_length"],
+        "seed_cuts": result["seed_cuts"],
+        "window_after_seed": result["window_after_seed"],
+        "trigger_mode": config["challenger_trigger"],
+        "psi_only": config["psi_only"],
+        "reference": config["psi_reference"],
+        "refresh": bool(config["refresh_reference_after_promotion"]),
+        "preset": preset,
+        "wape": served["wape"],
+        "mae": served["mae"],
+        "rmse": served["rmse"],
+        "mase": served["mase"],
+        "n": served["n"],
+        "naive_wape": naive_wape,
+        "below_naive": bool(served["wape"] < naive_wape),
+        "adwin_months": result["adwin_alarm_months"],
+        "n_adwin": len(result["adwin_alarm_months"]),
+        "watch_months": [event["month"] for event in watches],
+        "watches": [{"month": event["month"], "features": event["features"]} for event in watches],
+        "n_retrains": len(retrains),
+        "retrain_months": [event["month"] for event in retrains],
+        "n_promotions": len(promotions),
+        "promotions": promotions,
+        "n_rollbacks": len(rollbacks),
+        "rollbacks": rollbacks,
+        "registry": result["registry"],
+    }
     payload = {
         "primary": config,
+        "decision_date": config["decision_date"],
+        "owners": config["owners"],
         "gate_months": gate_months,
         "rollback_months": rollback_months,
         "adwin": "local Bifet-Gavalda cut; river is not installed; a window shorter than 32 points is not cut",
-        "adwin_bound": "The cut assumes values on [0, 1]. Province absolute errors are not on that scale.",
         "seed_method": {
             "recipe": "rf|logdiff|ext|d10_leaf3, the warm-start Champion spec",
-            "protocol": "For month t, fit on 2019-01 through t-1 and score t. The fit does not see t.",
-            "omitted": "2019-01 has no prior modeling month.",
-            "oos_expanding_2019_2024": "Every scored month from 2019-02 through 2024-12. Early 2019 fits use fewer than 12 training months.",
-            "oos_expanding_2023_2024": "The same series restricted to 2023-01..2024-12. Each of those months has at least 48 training months.",
-            "unseeded": "The 12 monthly WAPE values of 2025 are shorter than the 32-point cut, so that seed cannot alarm.",
+            "protocol": "For each month t in 2023-01..2024-12, fit on 2019-01 through t-1 and score t. The fit does not see t.",
+            "n_train_months": "Each scored month has at least 48 training months.",
         },
         "oos_wape": history_wape,
-        "seed_cuts_before_2025": seed_cut_log(history_wape, comparison["monthly_wape"]["deltas"]),
+        "seed_cuts_before_2025": seed_cut_log(history_wape, [delta]),
         "seasonal_2y_matches_fixed_2023_2024_alerts": reference_match,
         "validation_warnings": validation["n_warnings"],
         "dq_overall": quality["scores"]["overall"],
-        "runs": summaries,
+        "primary_result": summary,
     }
     (HERE / "results.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    flat = []
-    for row in summaries:
-        item = {key: value for key, value in row.items() if key not in {"alerts", "promotions", "rollbacks", "registry"}}
-        item["adwin_months"] = " ".join(row["adwin_months"])
-        item["alert_months"] = " ".join(row["alert_months"])
-        flat.append(item)
-    pd.DataFrame(flat).to_csv(HERE / "results.csv", index=False)
-    (HERE / "events.jsonl").write_text("".join(json.dumps(event) + "\n" for event in events), encoding="utf-8")
-    print("DONE", reference_match, "runs", len(summaries), flush=True)
+    flat = {key: value for key, value in summary.items() if key not in {"watches", "promotions", "rollbacks", "registry"}}
+    flat["adwin_months"] = " ".join(summary["adwin_months"])
+    flat["watch_months"] = " ".join(summary["watch_months"])
+    flat["retrain_months"] = " ".join(summary["retrain_months"])
+    pd.DataFrame([flat]).to_csv(HERE / "results.csv", index=False)
+    (HERE / "events.jsonl").write_text(
+        "".join(json.dumps({"config": label, **event}) + "\n" for event in result["events"]),
+        encoding="utf-8",
+    )
+    print(
+        "DONE", "wape", served["wape"], "watches", len(watches),
+        "retrains", len(retrains), "promotions", len(promotions), flush=True,
+    )
 
 
 if __name__ == "__main__":

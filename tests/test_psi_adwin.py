@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -102,6 +105,48 @@ def test_replay_rejects_an_unknown_error_mode():
             ("logdiff_expanding",), promotion_rule("margin_0005_confirm_2"),
             trigger_mode="adwin", error_mode="other",
         )
+
+
+def test_primary_config_is_the_2026_11_21_decision():
+    config = json.loads((Path(__file__).resolve().parents[1] / "experiments" / "psi_adwin" / "config.json").read_text())
+    assert config["decision_date"] == "2026-11-21"
+    assert config["adwin_input"] == "monthly_wape"
+    assert config["adwin_delta"] == 0.002
+    assert config["adwin_seed"] == "oos_expanding_2023_2024"
+    assert config["challenger_trigger"] == "psi_and_adwin"
+    assert config["psi_only"] == "watch"
+    assert config["promotion_preset"] == "margin_0005_confirm_2"
+    assert config["psi_reference"] == "seasonal_2y"
+    assert config["refresh_reference_after_promotion"] is False
+    assert config["rollback_months"] == 2
+    assert "is_covid" in config["covid_flags"]
+
+
+def test_psi_alone_is_a_watch_and_does_not_train_challengers():
+    months = ["2025-01", "2025-02"]
+    y = {
+        "2025-01": np.full(40, 1000.0),
+        "2025-02": np.full(40, 8000.0),
+    }
+    naive = {month: np.full(40, 900.0) for month in months}
+
+    def predict(key, month):
+        return np.full(40, 1000.0)
+
+    def psi(month, reference_end):
+        return True, ["guest_lag_1"], False
+
+    result = replay(
+        months, y, naive, predict, psi, ("logdiff_expanding",),
+        promotion_rule("margin_0005_confirm_2"),
+        trigger_mode="psi_and_adwin", error_mode="province_abs", delta=0.002,
+    )
+    watches = [event for event in result["events"] if event["event"] == "watch"]
+    trained = [event for event in result["events"] if event["event"] == "challengers"]
+    assert [event["month"] for event in watches] == ["2025-01"]
+    assert watches[0]["retrain"] is False
+    assert [event["month"] for event in trained] == ["2025-02"]
+    assert result["adwin_alarm_months"] == ["2025-02"]
 
 
 def test_rollback_restores_the_previous_model_after_two_worse_months():
