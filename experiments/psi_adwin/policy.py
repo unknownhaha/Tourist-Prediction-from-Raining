@@ -26,12 +26,23 @@ def _next_month(month: str) -> str:
 def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tuple[str, ...],
            rule, *, trigger_mode: str, delta: float = 0.002, gate_months: int = 2,
            rollback_months: int = 2, refresh: bool = False, error_mode: str = "province_abs",
-           seed: list[float] | None = None) -> dict:
-    active = "logdiff_expanding@2024-12"
+           seed: list[float] | None = None, initial_model: str = "logdiff_expanding@2024-12",
+           trained_through: str = "2024-12", reference_end: str = "2024-12", log=None,
+           adwin_direction: str = "both") -> dict:
+    """Month-by-month serve / observe / detect / decide loop.
+
+    The keyword defaults reproduce the approved 2025 primary run exactly. ``log`` is called
+    once per month with that month's state (ADWIN window, cut direction, PSI, trigger,
+    decision). ``adwin_direction="up"`` lets only a cut whose newer window has the higher
+    mean error (degradation) count as an ADWIN alarm for the trigger; every cut is logged.
+    """
+    if adwin_direction not in {"both", "up"}:
+        raise KeyError(adwin_direction)
+    active = initial_model
     registry = [{
         "id": "v001",
         "model": active,
-        "trained_through": "2024-12",
+        "trained_through": trained_through,
         "effective_from": months[0],
         "rolled_back": False,
     }]
@@ -41,7 +52,6 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
     streak = {name: 0 for name in candidates}
     recent_psi: list[bool] = []
     last_rain = None
-    reference_end = "2024-12"
     if error_mode not in {"province_abs", "monthly_wape"}:
         raise KeyError(error_mode)
     detector = ADWIN(delta)
@@ -53,15 +63,31 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
     served_rows = []
     adwin_alarm_months = []
     for month in months:
+        n_events = len(events)
+        served_model = active
         pred = np.asarray(predict(active, month), dtype=float)
         actual = np.asarray(y[month], dtype=float)
         lag = np.asarray(naive[month], dtype=float)
+        before = list(detector.window)
         if error_mode == "province_abs":
             adwin_hit = False
-            for error in np.abs(actual - pred):
-                adwin_hit = detector.update(float(error)) or adwin_hit
+            added = [float(e) for e in np.abs(actual - pred)]
+            for error in added:
+                adwin_hit = detector.update(error) or adwin_hit
         else:
-            adwin_hit = detector.update(float(_block(actual, pred, lag)["wape"]))
+            added = [float(_block(actual, pred, lag)["wape"])]
+            adwin_hit = detector.update(added[0])
+        cut = None
+        if adwin_hit:
+            full = before + added
+            kept = list(detector.window)
+            dropped = full[: len(full) - len(kept)]
+            mean_before = float(np.mean(dropped)) if dropped else float("nan")
+            mean_after = float(np.mean(kept)) if kept else float("nan")
+            cut = {"mean_before": mean_before, "mean_after": mean_after, "n_dropped": len(dropped),
+                   "direction": "up" if mean_after > mean_before else "down"}
+            if adwin_direction == "up" and cut["direction"] != "up":
+                adwin_hit = False
         if adwin_hit:
             adwin_alarm_months.append(month)
         psi_hit, features, rain_raw = psi(month, reference_end)
@@ -154,6 +180,17 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
             served_rows.append({
                 "year_month": month, "y_true": float(actual_i), "y_pred": float(pred_i),
                 "y_naive": float(lag_i), "model": active, "decision": decision,
+            })
+        if log is not None:
+            block = _block(actual, pred, lag)
+            log({
+                "month": month, "served_model": served_model, "served": block,
+                "adwin_window_len": len(detector.window),
+                "adwin_mean": float(np.mean(detector.window)) if detector.window else float("nan"),
+                "adwin_cut": cut is not None, "adwin_alarm": bool(adwin_hit), "cut": cut,
+                "psi": bool(psi_hit), "psi_features": list(features), "rain_confirmed": rain_confirmed,
+                "trigger": bool(fired), "decision": decision, "reference_end": reference_end,
+                "events": events[n_events:],
             })
         if probation is not None and probation.get("starts") == _next_month(month) and decision == "PROMOTE":
             active = probation["pending_model"]

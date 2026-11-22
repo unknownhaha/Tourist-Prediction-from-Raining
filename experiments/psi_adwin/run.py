@@ -142,7 +142,8 @@ def seed_cut_log(series: list[dict], deltas: list[float]) -> list[dict]:
     return found
 
 
-def champion_oos_wape(models: Models, table: pd.DataFrame, start: str, end: str) -> list[dict]:
+def champion_oos_wape(models: Models, table: pd.DataFrame, start: str, end: str,
+                      model_name: str = "logdiff_expanding") -> list[dict]:
     """One-step WAPE of the warm-start Champion recipe.
 
     Month t is predicted by ``logdiff_expanding`` fit on 2019-01 through t-1.
@@ -162,7 +163,7 @@ def champion_oos_wape(models: Models, table: pd.DataFrame, start: str, end: str)
             })
             continue
         part = table.loc[table["year_month"] == month].sort_values("province_id")
-        pred = models.predict(f"logdiff_expanding@{train_end}", month)
+        pred = models.predict(f"{model_name}@{train_end}", month)
         actual = part["guest_arrivals_total"].to_numpy(dtype=float)
         n_train = int(table.loc[table["year_month"].between("2019-01", train_end), "year_month"].nunique())
         value = wape(actual, pred)
