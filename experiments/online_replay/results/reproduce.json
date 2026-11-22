@@ -1,0 +1,120 @@
+{
+  "online_trials": {
+    "rf_logdiff|2023": {
+      "wape": 0.19966991334615072,
+      "reference": 0.19966991334615072,
+      "match_4dp": true
+    },
+    "rf_level|2023": {
+      "wape": 0.07488332904130364,
+      "reference": 0.07488332904130364,
+      "match_4dp": true
+    },
+    "ewa_logdiff_level|2023": {
+      "wape": 0.07131169664207725,
+      "reference": 0.07131169664207725,
+      "match_4dp": true
+    },
+    "seasonal_naive|2023": {
+      "wape": 0.32715528816404066,
+      "reference": 0.32715528816404066,
+      "match_4dp": true
+    },
+    "level_port_equals_run_year|2023": {
+      "max_abs_diff": 9.313225746154785e-10
+    },
+    "rf_logdiff|2024": {
+      "wape": 0.05936084069568007,
+      "reference": 0.05936084069568007,
+      "match_4dp": true
+    },
+    "rf_level|2024": {
+      "wape": 0.06997717936881007,
+      "reference": 0.06997717936881007,
+      "match_4dp": true
+    },
+    "ewa_logdiff_level|2024": {
+      "wape": 0.056370727420677634,
+      "reference": 0.056370727420677634,
+      "match_4dp": true
+    },
+    "seasonal_naive|2024": {
+      "wape": 0.11152113853639248,
+      "reference": 0.11152113853639248,
+      "match_4dp": true
+    },
+    "level_port_equals_run_year|2024": {
+      "max_abs_diff": 9.313225746154785e-10
+    },
+    "rf_logdiff|2025": {
+      "wape": 0.04829016837105007,
+      "reference": 0.04829016837105007,
+      "match_4dp": true
+    },
+    "rf_level|2025": {
+      "wape": 0.05961592738032414,
+      "reference": 0.05961592738032414,
+      "match_4dp": true
+    },
+    "ewa_logdiff_level|2025": {
+      "wape": 0.04554990159651405,
+      "reference": 0.04554990159651405,
+      "match_4dp": true
+    },
+    "seasonal_naive|2025": {
+      "wape": 0.05480419201387209,
+      "reference": 0.05480419201387209,
+      "match_4dp": true
+    },
+    "level_port_equals_run_year|2025": {
+      "max_abs_diff": 9.313225746154785e-10
+    }
+  },
+  "champion": {
+    "2023": {
+      "wape": 0.06502057545896253,
+      "wape_pct": 6.5021,
+      "reference_pct": 6.5,
+      "within_0.01pt": true,
+      "logdiff_expert_wape": 0.08549391530241658
+    },
+    "2024": {
+      "wape": 0.0559093933332637,
+      "wape_pct": 5.5909,
+      "reference_pct": 5.59,
+      "within_0.01pt": true,
+      "logdiff_expert_wape": 0.05937713042970685
+    },
+    "2025": {
+      "wape": 0.04536618344145372,
+      "wape_pct": 4.5366,
+      "reference_pct": 4.54,
+      "within_0.01pt": true,
+      "logdiff_expert_wape": 0.04656365545474668
+    }
+  },
+  "no_rain": {
+    "2023": {
+      "wape": 0.06657219298990792,
+      "wape_pct": 6.6572,
+      "reference_pct": 6.66,
+      "within_0.01pt": true,
+      "logdiff_expert_wape": 0.0864731761495282
+    },
+    "2024": {
+      "wape": 0.05719280484863148,
+      "wape_pct": 5.7193,
+      "reference_pct": 5.72,
+      "within_0.01pt": true,
+      "logdiff_expert_wape": 0.06072795930938022
+    },
+    "2025": {
+      "wape": 0.04435770937211995,
+      "wape_pct": 4.4358,
+      "reference_pct": 4.44,
+      "within_0.01pt": true,
+      "logdiff_expert_wape": 0.044942120058078044
+    }
+  },
+  "all_match": true
+}

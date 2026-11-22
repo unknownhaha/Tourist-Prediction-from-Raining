@@ -1,0 +1,8 @@
+{
+  "note": "Proposed event spans; DS/ML must confirm the dates. The model only uses event_lag1 (event in t-1). event_now is an oracle/scenario column and never enters a model matrix.",
+  "events": [
+    {"name": "Chiang Rai flood", "province_id": "57", "start": "2024-09", "end": "2024-10"},
+    {"name": "Songkhla flood", "province_id": "90", "start": "2025-11", "end": "2025-12"},
+    {"name": "Sa Kaeo event", "province_id": "27", "start": "2025-11", "end": "2025-12"}
+  ]
+}
