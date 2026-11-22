@@ -8,6 +8,7 @@ import re
 import sys
 import time
 import xml.etree.ElementTree as ET
+from collections import deque
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -90,13 +91,13 @@ def parse_title(html: str) -> str:
 def build_tree(session: requests.Session, cfg: dict) -> list[dict]:
     nodes: dict[int, dict] = {}
     hub = cfg["hub_category_id"]
-    queue: list[tuple[int, int | None, int | None]] = [(hub, None, None)]
+    queue: deque[tuple[int, int | None, int | None]] = deque([(hub, None, None)])
     seen: set[int] = set()
 
     year_map = {y["category_id"]: y for y in cfg["year_categories"]}
 
     while queue:
-        cid, parent, year_be = queue.pop(0)
+        cid, parent, year_be = queue.popleft()
         if cid in seen:
             continue
         seen.add(cid)
@@ -129,9 +130,9 @@ def discover_year_category_ids(
     """BFS from a year root, skipping sitewide menu categories."""
     year_roots = {y["category_id"] for y in cfg["year_categories"]}
     seen: set[int] = {root_id}
-    queue = [root_id]
+    queue: deque[int] = deque([root_id])
     while queue:
-        cid = queue.pop(0)
+        cid = queue.popleft()
         html = fetch_category_html(session, cid)
         time.sleep(cfg["rate_limit_seconds"])
         for child in parse_child_categories(html):
@@ -151,13 +152,42 @@ def category_descendants(tree: list[dict], root_id: int) -> set[int]:
     for node in tree:
         children.setdefault(node.get("parent_id"), []).append(node["category_id"])
     seen: set[int] = set()
-    queue = [root_id]
+    queue: deque[int] = deque([root_id])
     while queue:
-        cid = queue.pop(0)
+        cid = queue.popleft()
         if cid in seen:
             continue
         seen.add(cid)
         queue.extend(children.get(cid, []))
+    return seen
+
+
+def category_ids_for_year(
+    session: requests.Session,
+    cfg: dict,
+    root_id: int,
+    tree: list[dict],
+) -> set[int]:
+    """Use the saved category tree. Fall back to a live walk only when the year root is missing."""
+    if not any(node.get("category_id") == root_id for node in tree):
+        return discover_year_category_ids(session, cfg, root_id)
+    year_roots = {y["category_id"] for y in cfg.get("year_categories", [])}
+    children: dict[int | None, list[int]] = {}
+    for node in tree:
+        children.setdefault(node.get("parent_id"), []).append(node["category_id"])
+    seen: set[int] = set()
+    queue: deque[int] = deque([root_id])
+    while queue:
+        cid = queue.popleft()
+        if cid in seen:
+            continue
+        seen.add(cid)
+        for child in children.get(cid, []):
+            if child in seen or child in SITEWIDE_CATEGORY_IDS:
+                continue
+            if child in year_roots and child != root_id:
+                continue
+            queue.append(child)
     return seen
 
 
@@ -206,56 +236,78 @@ def discover_attachments_http(session: requests.Session, news_url: str) -> list[
         return []
 
 
+class PlaywrightPages:
+    """One Chromium instance for every news page in a crawl."""
+
+    def __init__(self, cfg: dict) -> None:
+        self._cfg = cfg
+        self._playwright = None
+        self._browser = None
+        self.page = None
+
+    def get(self):
+        if self.page is None:
+            from playwright.sync_api import sync_playwright
+
+            self._playwright = sync_playwright().start()
+            self._browser = self._playwright.chromium.launch(headless=True)
+            self.page = self._browser.new_page(user_agent=self._cfg["user_agent"])
+        return self.page
+
+    def close(self) -> None:
+        if self._browser is not None:
+            self._browser.close()
+            self._browser = None
+        if self._playwright is not None:
+            self._playwright.stop()
+            self._playwright = None
+        self.page = None
+
+
+def _read_attachment_page(page, news_url: str, expected_title: str, run_id: str, meta: dict) -> list[str]:
+    page.goto(news_url, wait_until="domcontentloaded", timeout=25000)
+    try:
+        page.get_by_role("button", name="ยอมรับทั้งหมด").click(timeout=3000)
+    except Exception:
+        pass
+    page_title = page.title()
+    links = parse_attachment_hrefs(page.content())
+    if not links and (
+        "ไม่พบข่าว" in page_title
+        or (
+            expected_title
+            and expected_title[:30] not in page_title
+            and page_title[:30] not in expected_title
+        )
+    ):
+        append_row(
+            {
+                **meta,
+                "run_id": run_id,
+                "news_url": news_url,
+                "news_title": expected_title,
+                "status": "rejected_title_mismatch",
+                "error_message": page_title[:200],
+            }
+        )
+    return links
+
+
 def discover_attachments_playwright(
     news_url: str,
     expected_title: str,
     cfg: dict,
     run_id: str,
     meta: dict,
+    page=None,
 ) -> list[str]:
-    from playwright.sync_api import sync_playwright
-
-    links: list[str] = []
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(user_agent=cfg["user_agent"])
-        page.goto(news_url, wait_until="domcontentloaded", timeout=25000)
-        try:
-            page.get_by_role("button", name="ยอมรับทั้งหมด").click(timeout=3000)
-        except Exception:
-            pass
-        page_title = page.title()
-        html = page.content()
-        links = parse_attachment_hrefs(html)
-        if not links and "ไม่พบข่าว" in page_title:
-            append_row(
-                {
-                    **meta,
-                    "run_id": run_id,
-                    "news_url": news_url,
-                    "news_title": expected_title,
-                    "status": "rejected_title_mismatch",
-                    "error_message": page_title[:200],
-                }
-            )
-        elif (
-            not links
-            and expected_title
-            and expected_title[:30] not in page_title
-            and page_title[:30] not in expected_title
-        ):
-            append_row(
-                {
-                    **meta,
-                    "run_id": run_id,
-                    "news_url": news_url,
-                    "news_title": expected_title,
-                    "status": "rejected_title_mismatch",
-                    "error_message": page_title[:200],
-                }
-            )
-        browser.close()
-    return links
+    if page is not None:
+        return _read_attachment_page(page, news_url, expected_title, run_id, meta)
+    pages = PlaywrightPages(cfg)
+    try:
+        return _read_attachment_page(pages.get(), news_url, expected_title, run_id, meta)
+    finally:
+        pages.close()
 
 
 def _news_numeric_id(news_url: str) -> int:
@@ -394,12 +446,40 @@ def crawl_year(
         tree = build_tree(session, cfg)
         save_tree(tree)
 
-    cat_ids = discover_year_category_ids(session, cfg, root_id)
+    cat_ids = category_ids_for_year(session, cfg, root_id, tree)
 
     stats = {"categories": len(cat_ids), "posts": 0, "files": 0, "bytes": 0, "inventory": []}
 
     meta_base = {"year_be": year_be, "year_ce": year_ce}
+    pages = PlaywrightPages(cfg)
+    try:
+        _crawl_categories(
+            session,
+            cfg,
+            cat_ids,
+            stats,
+            meta_base,
+            run_id,
+            inventory_only,
+            skip_posts,
+            pages,
+        )
+    finally:
+        pages.close()
+    return stats
 
+
+def _crawl_categories(
+    session: requests.Session,
+    cfg: dict,
+    cat_ids: set[int],
+    stats: dict,
+    meta_base: dict,
+    run_id: str,
+    inventory_only: bool,
+    skip_posts: bool,
+    pages: PlaywrightPages,
+) -> None:
     for cid in sorted(cat_ids):
         print(f"  category {cid}...", flush=True)
         cat_html = fetch_category_html(session, cid)
@@ -458,7 +538,7 @@ def crawl_year(
             if not attach_urls and _news_numeric_id(news_url) >= 100000:
                 try:
                     attach_urls = discover_attachments_playwright(
-                        news_url, title, cfg, run_id, meta
+                        news_url, title, cfg, run_id, meta, page=pages.get()
                     )
                 except Exception as e:
                     append_row(
@@ -497,7 +577,6 @@ def crawl_year(
                     "status": "failed" if fail else "ok",
                 }
             )
-    return stats
 
 
 def main(argv: list[str] | None = None) -> int:

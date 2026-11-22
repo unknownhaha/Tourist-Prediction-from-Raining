@@ -44,6 +44,9 @@ def load_crosswalk() -> pd.DataFrame:
 
 
 def _canonical_by_id(cw: pd.DataFrame) -> dict[str, str]:
+    cached = cw.attrs.get("_canonical_by_id")
+    if cached is not None:
+        return cached
     canon = cw.dropna(subset=["province_id"]).copy()
     canon = canon[canon["province_id"].astype(str).str.strip() != ""]
     out: dict[str, str] = {}
@@ -55,7 +58,38 @@ def _canonical_by_id(cw: pd.DataFrame) -> dict[str, str]:
             if t == grp["alias"].astype(str).str.strip().iloc[0] or len(t) >= len(canonical):
                 canonical = t
         out[pid_s] = canonical
+    cw.attrs["_canonical_by_id"] = out
     return out
+
+
+def _province_id_value(pid) -> str | None:
+    try:
+        if pd.isna(pid):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if str(pid).strip() == "":
+        return None
+    try:
+        return str(int(float(pid)))
+    except (TypeError, ValueError):
+        return str(pid).strip()
+
+
+def _alias_to_id_map(cw: pd.DataFrame) -> dict[str, str | None]:
+    """One normalized-name map per crosswalk frame. Parsers look up every sheet row."""
+    cached = cw.attrs.get("_alias_to_id")
+    if cached is not None:
+        return cached
+    mapping: dict[str, str | None] = {}
+    for col in ("alias", "province_th"):
+        for alias, pid in zip(cw[col].astype(str).tolist(), cw["province_id"].tolist(), strict=True):
+            key = normalize_name(alias)
+            if not key or key.lower() in ("nan", "none") or key in mapping:
+                continue
+            mapping[key] = _province_id_value(pid)
+    cw.attrs["_alias_to_id"] = mapping
+    return mapping
 
 
 def alias_to_province_id(alias: str, crosswalk: pd.DataFrame | None = None) -> str | None:
@@ -63,17 +97,7 @@ def alias_to_province_id(alias: str, crosswalk: pd.DataFrame | None = None) -> s
     key = normalize_name(alias)
     if not key or key.lower() in ("nan", "none"):
         return None
-    for col in ("alias", "province_th"):
-        hit = cw[cw[col].astype(str).map(normalize_name) == key]
-        if not hit.empty:
-            pid = hit.iloc[0]["province_id"]
-            if pd.isna(pid) or str(pid).strip() == "":
-                return None
-            try:
-                return str(int(float(pid)))
-            except (TypeError, ValueError):
-                return str(pid).strip()
-    return None
+    return _alias_to_id_map(cw).get(key)
 
 
 def classify_sheet(sheet_name: str, crosswalk: pd.DataFrame | None = None) -> str:

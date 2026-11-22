@@ -39,10 +39,20 @@ def fetch_round(year_be: int, subcode: str, run_id: str) -> list[Path]:
     dest_dir.mkdir(parents=True, exist_ok=True)
     saved: list[Path] = []
     for link in links:
-        r = requests.get(link, headers=UA, timeout=300)
         name = link.split("/")[-1]
         dest = dest_dir / name
-        dest.write_bytes(r.content)
+        if dest.exists() and dest.stat().st_size > 0:
+            saved.append(dest)
+            continue
+        tmp = dest.with_suffix(dest.suffix + ".part")
+        with requests.get(link, headers=UA, timeout=300, stream=True) as r:
+            r.raise_for_status()
+            status = r.status_code
+            with tmp.open("wb") as handle:
+                for chunk in r.iter_content(1024 * 256):
+                    if chunk:
+                        handle.write(chunk)
+        tmp.replace(dest)
         digest = sha256_file(dest)
         append_row(
             {
@@ -55,7 +65,7 @@ def fetch_round(year_be: int, subcode: str, run_id: str) -> list[Path]:
                 "file_type": "rar",
                 "sha256": digest,
                 "size_bytes": dest.stat().st_size,
-                "http_status": r.status_code,
+                "http_status": status,
                 "status": "ok",
             }
         )
@@ -76,6 +86,8 @@ def _seven_zip() -> Path | None:
 
 def extract_rar(rar_path: Path) -> Path:
     extract_dir = rar_path.parent / rar_path.stem
+    if extract_dir.exists() and any(extract_dir.rglob("*.xls*")):
+        return extract_dir
     extract_dir.mkdir(exist_ok=True)
     seven = _seven_zip()
     if seven:

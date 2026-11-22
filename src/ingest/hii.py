@@ -53,9 +53,9 @@ def stage(csv_path: Path) -> Path:
             "AvgRain": "avg_rain_mm",
         }
     )
-    df["year_month"] = df.apply(
-        lambda r: f"{int(r['year_ce']):04d}-{int(r['month']):02d}", axis=1
-    )
+    year = pd.to_numeric(df["year_ce"], errors="coerce").astype("int64")
+    month = pd.to_numeric(df["month"], errors="coerce").astype("int64")
+    df["year_month"] = year.astype(str).str.zfill(4) + "-" + month.astype(str).str.zfill(2)
     df["source"] = "hii"
     df["source_file"] = csv_path.name
     out_cols = [

@@ -1,0 +1,107 @@
+{
+  "target": "guest_arrivals_total",
+  "features": [
+    "guest_lag_1",
+    "guest_lag_12",
+    "rain_lag_1",
+    "rain_roll3",
+    "is_covid",
+    "is_covid_lag12"
+  ],
+  "train": {
+    "start": "2019-01",
+    "end": "2023-12",
+    "n": 4620
+  },
+  "test": {
+    "start": "2024-01",
+    "end": "2024-12",
+    "n": 924
+  },
+  "hyperparameters_fixed": {
+    "seasonal_naive": "predict guest_lag_12",
+    "linear": "LinearRegression, StandardScaler fit on train only",
+    "ridge": "Ridge alpha=1.0, StandardScaler fit on train only",
+    "random_forest": "n_estimators=300, max_depth=10, min_samples_leaf=3, random_state=42",
+    "catboost": "iterations=500, depth=6, learning_rate=0.05, loss_function=RMSE, random_seed=42"
+  },
+  "predictions_clipped_at_zero": true,
+  "tuned_on_test": false,
+  "models": [
+    {
+      "model": "seasonal_naive",
+      "train_2019_2023": {
+        "wape": 0.5020101407163622,
+        "mae": 59068.95735930736,
+        "rmse": 185598.28430719578,
+        "n": 4620
+      },
+      "test_2024": {
+        "wape": 0.11152113853639248,
+        "mae": 21049.72943722944,
+        "rmse": 56692.98828924528,
+        "n": 924
+      }
+    },
+    {
+      "model": "linear",
+      "train_2019_2023": {
+        "wape": 0.16351450523742664,
+        "mae": 19239.91281075527,
+        "rmse": 51111.33394141514,
+        "n": 4620
+      },
+      "test_2024": {
+        "wape": 0.07852848295046781,
+        "mae": 14822.33181007214,
+        "rmse": 30381.046871435046,
+        "n": 924
+      }
+    },
+    {
+      "model": "ridge",
+      "train_2019_2023": {
+        "wape": 0.16353839508213516,
+        "mae": 19242.723806199298,
+        "rmse": 51112.94988422284,
+        "n": 4620
+      },
+      "test_2024": {
+        "wape": 0.07853748354436098,
+        "mae": 14824.030681413593,
+        "rmse": 30397.877949178208,
+        "n": 924
+      }
+    },
+    {
+      "model": "random_forest",
+      "train_2019_2023": {
+        "wape": 0.09838265628921442,
+        "mae": 11576.182347532382,
+        "rmse": 31438.039679664424,
+        "n": 4620
+      },
+      "test_2024": {
+        "wape": 0.08539912087560778,
+        "mae": 16119.171774974118,
+        "rmse": 49962.907438708404,
+        "n": 924
+      }
+    },
+    {
+      "model": "catboost",
+      "train_2019_2023": {
+        "wape": 0.09542690667407307,
+        "mae": 11228.394456768998,
+        "rmse": 20726.89958036525,
+        "n": 4620
+      },
+      "test_2024": {
+        "wape": 0.07911102037326256,
+        "mae": 14932.286346923369,
+        "rmse": 36718.10994929033,
+        "n": 924
+      }
+    }
+  ]
+}

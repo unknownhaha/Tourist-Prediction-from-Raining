@@ -210,12 +210,31 @@ def _row_label(df: pd.DataFrame, row_idx: int, label_col: int) -> str:
     return ""
 
 
-def parse_workbook(path: Path, cw: pd.DataFrame | None = None) -> pd.DataFrame:
+def parse_workbook(
+    path: Path,
+    cw: pd.DataFrame | None = None,
+    xl: pd.ExcelFile | None = None,
+) -> pd.DataFrame:
     if cw is None:
         cw = load_crosswalk()
     rel = path_relative_to_root(path)
     frames: list[pd.DataFrame] = []
-    xl = pd.ExcelFile(path)
+    owns = xl is None
+    book = xl if xl is not None else pd.ExcelFile(path)
+    try:
+        return _parse_open_workbook(book, path, rel, cw, frames)
+    finally:
+        if owns:
+            book.close()
+
+
+def _parse_open_workbook(
+    xl: pd.ExcelFile,
+    path: Path,
+    rel: str,
+    cw: pd.DataFrame,
+    frames: list[pd.DataFrame],
+) -> pd.DataFrame:
     for sheet in xl.sheet_names:
         sheet_stripped = str(sheet).strip()
         level = classify_sheet(sheet_stripped, cw)
@@ -229,7 +248,7 @@ def parse_workbook(path: Path, cw: pd.DataFrame | None = None) -> pd.DataFrame:
             area_level = "province"
         else:
             continue
-        df = pd.read_excel(path, sheet_name=sheet, header=None)
+        df = xl.parse(sheet, header=None)
         if df.shape[0] < 40:
             continue
         year_ce = _year_ce_from_workbook(path, df)

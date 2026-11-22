@@ -1,25 +1,27 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tourism Lab · ห้องทดลองพยากรณ์</title>
 <style>
-:root{--ink:#173b37;--muted:#516b63;--line:#d4e0da;--green:#176650;--bg:#f1f5f2;--orange:#b35b29}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Leelawadee UI",Tahoma,sans-serif}header{background:#123d36;color:white}nav,main,.intro{max-width:1220px;margin:auto;padding:0 24px}nav{display:flex;gap:18px;align-items:center;padding-block:14px;border-bottom:1px solid #437067;flex-wrap:wrap}nav b{margin-right:auto;letter-spacing:.09em}nav a{color:#e1efe6;text-decoration:none}.intro{padding-block:24px 32px}.intro p{color:#c4dfcf}h1,h2,h3,p{margin:0}h1{font-size:clamp(28px,3.7vw,46px);line-height:1.35}h2{font-size:21px}h3{font-size:16px}main{padding-bottom:40px}.panel,.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:20px}.panel{margin-top:16px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.stat{padding:14px 18px}.stat b{display:block;font-size:23px}.stat small,p,.note{color:var(--muted)}.bar,.controls,.legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.controls,.legend{justify-content:flex-start}.legend{margin:8px 0;color:var(--muted);font-size:14px}.legend span:before{content:"";display:inline-block;width:15px;border-top:3px solid var(--color);margin-right:5px;vertical-align:middle}button,select{font:inherit;border:1px solid #a9c0b5;border-radius:7px;background:#fff;color:var(--ink);padding:7px 12px}button{cursor:pointer}button:disabled,select:disabled{opacity:.52;cursor:default}.primary{background:var(--green);color:white;font-weight:700}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #d78932}progress{width:100%;accent-color:var(--green);margin:10px 0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0 0;padding:0;list-style:none}.steps li{background:#eef5f0;padding:11px 13px;border-radius:6px}.steps span{display:block;color:var(--muted);font-size:14px}.plots{display:grid;grid-template-columns:1fr 1fr;gap:16px}.plot{height:190px}.plot svg{width:100%;height:100%}.plot text{font:13px Tahoma,sans-serif;fill:var(--muted)}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;margin-top:8px}td,th{padding:7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}td:first-child,th:first-child{text-align:left}summary{cursor:pointer;font-weight:700}details{margin-top:14px}.features{margin:10px 0}.feature{display:grid;grid-template-columns:minmax(115px,1fr) 2fr 55px;align-items:center;gap:8px}.track{height:9px;border-radius:5px;background:#e4ece8;position:relative}.fill{height:100%;border-radius:inherit}#feedback{min-height:1.6em;color:var(--green)}@media(max-width:800px){.plots{grid-template-columns:1fr}.stats,.steps{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){main,nav,.intro{padding-inline:12px}.panel{padding:14px}.stat{padding:10px}.stat b{font-size:18px}nav{gap:10px}.steps{grid-template-columns:1fr}}
-</style></head><body><header><nav><b>TOURISM LAB</b><a href="#control">ฝึกโมเดล</a><a href="#eda">สำรวจข้อมูล</a><a href="#models">ผลและรุ่นโมเดล</a></nav><div class="intro"><h1>ห้องทดลองพยากรณ์ผู้เข้าพัก</h1><p>77 จังหวัด · ข้อมูลฝึกปี 2019–2023 พร้อม lag จากปี 2018 · ทดลองออนไลน์ 24 เดือน</p></div></header>
-<main><section id="control" class="panel"><div class="bar"><div><h2>ฝึกทีละเดือน</h2><p id="status">กำลังเชื่อมต่อ Python…</p></div><div class="controls"><button class="primary" id="train" disabled>Train</button><button id="reset" disabled>Reset · เริ่มใหม่</button></div></div><progress id="progress" max="24" value="0" aria-label="เดือนที่ฝึกแล้ว"></progress><div id="feedback" role="status"></div><a id="local" hidden href="http://127.0.0.1:8774/">เปิดเซิร์ฟเวอร์ฝึกในเครื่อง</a></section>
+:root{--ink:#173b37;--muted:#516b63;--line:#d4e0da;--green:#176650;--bg:#f1f5f2;--orange:#b35b29}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Leelawadee UI",Tahoma,sans-serif}header{background:#123d36;color:white}nav,main,.intro{max-width:1220px;margin:auto;padding:0 24px}nav{display:flex;gap:18px;align-items:center;padding-block:14px;border-bottom:1px solid #437067;flex-wrap:wrap}nav b{margin-right:auto;letter-spacing:.09em}nav a{color:#e1efe6;text-decoration:none}.intro{padding-block:24px 32px}.intro p{color:#c4dfcf}h1,h2,h3,p{margin:0}h1{font-size:clamp(28px,3.7vw,46px);line-height:1.35}h2{font-size:21px}h3{font-size:16px}main{padding-bottom:40px}.panel,.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:20px}.panel{margin-top:16px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.stat{padding:14px 18px}.stat b{display:block;font-size:23px}.stat small,p,.note{color:var(--muted)}.bar,.controls,.legend{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.controls,.legend{justify-content:flex-start}.legend{margin:8px 0;color:var(--muted);font-size:14px}.legend span:before{content:"";display:inline-block;width:15px;border-top:3px solid var(--color);margin-right:5px;vertical-align:middle}.legend span.dashed:before{border-top-style:dashed}button,select{font:inherit;border:1px solid #a9c0b5;border-radius:7px;background:#fff;color:var(--ink);padding:7px 12px}button{cursor:pointer}button:disabled,select:disabled{opacity:.52;cursor:default}.primary{background:var(--green);color:white;font-weight:700}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #d78932}progress{width:100%;accent-color:var(--green);margin:10px 0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0 0;padding:0;list-style:none}.steps li{background:#eef5f0;padding:11px 13px;border-radius:6px}.steps span{display:block;color:var(--muted);font-size:14px}.plots{display:grid;grid-template-columns:1fr 1fr;gap:16px}.plot{height:190px}.plot svg{width:100%;height:100%}.plot text{font:13px Tahoma,sans-serif;fill:var(--muted)}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;margin-top:8px}td,th{padding:7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}td:first-child,th:first-child{text-align:left}summary{cursor:pointer;font-weight:700}details{margin-top:14px}.features{margin:10px 0}.feature{display:grid;grid-template-columns:minmax(115px,1fr) 2fr 55px;align-items:center;gap:8px}.track{height:9px;border-radius:5px;background:#e4ece8;position:relative}.fill{height:100%;border-radius:inherit}#feedback{min-height:1.6em;color:var(--green)}.warn-label{color:#c77700;font-weight:700}#signal.drift,p.drift{color:#c0392b;font-weight:700}#signal.warn,p.warn{color:#c77700;font-weight:700}#retrain:not(:disabled){background:#c0392b;color:#fff;border-color:#a93226;font-weight:700}td.over{color:#c0392b}td.under{color:#176650}@media(max-width:800px){.plots{grid-template-columns:1fr}.stats,.steps{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){main,nav,.intro{padding-inline:12px}.panel{padding:14px}.stat{padding:10px}.stat b{font-size:18px}nav{gap:10px}.steps{grid-template-columns:1fr}}
+</style></head><body><header><nav><b>TOURISM LAB</b><a href="#control">ฝึกโมเดล</a><a href="#eda">สำรวจข้อมูล</a><a href="#models">ผลและรุ่นโมเดล</a></nav><div class="intro"><h1>ห้องทดลองพยากรณ์ผู้เข้าพัก</h1><p>77 จังหวัด · Linear ฟิตถึงธันวาคม 2023 · เดินออนไลน์ 2024-01 ถึง 2025-12 ทีละเดือน</p></div></header>
+<main><section id="control" class="panel"><div class="bar"><div><h2>ฝึกทีละเดือน</h2><p id="status">กำลังเชื่อมต่อ Python…</p></div><div class="controls"><button class="primary" id="train" disabled>Train</button><button id="retrain" disabled title="กดได้เมื่อตัวตรวจจับแจ้ง Drift และต้องฝึกใหม่">Retrain</button><button id="reset" disabled>Reset · เริ่มใหม่</button></div></div><progress id="progress" max="24" value="0" aria-label="เดือนที่ฝึกแล้ว"></progress><div id="feedback" role="status"></div><a id="local" hidden href="http://127.0.0.1:8774/">เปิดเซิร์ฟเวอร์ฝึกในเครื่อง</a></section>
 <section class="panel"><div class="bar"><div><h2>ตรวจผลย้อนหลัง</h2><p>เลือกเดือนเพื่อดูผลทุกแผง ณ สิ้นเดือนนั้น</p></div><div class="controls"><label>เดือน <select id="month" disabled></select></label><button id="play" disabled>เล่นย้อนหลัง</button></div></div></section>
-<div class="stats"><div class="stat">โมเดลที่ใช้พยากรณ์<b id="served">—</b></div><div class="stat">WAPE เดือนที่เลือก<b id="wape">—</b></div><div class="stat">สัญญาณ Drift<b id="signal">—</b></div><div class="stat">การตัดสินใจ<b id="decision">—</b></div></div>
+<div class="stats"><div class="stat">โมเดลที่ใช้พยากรณ์<b id="served">—</b></div><div class="stat">WAPE เดือนที่เลือก<b id="wape">—</b></div><div class="stat"><span class="warn-label">Warning</span><b id="signal">—</b></div><div class="stat">การตัดสินใจ<b id="decision">—</b></div></div>
 <section class="panel"><h2>ลำดับการทำงานรายเดือน</h2><ol id="steps" class="steps"></ol></section>
-<section id="eda" class="plots"><div class="panel"><div class="bar"><h2>ยอดจริงและยอดพยากรณ์</h2><label>พื้นที่ <select id="province"><option value="">ทั่วประเทศ</option></select></label></div><p>จำนวนคน · โมเดลที่ใช้พยากรณ์ในแต่ละเดือน</p><div class="legend"><span style="--color:#16745c">ยอดจริง</span><span style="--color:#b35b29">พยากรณ์</span></div><div id="arrivals" class="plot"></div></div>
+<section id="eda" class="plots"><div class="panel"><div class="bar"><h2>ยอดจริงและยอดพยากรณ์</h2><label>พื้นที่ <select id="province"><option value="">ทั่วประเทศ</option></select></label></div><p>จำนวนคน · โมเดลที่ใช้พยากรณ์ในแต่ละเดือน</p><div class="legend"><span style="--color:#16745c">ยอดจริง</span><span style="--color:#b35b29">พยากรณ์</span></div><div id="arrivals" class="plot"></div><p id="rain-note">ปริมาณฝนรายเดือน</p><div class="legend"><span style="--color:#2a6f97">ปริมาณฝน (มม.)</span></div><div id="rain" class="plot"></div></div>
 <div class="panel"><h2>ความคลาดเคลื่อนตามเวลา</h2><p>WAPE รายเดือนของ 77 จังหวัด · ยิ่งต่ำยิ่งดี</p><div class="legend" id="keys"></div><div id="performance" class="plot"></div></div></section>
-<section id="models" class="plots"><div class="panel"><h2>Champion และ Challenger</h2><p>คะแนนของคำพยากรณ์ก่อนเรียนรู้ยอดจริงของเดือนที่เลือก</p><div class="scroll"><table><thead><tr><th>โมเดล</th><th>WAPE</th><th>MAE (คน)</th><th>RMSE (คน)</th></tr></thead><tbody id="scores"></tbody></table></div><p id="weights"></p></div><div class="panel"><h2>ตรวจสอบ Drift</h2><p>PSI เทียบฟีเจอร์กับเดือนเดียวกันในปี 2022–2023 · เกณฑ์ 0.15</p><div id="features" class="features"></div><p id="drift"></p></div></section>
-<section class="panel"><h2>เหตุการณ์และรุ่นโมเดล</h2><p>พิจารณา Challenger เมื่อ Page-Hinkley ตรวจพบว่า WAPE สูงขึ้น ส่วน PSI ใช้ติดตามการเปลี่ยนของฟีเจอร์ รุ่นที่ผ่านเกณฑ์สองเดือนติดกันเริ่มใช้งานในเดือนถัดไป</p><div class="scroll"><table><thead><tr><th>เดือน</th><th>โมเดลที่ใช้</th><th>PSI</th><th>Page-Hinkley</th><th>ผลนโยบาย</th></tr></thead><tbody id="events"></tbody></table></div><details><summary>ประวัติรุ่นที่ขึ้นใช้งาน</summary><div class="scroll"><table><thead><tr><th>รุ่น</th><th>โมเดล</th><th>เริ่มใช้</th><th>Rollback</th></tr></thead><tbody id="registry"></tbody></table></div></details>
-<details><summary>ยอดจริงและคำพยากรณ์รายจังหวัด</summary><div class="scroll"><table><thead><tr><th>จังหวัด</th><th>ยอดจริง</th><th>EWA</th><th>RF logdiff</th><th>YoY3</th></tr></thead><tbody id="rows"></tbody></table></div></details></section></main>
+<section id="models" class="plots"><div class="panel"><h2>Champion และ Challenger</h2><p>คะแนนของคำพยากรณ์ก่อนเรียนรู้ยอดจริงของเดือนที่เลือก · Champion เริ่มต้นคือ Linear</p><div class="scroll"><table><thead><tr><th>โมเดล</th><th>WAPE</th><th>MAE (คน)</th><th>RMSE (คน)</th></tr></thead><tbody id="scores"></tbody></table></div><p id="weights"></p></div><div class="panel"><h2>ตรวจสอบ Drift</h2><p>Page-Hinkley เฝ้า WAPE รายเดือนของโมเดลที่เสิร์ฟ · PSI เทียบ 4 ฟีเจอร์กับเดือนเดียวกันในปี 2022–2023 เกณฑ์ 0.15 และเป็นแค่สัญญาณเฝ้าดู</p><div id="features" class="features"></div><p id="drift"></p></div></section>
+<section class="panel"><h2>เหตุการณ์และรุ่นโมเดล</h2><p>Warning สีส้มคือ PSI เฝ้าดู · Drift สีแดงคือ Page-Hinkley แจ้งว่าต้อง Retrain · กดแล้วฝึก Random Forest และสลับทันทีถ้า WAPE ของเดือนนั้นต่ำกว่าตัวที่เสิร์ฟ ฝน lag 1 ต้องเตือนสองเดือนติดก่อนนับเป็น PSI</p><div class="scroll"><table><thead><tr><th>เดือน</th><th>โมเดลที่ใช้</th><th>PSI</th><th>Page-Hinkley</th><th>ผลนโยบาย</th></tr></thead><tbody id="events"></tbody></table></div><details><summary>ประวัติรุ่นที่ขึ้นใช้งาน</summary><div class="scroll"><table><thead><tr><th>รุ่น</th><th>โมเดล</th><th>เริ่มใช้</th><th>Rollback</th></tr></thead><tbody id="registry"></tbody></table></div></details>
+<details><summary>ยอดจริงและคำพยากรณ์รายจังหวัด</summary><p>ส่วนต่าง = คำพยากรณ์ − ยอดจริง · บวกคือพยากรณ์สูงกว่ายอดจริง · ฝนคือปริมาณฝนของเดือนที่เลือก</p><div class="scroll"><table><thead><tr><th>จังหวัด</th><th>ฝน (มม.)</th><th>ยอดจริง</th><th>Linear</th><th>ส่วนต่าง</th><th>Ridge</th><th>ส่วนต่าง</th><th>CatBoost</th><th>ส่วนต่าง</th><th>Random Forest</th><th>ส่วนต่าง</th><th>Seasonal naïve</th><th>ส่วนต่าง</th></tr></thead><tbody id="rows"></tbody></table></div></details></section></main>
 <script>
 const el=id=>document.getElementById(id);
-const names={champion:'EWA',rf_logdiff:'RF logdiff',yoy3:'YoY3'};
-const colors=['#16745c','#b35b29','#526bb4'];
+const names={linear:'Linear',ridge:'Ridge',catboost:'CatBoost',random_forest:'Random Forest',seasonal:'Seasonal naïve'};
+const colors=['#16745c','#526bb4','#b35b29','#6b4c9a','#8aa094'];
 const keys=Object.keys(names), num=new Intl.NumberFormat('th-TH',{maximumFractionDigits:0});
 const pct=v=>(100*v).toFixed(2)+'%';
+const mm=new Intl.NumberFormat('th-TH',{minimumFractionDigits:1,maximumFractionDigits:1});
 let state, busy=false, timer=null;
 function tag(type,text){const n=document.createElement(type);n.textContent=text;return n}
-function row(values){const tr=document.createElement('tr');tr.append(...values.map(v=>tag('td',v)));return tr}
+function row(values){const tr=document.createElement('tr');tr.append(...values.map(v=>v instanceof Node?v:tag('td',v)));return tr}
+function driftHit(r){return Boolean(r&&(r.ph_alarm||String(r.action||'').includes('prepare_retrain')))}
 function chart(id,labels,series,fmt){
   const area=el(id);area.replaceChildren();
   if(!labels.length){area.append(tag('p','รอผลเดือนแรก'));return}
@@ -31,46 +33,74 @@ function chart(id,labels,series,fmt){
   function text(px,py,value,anchor){const n=svg('text',{x:px,y:py,'text-anchor':anchor});n.textContent=value;image.append(n)}
   for(const f of [0,.5,1]){image.append(svg('line',{x1:75,x2:477,y1:y(f*max),y2:y(f*max),stroke:'#d9e4dc'}));text(70,y(f*max)+4,fmt(f*max),'end')}
   labels.forEach((m,i)=>{if(i===0||i===labels.length-1||(i%6===0 && labels.length-1-i>=3))text(x(i),175,m,'middle')});
-  for(const s of series){const points=s.values.map((v,i)=>[x(i),y(v)]);
-    image.append(svg('polyline',{points:points.map(p=>p.join(',')).join(' '),fill:'none',stroke:s.color,'stroke-width':2.5}));
-    points.forEach(([cx,cy],i)=>{const dot=svg('circle',{cx,cy,r:3,fill:s.color}),title=svg('title',{});title.textContent=labels[i]+' · '+s.name+' · '+fmt(s.values[i]);dot.append(title);image.append(dot)});
+  const ordered=[...series.filter(s=>!s.dash),...series.filter(s=>s.dash)];
+  for(const s of ordered){const points=s.values.map((v,i)=>[x(i),y(v)]);
+    const line=svg('polyline',{points:points.map(p=>p.join(',')).join(' '),fill:'none',stroke:s.color,'stroke-width':2.5});
+    if(s.dash)line.setAttribute('stroke-dasharray',s.dash);
+    image.append(line);
+    points.forEach(([cx,cy],i)=>{const dot=s.dash?svg('circle',{cx,cy,r:5.5,fill:'#fff',stroke:s.color,'stroke-width':2.5}):svg('circle',{cx,cy,r:3,fill:s.color});const title=svg('title',{});title.textContent=labels[i]+' · '+s.name+' · '+fmt(s.values[i]);dot.append(title);image.append(dot)});
   }
   area.append(image);
 }
 function outcome(r){
   if(r.action.includes('rollback'))return 'ย้อนรุ่น';
   if(r.decision==='PROMOTE')return 'เลื่อน Challenger';
+  if(r.retrained){
+    if(r.switched)return 'เปลี่ยนเป็น '+names[r.next_model];
+    if(r.served==='random_forest')return 'คง Random Forest';
+    return 'WAPE ของ Random Forest ไม่ต่ำกว่า · คง '+names[r.served];
+  }
+  if(driftHit(r))return 'ต้อง Retrain';
+  if(r.psi_watch)return 'Warning';
   return 'คงรุ่นเดิม';
+}
+function nextModel(r){
+  const live=(r.registry||[]).filter(v=>!v.rolled_back).at(-1);
+  return live?names[live.model.split('@')[0]]:'Linear';
 }
 function show(){
   const all=state?.history||[], idx=el('month').selectedIndex, history=all.slice(0,idx+1), r=history.at(-1);
   const received=Boolean(r);
-  el('served').textContent=r?names[r.served]:'EWA';el('wape').textContent=r?pct(r.metrics[r.served].wape):'—';
-  el('signal').textContent=r?([r.psi_watch?'PSI':'',r.ph_alarm?'Page-Hinkley':''].filter(Boolean).join(' + ')||'ปกติ'):'รอผล';
+  el('served').textContent=r?names[r.served]:'Linear';el('wape').textContent=r?pct(r.metrics[r.served].wape):'—';
+  el('signal').className=r?(driftHit(r)?'drift':(r.psi_watch?'warn':'')):'';
+  el('signal').textContent=r?(driftHit(r)?'Drift':(r.psi_watch?'Warning':'ปกติ')):'รอผล';
   el('decision').textContent=r?outcome(r):'รอผล';
   const steps=[
     ['เลือกเดือน',r?.month],['สร้างฟีเจอร์',r&&'ใช้ข้อมูลถึง '+r.cutoff],['พยากรณ์',r&&names[r.served]+' · '+r.actual.length+' จังหวัด'],
-    ['ตรวจ Drift',r&&'PSI '+(r.psi_watch?'เตือน':'ปกติ')+' · Page-Hinkley '+(r.ph_alarm?'เตือน':'ปกติ')],
-    ['เปรียบเทียบโมเดล',r&&outcome(r)],['ฝึกและบันทึก',r&&'เรียนรู้ยอดจริงถึง '+r.month]];
+    ['ตรวจ Drift',r&&(driftHit(r)?'Drift':(r.psi_watch?'Warning':'ปกติ'))],
+    ['เปรียบเทียบโมเดล',r&&outcome(r)],['ฝึกและบันทึก',r&&('เรียนรู้ถึง '+r.month+(r.needs_retrain?' · รอ Retrain':(r.retrained?' · Retrain แล้ว':'')))]];
   el('steps').replaceChildren(...steps.map(([name,detail])=>{const item=tag('li','');item.append(tag('b',name),tag('span',detail||'รอฝึกเดือนแรก'));return item}));
   const labels=history.map(m=>m.month), province=el('province').value;
   function amount(m,values){return province?values[m.province.indexOf(province)]:values.reduce((a,b)=>a+b,0)}
   chart('arrivals',labels,[{name:'ยอดจริง',color:colors[0],values:history.map(m=>amount(m,m.actual))},{name:'พยากรณ์',color:colors[1],values:history.map(m=>amount(m,m.predictions[m.served]))}],v=>num.format(v));
-  chart('performance',labels,keys.map((k,i)=>({name:names[k],color:colors[i],values:history.map(m=>100*m.metrics[k].wape)})),v=>v.toFixed(1)+'%');
+  function rainOf(m){if(!Array.isArray(m.rain))return null;if(province){const i=m.province.indexOf(province);return i<0?null:m.rain[i]}const vals=m.rain.filter(v=>Number.isFinite(v));return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null}
+  const rains=history.map(rainOf);
+  if(rains.length&&rains.every(v=>Number.isFinite(v)))chart('rain',labels,[{name:'ปริมาณฝน',color:'#2a6f97',values:rains}],v=>v.toFixed(1)+' มม.');
+  else{el('rain').replaceChildren();el('rain').append(tag('p',r?'ไม่มีปริมาณฝนของเดือนนี้':'รอผลเดือนแรก'))}
+  const selectedRain=r?rainOf(r):null;
+  el('rain-note').textContent=r&&Number.isFinite(selectedRain)?('ปริมาณฝน '+r.month+' · '+(province||'ทั่วประเทศเฉลี่ย')+' '+selectedRain.toFixed(1)+' มม.'):'ปริมาณฝนจะขึ้นหลังมีผลเดือนแรก';
+  chart('performance',labels,keys.map((k,i)=>({name:names[k],color:colors[i],dash:k==='linear'?'7 4':undefined,values:history.map(m=>100*m.metrics[k].wape)})),v=>v.toFixed(1)+'%');
   el('scores').replaceChildren(...(r?keys.map(k=>row([names[k],pct(r.metrics[k].wape),num.format(r.metrics[k].mae),num.format(r.metrics[k].rmse)])):[]));
-  el('weights').textContent=r?'น้ำหนัก EWA เดือนถัดไป · RF logdiff แบบปรับฤดูกาล '+pct(r.next_weights[0])+' · RF level '+pct(r.next_weights[1]):'น้ำหนัก EWA ตั้งต้น 50% / 50%';
+  el('weights').textContent=r?'เดือนถัดไปเสิร์ฟ '+nextModel(r):'Linear เริ่มเสิร์ฟที่ 2024-01 · Challenger คือ Ridge, CatBoost และ Random Forest';
   el('features').replaceChildren();
   if(received){const top=Math.max(.15,...Object.values(r.psi));for(const [k,v] of Object.entries(r.psi)){
     const f=tag('div',''),track=tag('div',''),fill=tag('div','');f.className='feature';track.className='track';fill.className='fill';
     fill.style.width=Math.min(100,v/top*100)+'%';fill.style.background=v>=.15?'#b35b29':'#16745c';track.append(fill);f.append(tag('span',k),track,tag('span',v.toFixed(3)));el('features').append(f);
   }}
-  el('drift').textContent=r?'Page-Hinkley '+r.ph_score.toFixed(2)+' / เกณฑ์ '+state.ph_threshold.toFixed(2)+' · '+(r.ph_alarm?'เตือนว่าความผิดพลาดสูงขึ้น':'ยังไม่พบสัญญาณว่าความผิดพลาดสูงขึ้น')+(Object.hasOwn(r,'adwin')?' · คำนวณย้อนหลังจาก WAPE ของโมเดลที่ใช้จริง การตัดสินใจเดือนนี้เป็นของนโยบายเดิม':' · สถานะ '+r.action):'รอผลการตรวจเดือนแรก';
+  const phText=r&&driftHit(r)?'Drift · ความผิดพลาดสูงขึ้น':'ยังไม่พบ Drift';
+  const psiText=r&&r.psi_watch?'Warning · PSI เฝ้าดูฟีเจอร์':'PSI ปกติ';
+  el('drift').className=r?(driftHit(r)?'drift':(r.psi_watch?'warn':'')):'';
+  el('drift').textContent=r?'Page-Hinkley '+r.ph_score.toFixed(2)+' / เกณฑ์ '+state.ph_threshold+' · delta '+state.ph_delta+' · '+phText+' · '+psiText:'รอผลการตรวจเดือนแรก';
   el('events').replaceChildren(...history.slice().reverse().map(m=>row([m.month,names[m.served],m.psi_watch?'เตือน':'ปกติ',m.ph_score.toFixed(2)+' · '+(m.ph_alarm?'เตือน':'ปกติ'),outcome(m)])));
-  el('registry').replaceChildren(...(r?.registry||[{id:'v001',model:'champion',effective_from:'2024-01'}]).map(v=>row([v.id,names[v.model.split('@')[0]],v.effective_from,v.rolled_back?'ใช่':'—'])));
-  el('rows').replaceChildren(...(r?r.province.map((p,i)=>row([p,...[r.actual[i],...keys.map(k=>r.predictions[k][i])].map(v=>num.format(v))])):[]));
+  el('registry').replaceChildren(...(r?.registry||[{id:'v001',model:'linear',effective_from:'2024-01'}]).map(v=>row([v.id,names[v.model.split('@')[0]],v.effective_from,v.rolled_back?'ใช่':'—'])));
+  function diffCell(pred,actual){const d=pred-actual;const td=tag('td',(d>0?'+':'')+num.format(d));td.className=d>0?'over':(d<0?'under':'');return td}
+  el('rows').replaceChildren(...(r?r.province.map((p,i)=>{const bits=[p,Array.isArray(r.rain)?mm.format(r.rain[i]):'—',num.format(r.actual[i])];keys.forEach(k=>{bits.push(num.format(r.predictions[k][i]),diffCell(r.predictions[k][i],r.actual[i]))});return row(bits)}):[]));
 }
 function controls(){
-  el('train').disabled=busy||!state?.next;el('reset').disabled=busy||!state?.history.length;
+  const pending=Boolean(state?.history?.at(-1)?.needs_retrain);
+  el('train').disabled=busy||!state?.next||pending;el('retrain').disabled=busy||!pending;
+  el('retrain').textContent=pending?'Retrain · '+state.history.at(-1).month:'Retrain';
+  el('reset').disabled=busy||!state?.history.length;
   el('play').disabled=busy||!(state?.history.length>=2);el('play').textContent=timer?'หยุดย้อนหลัง':'เล่นย้อนหลัง';
   el('month').disabled=busy||!state?.history.length;
 }
@@ -81,19 +111,29 @@ el('month').onchange=()=>{stop();show()};el('province').onchange=show;
 function render(){
   const h=state.history;
   el('train').textContent=state.next?'Train · '+state.next:'ฝึกครบแล้ว';el('progress').value=h.length;
-  el('status').textContent=h.length+' / 24 เดือน · โมเดลเรียนรู้ถึง '+state.through;
+  const pending=Boolean(h.at(-1)?.needs_retrain);
+  el('status').textContent=h.length+' / 24 เดือน · โมเดลเรียนรู้ถึง '+state.through+(h.at(-1)?.retrained?' · Retrain แล้ว':(pending?' · รอ Retrain':''));
   el('month').replaceChildren(...h.map(r=>new Option(r.month,r.month)));el('month').selectedIndex=h.length-1;
   const p=el('province').value;el('province').replaceChildren(new Option('ทั่วประเทศ',''),...(h.at(-1)?.province||[]).map(v=>new Option(v,v)));el('province').value=p;
   show();controls();
 }
 async function request(action){
-  if(busy)return;stop();busy=true;controls();el('feedback').textContent=action==='train'?'Python กำลังพยากรณ์ ตรวจ drift และฝึกเดือน '+state.next+'…':'กำลังเชื่อมต่อ…';
+  if(busy)return;stop();busy=true;controls();
+  const pendingMonth=state?.history?.at(-1)?.month;
+  el('feedback').textContent=action==='train'?'Python กำลังพยากรณ์ ตรวจ drift และฝึกโมเดลถึงเดือน '+state.next+'…':(action==='retrain'?'Python กำลังฝึกโมเดลใหม่ถึง '+pendingMonth+'…':'กำลังเชื่อมต่อ…');
   try{const options=action==='state'?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:state.revision})};
     const res=await fetch('/api/'+action,{...options,cache:'no-store'});const data=await res.json();if(!res.ok)throw Error(data.error);
-    state=data;render();el('feedback').textContent=action==='train'?'บันทึกผลและโมเดลของเดือน '+state.through+' แล้ว':'พร้อมใช้งาน';
+    state=data;render();
+    const last=state.history.at(-1);
+    const retrainText=last&&last.switched
+      ?'ฝึก Random Forest ถึง '+state.through+' · WAPE ต่ำกว่า จึงเปลี่ยนเป็น '+names[last.next_model]
+      :(last&&last.served==='random_forest'
+        ?'ฝึก Random Forest ถึง '+state.through+' · ยังเสิร์ฟ Random Forest'
+        :'ฝึก Random Forest ถึง '+state.through+' · WAPE ไม่ต่ำกว่า จึงยังเสิร์ฟ '+names[last?last.served:'linear']);
+    el('feedback').textContent=action==='retrain'?retrainText:(action==='train'?'ฝึกโมเดลถึง '+state.through+' แล้ว':'พร้อมใช้งาน');
   }catch(e){el('feedback').textContent='โหลดหรือบันทึกไม่สำเร็จ · '+e.message+' · รีเฟรชเพื่อตรวจสถานะ'}finally{busy=false;controls()}
 }
-keys.forEach((k,i)=>{const s=tag('span',names[k]);s.style.setProperty('--color',colors[i]);el('keys').append(s)});
-el('train').onclick=()=>request('train');el('reset').onclick=()=>{if(confirm('ล้างประวัติรอบนี้แล้วกลับไปธันวาคม 2023?'))request('reset')};
+keys.forEach((k,i)=>{const s=tag('span',names[k]);if(k==='linear')s.className='dashed';s.style.setProperty('--color',colors[i]);el('keys').append(s)});
+el('train').onclick=()=>request('train');el('retrain').onclick=()=>request('retrain');el('reset').onclick=()=>{if(confirm('ล้างประวัติรอบนี้แล้วกลับไปธันวาคม 2023?'))request('reset')};
 if(location.protocol==='file:'){el('local').hidden=false;el('status').textContent='เปิดผ่านเซิร์ฟเวอร์เพื่อใช้โมเดล Python'}else request('state');
 </script></body></html>

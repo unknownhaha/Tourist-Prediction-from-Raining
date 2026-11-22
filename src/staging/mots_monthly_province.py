@@ -83,19 +83,37 @@ def _find_metric_groups(row1: pd.Series, row3: pd.Series) -> list[tuple[int, str
     return groups
 
 
-def parse_workbook(path: Path, cw: pd.DataFrame | None = None) -> pd.DataFrame:
+def parse_workbook(
+    path: Path,
+    cw: pd.DataFrame | None = None,
+    xl: pd.ExcelFile | None = None,
+) -> pd.DataFrame:
     if cw is None:
         cw = load_crosswalk()
     rel = path_relative_to_root(path)
     frames: list[pd.DataFrame] = []
-    xl = pd.ExcelFile(path)
+    owns = xl is None
+    book = xl if xl is not None else pd.ExcelFile(path)
+    try:
+        return _parse_open_workbook(book, rel, cw, frames)
+    finally:
+        if owns:
+            book.close()
+
+
+def _parse_open_workbook(
+    xl: pd.ExcelFile,
+    rel: str,
+    cw: pd.DataFrame,
+    frames: list[pd.DataFrame],
+) -> pd.DataFrame:
     for sheet in xl.sheet_names:
         m = SHEET_MONTH_RE.match(str(sheet).strip())
         if not m:
             continue
         month = THAI_MONTH[m.group(1)]
         sheet_be = int(m.group(2))
-        df = pd.read_excel(path, sheet_name=sheet, header=None)
+        df = xl.parse(sheet, header=None)
         if df.shape[0] < 6 or df.shape[1] < 8:
             continue
         row1 = df.iloc[1]

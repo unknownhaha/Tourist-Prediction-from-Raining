@@ -4,23 +4,21 @@
 
 On Windows run `experiments/online_replay/start_manual_studio.ps1` from the checkout
 or run `python -m experiments.online_replay.manual_studio` with the experiment dependencies.
-Open `http://127.0.0.1:8774/`. The live studio monitors the serving model's monthly WAPE
-with upward Page-Hinkley. The last 12 pre-stream errors (2023) supply the mean and sample
-standard deviation. The standardized detector starts with count 12, delta 0.5 and the
-3.88166 threshold calibrated in the detector comparison. An alarm opens challenger
-evaluation independently of PSI; promotion and rollback use the existing safeguards.
-Older sessions display retrospectively calculated PH scores alongside their actual decisions.
-Training data for the initial models ends in December 2023. The
-Champion uses its existing recipe (historically selected on 2024) and starts with equal
-expert weights. RF logdiff and YoY3 run as shadow challengers.
+Open `http://127.0.0.1:8774/`. Each Train click walks one month from 2024-01 through 2025-12.
+The serving model starts as Linear Regression fit on 2019-01..2023-12 with the six documented
+forecast features. Ridge, CatBoost, and Random Forest are the challengers. Seasonal naive is scored
+beside them and is not eligible for promotion. Page-Hinkley watches the served model's monthly WAPE.
+The twelve one-step Linear WAPEs of 2023 supply the mean and sample standard deviation. The
+standardized detector starts with count 12, delta 0.005, and threshold 0.7. An alarm does not
+promote a challenger. PSI on `guest_lag_1`, `guest_lag_12`, `rain_lag_1`, and `rain_roll3` is a
+watch against the same calendar month in 2022-2023. The session is
+`outputs/manual_studio/level_session.sqlite`.
 
-Each Train request predicts one month from the last committed forests, opens that
-month's observations, scores the three models, applies the drift policy and refits the
-four underlying forests through that month. All models keep learning after a promotion.
-SQLite commits the new model parameters and month history together in
-`outputs/manual_studio/session.sqlite`. Reloading resumes the session. Reset restores
-the initial snapshot. The studio does not consume the batch experiments' 2024–2025
-predictions or final model files.
+Each Train request predicts from the models fit through the previous month, then opens
+that month's arrivals, scores Linear, Ridge, CatBoost, Random Forest, and seasonal naive,
+applies Page-Hinkley, and refits all four learners through the revealed month. All four
+keep learning after a promotion. SQLite commits the new parameters and the month history
+together. Reloading resumes the session. Reset restores the December 2023 snapshot.
 
 ## Select among eight models before monthly replay
 
