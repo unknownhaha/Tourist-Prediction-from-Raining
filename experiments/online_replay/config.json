@@ -1,0 +1,132 @@
+{
+  "status": "experiment config for the 2025 online replay (plan: /workspace/plans/online-ml-replay-2025-plan.md, Desin defaults); DS/ML own the final values",
+  "seed": 42,
+  "years": [
+    2023,
+    2024,
+    2025
+  ],
+  "select_year": 2024,
+  "etas": [
+    0.5,
+    1.0,
+    2.0,
+    5.0,
+    10.0,
+    20.0,
+    50.0,
+    100.0
+  ],
+  "champion_baseline_eta": 10.0,
+  "covid_candidates": [
+    "C0",
+    "C3"
+  ],
+  "covid_report_only": [
+    "C4"
+  ],
+  "covid_tie_break_pt": 0.05,
+  "e3_min_gain_pt": 0.02,
+  "drift": {
+    "adwin_input": "monthly_wape",
+    "adwin_delta": 0.002,
+    "adwin_direction": "up",
+    "challenger_trigger": "psi_and_adwin",
+    "psi_only": "watch",
+    "psi_gate_months": 2,
+    "psi_reference": "seasonal_2y",
+    "psi_features": [
+      "guest_lag_1",
+      "guest_lag_12",
+      "rain_lag_1",
+      "rain_roll3"
+    ],
+    "promotion_preset": "margin_0005_confirm_2",
+    "rollback_months": 2,
+    "refresh_reference_after_promotion": false,
+    "challengers": [
+      "logdiff_expanding",
+      "logdiff_12m",
+      "logdiff_seasonal_2y",
+      "yoy3_expanding",
+      "expert_logdiff",
+      "expert_level"
+    ],
+    "demo_2023_sensitivity_delta": 0.05
+  },
+  "selection": {
+    "covid_variant": "C0",
+    "experts": "E2",
+    "eta": 5.0,
+    "covid_ab": {
+      "chosen": "C0",
+      "best_raw": "C0",
+      "grid": {
+        "C0": {
+          "eta": 5.0,
+          "wape_2024": 0.05577904164895207,
+          "eta_grid": {
+            "0.5": 0.05607146373596415,
+            "1.0": 0.056011082269866404,
+            "2.0": 0.05591505981978117,
+            "5.0": 0.05577904164895207,
+            "10.0": 0.0559093933332637,
+            "20.0": 0.05704693130418289,
+            "50.0": 0.05954045851723642,
+            "100.0": 0.060233300922232356
+          }
+        },
+        "C3": {
+          "eta": 2.0,
+          "wape_2024": 0.06900332730000233,
+          "eta_grid": {
+            "0.5": 0.06919960067666431,
+            "1.0": 0.06903233589117674,
+            "2.0": 0.06900332730000233,
+            "5.0": 0.07052807642389458,
+            "10.0": 0.0729857448581132,
+            "20.0": 0.07545471939774634,
+            "50.0": 0.07624316073551902,
+            "100.0": 0.07625162229360528
+          }
+        }
+      },
+      "tie_break_pt": 0.05
+    },
+    "ewa_ab": {
+      "chosen": "E2",
+      "E2": {
+        "eta": 5.0,
+        "wape_2024": 0.05577904164895207,
+        "eta_grid": {
+          "0.5": 0.05607146373596415,
+          "1.0": 0.056011082269866404,
+          "2.0": 0.05591505981978117,
+          "5.0": 0.05577904164895207,
+          "10.0": 0.0559093933332637,
+          "20.0": 0.05704693130418289,
+          "50.0": 0.05954045851723642,
+          "100.0": 0.060233300922232356
+        }
+      },
+      "E3": {
+        "eta": 0.5,
+        "wape_2024": 0.056030679471154345,
+        "eta_grid": {
+          "0.5": 0.056030679471154345,
+          "1.0": 0.056064935260320116,
+          "2.0": 0.05615789584915151,
+          "5.0": 0.05642379298803943,
+          "10.0": 0.05697682570183697,
+          "20.0": 0.05799164418181802,
+          "50.0": 0.05948405499203316,
+          "100.0": 0.06010362671284223
+        }
+      },
+      "gain_pt": -0.02516378222022775,
+      "min_gain_pt": 0.02
+    },
+    "rule": "lowest 2024 monthly EWA WAPE; COVID tie < 0.05 pt -> fewer features; E3 kept only if >= 0.02 pt better",
+    "selected_on": 2024
+  }
+}

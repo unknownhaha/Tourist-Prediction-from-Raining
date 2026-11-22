@@ -1,0 +1,250 @@
+{
+  "hard_fail": false,
+  "hard_reasons": [],
+  "thresholds": {
+    "completeness_max_missing_frac_core": 0.0,
+    "completeness_max_missing_frac_splits_from_2019": 0.0,
+    "uniqueness_max_duplicate_keys": 0,
+    "timeliness_max_gap_frac": 0.0,
+    "validity_max_invalid_frac": 0.0,
+    "consistency_max_mismatch_frac": 0.01,
+    "consistency_max_calendar_mismatch": 0,
+    "accuracy_max_flagged_row_frac": 0.5,
+    "holiday_count_max": 31,
+    "accuracy_rule": "v2",
+    "rain_rule": "seasonal_log_mad",
+    "rain_z_limit": 3.5,
+    "guest_log_jump_limit": 0.6931471805599453,
+    "covid_window": [
+      "2020-03",
+      "2022-12"
+    ],
+    "accuracy_min_normal": 0.9,
+    "notes": "A warning never blocks training. A rate above a max does. DS/ML may edit these numbers. accuracy_rule v1 reproduces the legacy accuracy (0.5392316017); v2 scores the normal bucket (t and t-12 outside covid_window, which mirrors config/sources.yaml) and reports the COVID buckets separately."
+  },
+  "scores": {
+    "completeness": 1.0,
+    "accuracy": 0.8927272727272727,
+    "consistency": 1.0,
+    "uniqueness": 1.0,
+    "timeliness": 1.0,
+    "validity": 1.0,
+    "overall": 0.9821212121212121
+  },
+  "completeness": {
+    "core": {
+      "guest_arrivals_total": 0.0,
+      "rain_avg_mm": 0.0
+    },
+    "splits_from_2019": {
+      "guest_arrivals_thai": 0.0,
+      "guest_arrivals_foreign": 0.0
+    },
+    "by_year": {
+      "2018": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 1.0,
+        "guest_arrivals_foreign": 1.0
+      },
+      "2019": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      },
+      "2020": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      },
+      "2021": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      },
+      "2022": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      },
+      "2023": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      },
+      "2024": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      },
+      "2025": {
+        "guest_arrivals_total": 0.0,
+        "rain_avg_mm": 0.0,
+        "guest_arrivals_thai": 0.0,
+        "guest_arrivals_foreign": 0.0
+      }
+    },
+    "by_province_mean_core_missing": {
+      "10": 0.0,
+      "11": 0.0,
+      "12": 0.0,
+      "13": 0.0,
+      "14": 0.0,
+      "15": 0.0,
+      "16": 0.0,
+      "17": 0.0,
+      "18": 0.0,
+      "19": 0.0,
+      "20": 0.0,
+      "21": 0.0,
+      "22": 0.0,
+      "23": 0.0,
+      "24": 0.0,
+      "25": 0.0,
+      "26": 0.0,
+      "27": 0.0,
+      "30": 0.0,
+      "31": 0.0,
+      "32": 0.0,
+      "33": 0.0,
+      "34": 0.0,
+      "35": 0.0,
+      "36": 0.0,
+      "37": 0.0,
+      "38": 0.0,
+      "39": 0.0,
+      "40": 0.0,
+      "41": 0.0,
+      "42": 0.0,
+      "43": 0.0,
+      "44": 0.0,
+      "45": 0.0,
+      "46": 0.0,
+      "47": 0.0,
+      "48": 0.0,
+      "49": 0.0,
+      "50": 0.0,
+      "51": 0.0,
+      "52": 0.0,
+      "53": 0.0,
+      "54": 0.0,
+      "55": 0.0,
+      "56": 0.0,
+      "57": 0.0,
+      "58": 0.0,
+      "60": 0.0,
+      "61": 0.0,
+      "62": 0.0,
+      "63": 0.0,
+      "64": 0.0,
+      "65": 0.0,
+      "66": 0.0,
+      "67": 0.0,
+      "70": 0.0,
+      "71": 0.0,
+      "72": 0.0,
+      "73": 0.0,
+      "74": 0.0,
+      "75": 0.0,
+      "76": 0.0,
+      "77": 0.0,
+      "80": 0.0,
+      "81": 0.0,
+      "82": 0.0,
+      "83": 0.0,
+      "84": 0.0,
+      "85": 0.0,
+      "86": 0.0,
+      "90": 0.0,
+      "91": 0.0,
+      "92": 0.0,
+      "93": 0.0,
+      "94": 0.0,
+      "95": 0.0,
+      "96": 0.0
+    }
+  },
+  "accuracy": {
+    "robust_z_limit": 3.5,
+    "rule": "v2",
+    "yoy_jump_limit": null,
+    "guest_log_jump_limit": 0.6931471805599453,
+    "rain_rule": "seasonal_log_mad",
+    "covid_window": [
+      "2020-03",
+      "2022-12"
+    ],
+    "buckets": {
+      "normal": {
+        "rows": 3850,
+        "flagged": 413,
+        "accuracy": 0.8927272727272727
+      },
+      "covid": {
+        "rows": 2618,
+        "flagged": 2463,
+        "accuracy": 0.05920550038197092
+      },
+      "covid_base": {
+        "rows": 924,
+        "flagged": 639,
+        "accuracy": 0.3084415584415584
+      }
+    },
+    "accuracy_normal": 0.8927272727272727,
+    "accuracy_covid": 0.05920550038197092,
+    "accuracy_covid_base": 0.3084415584415584,
+    "accuracy_legacy_v1": 0.5392316017316017,
+    "accuracy_normal_total_and_rain_only": 0.9516883116883117,
+    "below_normal_floor": true,
+    "flags_by_check": {
+      "yoy_log_jump|guest_arrivals_foreign": 2098,
+      "yoy_log_jump|guest_arrivals_total": 1702,
+      "yoy_log_jump|guest_arrivals_thai": 1563,
+      "robust_z|guest_arrivals_total": 1317,
+      "robust_z|guest_arrivals_thai": 1130,
+      "robust_z|guest_arrivals_foreign": 994,
+      "rain_seasonal_z|rain_avg_mm": 114
+    },
+    "n_flags": 8918,
+    "n_flagged_rows": 3515,
+    "flagged_row_frac": 0.1072727272727273
+  },
+  "consistency": {
+    "thai_foreign_mismatches": 0,
+    "mismatch_frac": 0.0,
+    "holiday_count_mismatches": 0
+  },
+  "uniqueness": {
+    "duplicate_keys": 0
+  },
+  "timeliness": {
+    "gap_rows": 0,
+    "gap_frac": 0.0,
+    "n_provinces": 77
+  },
+  "validity": {
+    "invalid_values": 0,
+    "invalid_frac": 0.0,
+    "inf_ratios": 0
+  },
+  "warnings": [
+    "Robust-z and year-over-year jumps are warnings unless accuracy_max_flagged_row_frac is exceeded.",
+    "2018 Thai and foreign arrivals are unpublished. They are excluded from the split completeness threshold."
+  ],
+  "legacy_v1_scores": {
+    "completeness": 1.0,
+    "accuracy": 0.5392316017316017,
+    "consistency": 1.0,
+    "uniqueness": 1.0,
+    "timeliness": 1.0,
+    "validity": 1.0,
+    "overall": 0.923205266955267
+  }
+}
