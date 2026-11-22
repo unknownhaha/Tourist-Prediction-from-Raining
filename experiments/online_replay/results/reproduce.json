@@ -21,7 +21,7 @@
       "match_4dp": true
     },
     "level_port_equals_run_year|2023": {
-      "max_abs_diff": 6.984919309616089e-10
+      "max_abs_diff": 4.656612873077393e-10
     },
     "rf_logdiff|2024": {
       "wape": 0.05936084069568007,
@@ -44,7 +44,7 @@
       "match_4dp": true
     },
     "level_port_equals_run_year|2024": {
-      "max_abs_diff": 1.3969838619232178e-09
+      "max_abs_diff": 9.313225746154785e-10
     },
     "rf_logdiff|2025": {
       "wape": 0.04829016837105007,
@@ -67,26 +67,26 @@
       "match_4dp": true
     },
     "level_port_equals_run_year|2025": {
-      "max_abs_diff": 9.313225746154785e-10
+      "max_abs_diff": 4.656612873077393e-10
     }
   },
   "champion": {
     "2023": {
-      "wape": 0.06502057545896253,
+      "wape": 0.06502057545896256,
       "wape_pct": 6.5021,
       "reference_pct": 6.5,
       "within_0.01pt": true,
       "logdiff_expert_wape": 0.08549391530241658
     },
     "2024": {
-      "wape": 0.05590939333326368,
+      "wape": 0.05590939333326372,
       "wape_pct": 5.5909,
       "reference_pct": 5.59,
       "within_0.01pt": true,
-      "logdiff_expert_wape": 0.05937713042970685
+      "logdiff_expert_wape": 0.05937713042970684
     },
     "2025": {
-      "wape": 0.045366183441453725,
+      "wape": 0.04536618344145372,
       "wape_pct": 4.5366,
       "reference_pct": 4.54,
       "within_0.01pt": true,
@@ -95,25 +95,25 @@
   },
   "no_rain": {
     "2023": {
-      "wape": 0.06657219298990788,
+      "wape": 0.06657219298990791,
       "wape_pct": 6.6572,
       "reference_pct": 6.66,
       "within_0.01pt": true,
-      "logdiff_expert_wape": 0.0864731761495282
+      "logdiff_expert_wape": 0.08647317614952818
     },
     "2024": {
-      "wape": 0.057192804848631484,
+      "wape": 0.05719280484863148,
       "wape_pct": 5.7193,
       "reference_pct": 5.72,
       "within_0.01pt": true,
       "logdiff_expert_wape": 0.06072795930938022
     },
     "2025": {
-      "wape": 0.04435770937211993,
+      "wape": 0.04435770937211992,
       "wape_pct": 4.4358,
       "reference_pct": 4.44,
       "within_0.01pt": true,
-      "logdiff_expert_wape": 0.044942120058078044
+      "logdiff_expert_wape": 0.04494212005807804
     }
   },
   "all_match": true

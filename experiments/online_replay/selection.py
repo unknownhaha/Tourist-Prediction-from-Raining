@@ -73,8 +73,20 @@ def load_config(path: Path | None = None) -> dict:
     return json.loads((path or CONFIG_PATH).read_text(encoding="utf-8"))
 
 
+def _rounded(obj, digits: int = 10):
+    """Round floats so a rerun with ~1e-15 RF float noise writes a byte-identical config.json."""
+    if isinstance(obj, float):
+        return round(obj, digits)
+    if isinstance(obj, dict):
+        return {k: _rounded(v, digits) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_rounded(v, digits) for v in obj]
+    return obj
+
+
 def freeze(config: dict, selection: dict, path: Path | None = None) -> dict:
     config = dict(config)
+    selection = _rounded(selection)
     config["selection"] = {**selection, "selected_on": SELECT_YEAR}
     (path or CONFIG_PATH).write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
     return config
