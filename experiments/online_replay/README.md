@@ -8,8 +8,12 @@ Run (about 10 minutes from a cold cache on 8 cores; the cache `results/predictio
 
 ```
 ./.venv/bin/python experiments/online_replay/run.py --stage all
-# or one stage: reproduce dq select covid ewa replay2025 demo2023 rain results charts
+# or one stage: reproduce dq select covid ewa replay2025 demo2023 drift_demos rain results charts
 ```
+
+`--stage all` deletes the prediction cache first, so a full run is always cold (about 15 minutes with
+the drift demos). Single stages reuse the cache. The cache has no code or data fingerprint, so delete it
+by hand after changing features or data and before running a single stage.
 
 `select` rewrites the `selection` block of `config.json` from 2024 data. All other stages read the frozen choice and refuse to run without the `selected_on: 2024` stamp.
 
@@ -102,7 +106,9 @@ Settings: Seasonal-2Y PSI reference up to 2024-12 with alarm >= 0.15 (`studio_mo
 
 `policy.replay` was parameterised with `initial_model`, `trained_through`, `reference_end`, a `log` callback and `adwin_direction`. Its defaults reproduce the approved 2025 run exactly: served WAPE 0.04788460348726727 with 0 promotions. This is asserted in the replay2025 stage.
 
-**Why ADWIN rarely fires here:** the local ADWIN uses a Hoeffding bound for values in [0, 1]. It needs a window of 32 or more points and at least 16 points on each side of a cut. With monthly WAPE input, a cut therefore needs a mean shift of about 0.8 sustained over 16 months. Within one replay year after a 24-month seed, that can only happen when the shift started months before the year. The first month that can cut is month 8.
+**Plain statement: with the approved settings, ADWIN cannot fire on drift that starts inside the replay year.** The local ADWIN uses a Hoeffding bound for values in [0, 1]. It needs a window of 32 or more points and at least 16 points on each side of a cut. With monthly WAPE input, a cut therefore needs a mean shift of about 0.8 WAPE (80 pt), with at least 16 post-shift months. With a 24-month seed, month 8 (August) is only the first month in which the window is long enough to be *tested*. A cut there needs a shift that began at least 8 months *before* the year, so it is not in-year detection. `tests/test_online_replay_drift.py::test_approved_adwin_cannot_fire_on_a_step_that_starts_inside_the_replay_year` pins this: a 5 % -> 100 % WAPE step from January, with PSI alarming all year, gives 12 x `watch` and never `prepare_retrain`. See "Drift demos" for parameters that do fire.
+
+**Input gate placement:** `check_inputs` runs through the `before_month` hook of `policy.replay`, *before* each month is served and decided. A hard failure raises `GateError` and stops the loop at that month. This is tested in `test_gate_runs_before_each_month_is_served`, and in the e2e poison test, where the poisoned stream stops before 2025-08 is served. The demo tracks use a non-strict gate: COVID months push `exp_lr_recent` outside its [-5, 5] range, so problems are logged in `gate_feature_problems` instead of raised.
 
 ## 2023 drift demo (step 6)
 
@@ -122,9 +128,62 @@ Conclusion: in 2023, PSI clearly detects the feature shift away from the COVID-e
 - RF permutation importance in the frozen logdiff expert (5 shuffles): rain_lag_1 +0.08 pt (2024) and -0.02 pt (2025); rain_roll3 +0.14 pt (2024) and +0.43 pt (2025).
 - These match Desin's re-run (`/workspace/plans/evidence/rain_stats_stdout.txt`): R^2 0.4295 / 0.4301 / 0.4337, p 0.058 / 0.166, quintile means 0.0083 ... -0.0122. statsmodels is not installed in the venv, so the OLS with CR1 clustered SE is re-implemented in numpy and gives the same values.
 
+## Drift demos (follow-up): `drift_demos.py`, stage `drift_demos`
+
+Two extra demos. The Champion and the 2025 replay are unchanged. Each detector runs on two tracks: **A** = monthly-refit RF logdiff (old model), **B** = EWA Champion (C0, E2, eta 5). Trigger `psi_and_adwin`, preset margin_0005_confirm_2, rollback 2 months, `adwin_direction: up`. Detectors:
+- `approved_adwin`: delta 0.002, window >= 32, >= 16 per side, raw monthly WAPE (the config).
+- `ILLUSTRATIVE_adwin_min16_side8`: same, window >= 16, >= 8 per side.
+- `ILLUSTRATIVE_adwin_min16_side8_relative`: 16/8 on WAPE divided by the seed-mean WAPE (`ScaledADWIN`).
+- `..._relative_confirm1`: the same with preset margin_0005_confirm_1.
+
+ILLUSTRATIVE rows are *not* tuned and are not a config.
+
+**Seeds (both variants):** one-step OOS monthly WAPE for 2019-02..2019-12 (11 points; 2019-01 has no training rows). Track A uses `champion_oos_wape` with logdiff_expanding; Track B uses EWA over the experts' 2019 one-step predictions. Why 2019: it is the last normal pre-COVID year, and it is *before* both replay windows, so the seed is leak-free. Pre-2019 rows have no features, so 2018 could not be scored. 2024 would be the future for a 2023 demo. PSI reference: same calendar month of 2019 (variant 1, never refreshed) and of 2021-2022 (variant 2, as in the original 2023 demo). A cut with no retrain is a downward cut, which `adwin_direction: up` ignores.
+
+**Variant 1: 2020-01..2023-12** (`results/replay_2020_*`, `charts/replay_2020_drift.png`)
+
+| detector | track | ADWIN cuts | retrain (prepare_retrain) | promotions / rollbacks | served WAPE |
+|---|---|---|---|---|---|
+| approved | A | 2023-08 (down, ignored) | none | none | 35.98 % |
+| approved | B | 2023-12 (down, ignored) | none | none | 20.98 % |
+| raw 16/8 | A | 2020-05, 2021-01, 2021-09, 2022-05 | 2020-05, 2021-09 | none | 35.98 % |
+| raw 16/8 | B | 2020-05, 2021-01 | 2020-05 | none | 20.98 % |
+| relative 16/8 | A | 2020-05, 2021-01, 2021-09, 2022-05, 2023-02, 2023-10 | 2020-05, 2021-09 | none | 35.98 % |
+| relative 16/8 | B | 2020-05, 2021-01, 2021-09, 2022-05, 2023-01, 2023-09 | 2020-05, 2021-09 | none | 20.98 % |
+| relative 16/8 + confirm-1 | A | 2020-05, 2021-01, 2021-09, 2022-05, 2023-01, 2023-09 (path changes after the promotion) | 2020-05, 2021-09 | promote expert_level 2020-05; promote logdiff_expanding 2021-09; rollback to expert_level@2020-04 in 2021-11 | 20.69 % |
+| relative 16/8 + confirm-1 | B | same as relative 16/8 B | 2020-05, 2021-09 | same events | 20.34 % |
+
+PSI alarms (watch) in nearly every month of 2020-2023 against the 2019 reference. Under confirm-2 nothing is promoted, because the triggers are isolated months.
+
+**Variant 2: 2023 with a normal-period seed** (`results/replay_2023_normalseed_*`, `charts/replay_2023_normalseed_drift.png`)
+
+| detector | track | ADWIN cuts | retrain | promotions | served WAPE |
+|---|---|---|---|---|---|
+| approved | A / B | none (11 + 12 = 23 points < 32: cannot cut) | none | none | 19.97 % / 6.34 % |
+| raw 16/8 | A / B | none | none | none | 19.97 % / 6.34 % |
+| relative 16/8 | A | 2023-05 | 2023-05 | none | 19.97 % |
+| relative 16/8 | B | none | none | none | 6.34 % |
+| relative 16/8 + confirm-1 | A | 2023-05 | 2023-05 | promote expert_level 2023-05 | 15.45 % |
+
+PSI watches in all 12 months. Caveat: a promoted `expert_*` challenger is served as a monthly refit, not frozen.
+
+**What ADWIN would need (recommendation for DS/ML, not applied):** delta only enters through a log, so moving it from 0.002 to 0.05 shrinks the bound by only about 17 %. On raw monthly WAPE, a 0.15 shift needs about 240 points per side, which is impossible with monthly data. The levers that work are a smaller window (16 total / 8 per side) and a **relative input** (WAPE divided by the normal-period mean WAPE). That combination detects a sustained shift above about 1.14x the normal level after 8 or more post-shift months. A 20x step is caught in its first month (`test_relative_adwin_16_8_fires_in_year_and_logs_prepare_retrain`). river's ADWIN was also tried. It has a scale-dependent term, so it misses the 4 % -> 20 % step at WAPE scale too (tested). An alternative is province-level errors as the ADWIN input (77 points per month).
+
+## Rain: why my 0.0006 / p = 0.058 differs from HYPOTHESES.md H1 (p = 0.73, ΔR² "0.00005 pp")
+
+They are different specifications, and both say rain has little effect:
+- **Mine (`rain_report.py`, = Desin's re-run):** dependent variable = YoY log growth log(Y/Y_-12). Control = momentum log(lag1/lag13) only, no fixed effects. Rain = lagged log YoY rain change. Province-clustered CR1, normal p. Years 2019, 2024 and 2025 (n = 2695). Base R² 0.4295, ΔR² 0.0006 (0.06 pp), coefficient 0.0020, p = 0.058.
+- **H1 (`/workspace/hypotheses/run_hypotheses.py`):** dependent variable = log arrivals *level*. Controls = province FE + calendar-month FE + logY_l1 + logY_l12. Rain = raw rain_l1 in mm. Same clusters, years and n. Base R² 0.99595, so ΔR² = 5e-7. The "0.00005 pp" label is that value x 100. Coefficient -7.2e-6 per mm, t = -0.35, p = 0.73.
+- The tiny ΔR² in H1 comes from the level model with fixed effects, which already explains 99.6 % of the variance. It is not a contradiction.
+- **For the slides:** quote H1 as the primary test (more controls, the forecast-relevant level model): p = 0.73, IQR effect about -0.13 %. Quote mine as a robustness check: on growth rates lagged rain adds ΔR² 0.0006 (p = 0.058). Do not put the two ΔR² numbers side by side as if they were comparable.
+
+## How the work was committed
+
+Some plan steps were combined into one commit: steps 0 + 2 (reproduce + selection scaffolding) and steps 3 + 4 (COVID A/B + EWA experts). The rain report was committed before the drift-demo outputs. The QA follow-ups (H1 tests, gate inside the loop, cold cache on `--stage all`, rounded config, label-poison e2e tests) are separate later commits. History was not rewritten and nothing was pushed. DQ was deliberately left unchanged (on hold pending a decision).
+
 ## Caveats and recommendations for DS/ML
 
 - 2024 selection is optimistic (see above). The held-out years agree with the C0 and E2 choices, except that E3 would be slightly better in 2025.
 - DQ normal-bucket accuracy (0.893) is below the 0.93 target, mainly because of foreign-arrival recovery jumps. Options: score accuracy on total arrivals + rain (0.952), or add a recovery bucket.
-- ADWIN on monthly WAPE with this implementation is effectively unable to fire within a year. Consider province-level absolute errors as ADWIN input, river's ADWIN (clock/grace), or a smaller minimum window. That is a DS/ML decision, not tuned here.
+- ADWIN on monthly WAPE with the approved settings cannot fire on in-year drift. Recommended (see "Drift demos"): a 16/8 window on relative WAPE, or province-level errors as input. That is a DS/ML decision and is not applied here.
 - Seeds: RF random_state 42 everywhere. The seed-robustness footnote (seeds 1-3) was not run because of time.
