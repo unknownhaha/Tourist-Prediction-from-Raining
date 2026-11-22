@@ -28,7 +28,7 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
            rollback_months: int = 2, refresh: bool = False, error_mode: str = "province_abs",
            seed: list[float] | None = None, initial_model: str = "logdiff_expanding@2024-12",
            trained_through: str = "2024-12", reference_end: str = "2024-12", log=None,
-           adwin_direction: str = "both") -> dict:
+           adwin_direction: str = "both", detector=None, before_month=None) -> dict:
     """Month-by-month serve / observe / detect / decide loop.
 
     The keyword defaults reproduce the approved 2025 primary run exactly. ``log`` is called
@@ -54,7 +54,9 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
     last_rain = None
     if error_mode not in {"province_abs", "monthly_wape"}:
         raise KeyError(error_mode)
-    detector = ADWIN(delta)
+    # ``detector`` overrides the local ADWIN (anything with update(value) -> bool and a
+    # ``window`` list); used only by illustrative sensitivity runs.
+    detector = ADWIN(delta) if detector is None else detector
     seed_cuts = 0
     for value in seed or []:
         seed_cuts += int(detector.update(float(value)))
@@ -63,6 +65,9 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
     served_rows = []
     adwin_alarm_months = []
     for month in months:
+        if before_month is not None:
+            # e.g. the input gate: runs before the month is served; it may raise to stop the loop.
+            before_month(month)
         n_events = len(events)
         served_model = active
         pred = np.asarray(predict(active, month), dtype=float)

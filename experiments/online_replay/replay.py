@@ -70,9 +70,29 @@ class Server:
         return self.models.predict(key, month)
 
 
+def month_action(st: dict) -> str:
+    """The action label of one month of the policy loop (written to the replay log)."""
+    kinds = [e["event"] for e in st["events"]]
+    if st["trigger"]:
+        action = "prepare_retrain"
+    elif st["psi"]:
+        action = "watch"
+    elif st["adwin_cut"]:
+        action = "alert" if st["adwin_alarm"] else "adwin_cut_ignored_down"
+    else:
+        action = "none"
+    if st["adwin_cut"] and not st["adwin_alarm"] and not action.startswith("adwin_cut"):
+        action += "+adwin_cut_ignored_down"
+    for k in ("promote", "rollback"):
+        if k in kinds:
+            action += f"+{k}"
+    return action
+
+
 def run_track(ctx: X.Context, cfg: dict, months: list[str], served: dict, initial: str, trained_through: str,
               reference_end: str, seed: list[float], variant: str, delta: float | None = None,
-              weights: dict | None = None, experts: dict | None = None, gate: bool = True) -> dict:
+              weights: dict | None = None, experts: dict | None = None, gate: bool = True,
+              detector=None, strict_gate: bool = True) -> dict:
     drift = cfg["drift"]
     server = Server(ctx, served, variant)
     y, naive = {}, {}
@@ -89,31 +109,24 @@ def run_track(ctx: X.Context, cfg: dict, months: list[str], served: dict, initia
         return bool(alarms), alarms, "rain_lag_1" in alarms
 
     states = []
+    gate_rows: dict[str, dict] = {}
+
+    def before_month(month):
+        # Input gate first: runs before month t is served or decided; a hard failure stops the loop.
+        gate_rows[month] = _gate(ctx, month, strict_gate) if gate else {}
+
     result = policy_replay(
         months, y, naive, server, psi, tuple(drift["challengers"]), promotion_rule(drift["promotion_preset"]),
         trigger_mode=drift["challenger_trigger"], delta=float(delta if delta is not None else drift["adwin_delta"]),
         gate_months=int(drift["psi_gate_months"]), rollback_months=int(drift["rollback_months"]),
         refresh=bool(drift["refresh_reference_after_promotion"]), error_mode=drift["adwin_input"], seed=seed,
         initial_model=initial, trained_through=trained_through, reference_end=reference_end,
-        log=states.append, adwin_direction=drift["adwin_direction"])
+        log=states.append, adwin_direction=drift["adwin_direction"], detector=detector, before_month=before_month)
     rows = []
     for st in states:
         m = st["month"]
-        dq = check_inputs(ctx.panel, ctx.table, m) if gate else {}
-        kinds = [e["event"] for e in st["events"]]
-        if st["trigger"]:
-            action = "prepare_retrain"
-        elif st["psi"]:
-            action = "watch"
-        elif st["adwin_cut"]:
-            action = "alert" if st["adwin_alarm"] else "adwin_cut_ignored_down"
-        else:
-            action = "none"
-        if st["adwin_cut"] and not st["adwin_alarm"] and not action.startswith("adwin_cut"):
-            action += "+adwin_cut_ignored_down"
-        for k in ("promote", "rollback"):
-            if k in kinds:
-                action += f"+{k}"
+        dq = gate_rows[m]
+        action = month_action(st)
         row = {"month": m, **{k: v for k, v in dq.items() if k != "as_of"},
                "served_model": st["served_model"], "served_wape": st["served"]["wape"], "served_mae": st["served"]["mae"],
                "served_rmse": st["served"]["rmse"], "served_bias": float(server(st["served_model"], m).sum() / y[m].sum() - 1),
@@ -136,6 +149,17 @@ def run_track(ctx: X.Context, cfg: dict, months: list[str], served: dict, initia
             row.update({f"w_{k}": v for k, v in weights[m].items()})
         rows.append(row)
     return {"result": result, "log": pd.DataFrame(rows), "y": y, "naive": naive, "server": server}
+
+
+_GATE_CACHE: dict = {}
+
+
+def _gate(ctx: X.Context, month: str, strict: bool = True) -> dict:
+    """The gate result depends only on the panel and the month, so tracks share it."""
+    key = (id(ctx), month, strict)
+    if key not in _GATE_CACHE:
+        _GATE_CACHE[key] = check_inputs(ctx.panel, ctx.table, month, strict=strict)
+    return _GATE_CACHE[key]
 
 
 def _by_month(part: pd.DataFrame, pred: np.ndarray) -> dict[str, np.ndarray]:
@@ -198,9 +222,11 @@ def reproduce_old_2025(ctx: X.Context) -> dict:
                         gate_months=int(cfg["psi_gate_months"]), rollback_months=int(cfg["rollback_months"]),
                         refresh=False, error_mode=cfg["adwin_input"], seed=seed)
     promos = sum(e["event"] == "promote" for e in res["events"])
+    rollbacks = sum(e["event"] == "rollback" for e in res["events"])
     out = {"served_wape": res["served"]["wape"], "target": OLD_2025_SERVED_WAPE,
-           "match": abs(res["served"]["wape"] - OLD_2025_SERVED_WAPE) < 1e-12, "promotions": promos}
-    if not out["match"] or promos:
+           "match": abs(res["served"]["wape"] - OLD_2025_SERVED_WAPE) < 1e-12, "promotions": promos,
+           "rollbacks": rollbacks}
+    if not out["match"] or promos or rollbacks:
         raise SystemExit(f"refactored policy.replay does not reproduce the approved 2025 result: {out}")
     return out
 
@@ -240,7 +266,11 @@ def stage_replay2025(ctx: X.Context) -> dict:
     summary["loop_matches_offline"] = abs(summary["served"]["wape"] - summary["champion_2025_wape_offline"]) * 100 <= 0.01
     summary["old_policy_reproduced"] = old
     summary["psi_threshold"] = PSI_THRESHOLD
-    summary["adwin_note"] = "local ADWIN never cuts a window shorter than 32 points; with a 24-month seed the first month that can fire is month 8 (August)"
+    summary["adwin_note"] = ("The approved local ADWIN (delta 0.002, window >= 32, >= 16 points per side, monthly WAPE) "
+                             "CANNOT fire on a shift that starts inside the replay year: a cut needs >= 16 post-shift "
+                             "months and a mean shift of about 0.8 WAPE. Month 8 is only the first month the window is "
+                             "long enough to be tested at all (24-month seed + 8), not a month in which in-year drift "
+                             "can be detected. See drift_demos.py and README for the parameters that would fire.")
     (RESULTS / "replay_2025_summary.json").write_text(json.dumps(summary, indent=2, default=float) + "\n", encoding="utf-8")
     print("2025:", summary["explanation"], "served", summary["served"]["wape"], flush=True)
     return summary

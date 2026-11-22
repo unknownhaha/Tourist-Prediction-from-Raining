@@ -16,10 +16,14 @@ import math
 
 
 class ADWIN:
-    def __init__(self, delta: float = 0.002):
+    def __init__(self, delta: float = 0.002, min_window: int = 32, min_side: int = 16):
         if not 0.0 < delta < 1.0:
             raise ValueError("delta must be between 0 and 1")
+        if min_side < 1 or min_window < 2 * min_side:
+            raise ValueError("need min_side >= 1 and min_window >= 2 * min_side")
         self.delta = float(delta)
+        self.min_window = int(min_window)
+        self.min_side = int(min_side)
         self.window: list[float] = []
 
     def update(self, value: float) -> bool:
@@ -32,13 +36,13 @@ class ADWIN:
     def _cut_once(self) -> bool:
         values = self.window
         count = len(values)
-        if count < 32:
-            # A shorter window cannot host a stable two-sided mean test.
+        if count < self.min_window:
+            # A shorter window cannot host a stable two-sided mean test (default 32).
             return False
         prefix = [0.0]
         for item in values:
             prefix.append(prefix[-1] + item)
-        for split in range(16, count - 15):
+        for split in range(self.min_side, count - self.min_side + 1):
             left, right = split, count - split
             mean_left = prefix[split] / left
             mean_right = (prefix[count] - prefix[split]) / right

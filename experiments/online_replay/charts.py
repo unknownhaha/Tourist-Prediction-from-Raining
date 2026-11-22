@@ -129,10 +129,11 @@ def _drift_panels(axes, log, label):
         hit = np.flatnonzero(flags[k].to_numpy())
         ax.scatter(hit, [list(kinds).index(k)] * len(hit), s=250, c=col, marker=mk, label=lab)
     ax.set_yticks(range(len(kinds)), [v[0] for v in kinds.values()])
-    ax.set_xticks(x, m, rotation=45)
+    step = 1 if len(m) <= 12 else 6
+    ax.set_xticks(x[::step], m[::step], rotation=45)
     ax.set_xlim(-0.5, len(m) - 0.5)
     for a in axes[:2]:
-        a.set_xticks(x, [])
+        a.set_xticks(x[::step], [])
         a.set_xlim(-0.5, len(m) - 0.5)
 
 
@@ -191,8 +192,65 @@ def dq():
           f"overall DQ score {r['legacy_v1_scores']['overall']:.3f} (v1) -> {r['scores']['overall']:.3f} (v2); COVID buckets reported, not scored")
 
 
+def _demo_chart(prefix, png, title, takeaway):
+    path = R / f"{prefix}_log.csv"
+    if not path.exists():
+        return
+    log = pd.read_csv(path)
+    summ = json.loads((R / f"{prefix}_summary.json").read_text())["runs"]
+    panels = [("A", "approved_adwin"), ("A", "ILLUSTRATIVE_adwin_min16_side8_relative_confirm1"),
+              ("B", "approved_adwin"), ("B", "ILLUSTRATIVE_adwin_min16_side8_relative_confirm1")]
+    fig, axes = plt.subplots(len(panels) + 1, 1, figsize=(16, 9), dpi=100, sharex=True)
+    first = log[(log.track == "A") & (log.detector == "approved_adwin")].reset_index(drop=True)
+    months = first.month.tolist()
+    x = np.arange(len(months))
+    ax = axes[0]
+    for c in [c for c in first.columns if c.startswith("psi_") and c not in ("psi_alarm", "psi_alarm_features")]:
+        ax.plot(x, first[c], ".-", label=c[4:])
+    from src.stream.studio_models import PSI_THRESHOLD
+    ax.axhline(PSI_THRESHOLD, color="red", ls="--", label=f"alarm {PSI_THRESHOLD}")
+    ax.set_yscale("symlog", linthresh=0.1)
+    ax.set_ylabel("PSI")
+    ax.legend(fontsize=8, ncol=5, loc="upper right")
+    ax.set_title("PSI per feature (same for every run)", fontsize=10, loc="left")
+    for ax, (track, det) in zip(axes[1:], panels):
+        d = log[(log.track == track) & (log.detector == det)].reset_index(drop=True)
+        ax.plot(x, d.served_wape * 100, "o-", ms=3, label="served")
+        ax.plot(x, d.naive_wape * 100, "--", color="grey", label="seasonal naive")
+        ax.set_yscale("log")
+        ax.set_ylabel("WAPE %")
+        marks = [("prepare_retrain", d.trigger.astype(bool), "red", "*"),
+                 ("promote", d.action.str.contains("promote"), "green", "P"),
+                 ("rollback", d.action.str.contains("rollback"), "black", "X"),
+                 ("ADWIN cut", d.adwin_cut.astype(bool), "blue", "x")]
+        top = ax.get_ylim()[1]
+        for i, (lab, mask, col, mk) in enumerate(marks):
+            hit = np.flatnonzero(mask.to_numpy())
+            for h in hit:
+                ax.axvline(h, color=col, alpha=0.25)
+            ax.scatter(hit, [top / (1.6 ** i)] * len(hit), c=col, marker=mk, s=120, label=lab, zorder=5)
+        s = summ[f"{track}|{det}"]
+        name = "A: RF logdiff" if track == "A" else "B: EWA Champion"
+        dname = "approved ADWIN" if det == "approved_adwin" else "ILLUSTRATIVE relative ADWIN 16/8 + confirm-1"
+        promos = ", ".join(p["month"] for p in s["promotions"]) or "none"
+        rbs = ", ".join(r["month"] for r in s["rollbacks"]) or "none"
+        ax.set_title(f"{name} | {dname} | served WAPE {s['served']['wape'] * 100:.2f}% | cuts: {', '.join(s['adwin_cut_months']) or 'none'} | "
+                     f"retrain: {', '.join(s['prepare_retrain_months']) or 'none'} | promote: {promos} | rollback: {rbs}", fontsize=9, loc="left")
+        ax.legend(fontsize=7, ncol=6, loc="lower right")
+    step = 1 if len(months) <= 12 else 3
+    axes[-1].set_xticks(x[::step], months[::step], rotation=45, fontsize=9)
+    _save(fig, png, title, takeaway)
+
+
+def drift_demos():
+    _demo_chart("replay_2020", "replay_2020_drift.png", "Long replay 2020-01..2023-12 (PSI reference and ADWIN seed = pre-COVID 2019)",
+                "Approved ADWIN: delta 0.002, window>=32, >=16/side. Illustrative: WAPE / 2019 seed mean, window>=16, >=8/side, promote after 1 trigger (not a config).")
+    _demo_chart("replay_2023_normalseed", "replay_2023_normalseed_drift.png", "2023 demo with a normal-period ADWIN seed (2019 one-step OOS errors)",
+                "11-point 2019 seed + 12 months = 23 < 32: the approved ADWIN cannot cut. Illustrative panels are sensitivity runs, not configs.")
+
+
 def main():
-    for fn in (headline, covid, ewa_ab, weights, drift, rain, dq):
+    for fn in (headline, covid, ewa_ab, weights, drift, drift_demos, rain, dq):
         fn()
         print("chart", fn.__name__, flush=True)
 
