@@ -1,0 +1,24 @@
+{"month": "2024-01", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12"], "reference_end": "2023-12"}
+{"month": "2024-02", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12"], "reference_end": "2023-12"}
+{"month": "2024-03", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-04", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-05", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-06", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-07", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-08", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12"], "reference_end": "2023-12"}
+{"month": "2024-09", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-10", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2024-11", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12"], "reference_end": "2023-12"}
+{"month": "2024-12", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-01", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_1", "guest_lag_12"], "reference_end": "2023-12"}
+{"month": "2025-02", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-03", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_1", "guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-04", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-05", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-06", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_lag_1", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-07", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-08", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-09", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12"], "reference_end": "2023-12"}
+{"month": "2025-10", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-11", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12", "rain_roll3"], "reference_end": "2023-12"}
+{"month": "2025-12", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["guest_lag_12"], "reference_end": "2023-12"}

@@ -28,7 +28,7 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
            rollback_months: int = 2, refresh: bool = False, error_mode: str = "province_abs",
            seed: list[float] | None = None, initial_model: str = "logdiff_expanding@2024-12",
            trained_through: str = "2024-12", reference_end: str = "2024-12", log=None,
-           adwin_direction: str = "both", detector=None, before_month=None) -> dict:
+           adwin_direction: str = "both", detector=None, before_month=None, performance_trigger=None) -> dict:
     """Month-by-month serve / observe / detect / decide loop.
 
     The keyword defaults reproduce the approved 2025 primary run exactly. ``log`` is called
@@ -56,11 +56,12 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
         raise KeyError(error_mode)
     # ``detector`` overrides the local ADWIN (anything with update(value) -> bool and a
     # ``window`` list); used only by illustrative sensitivity runs.
-    detector = ADWIN(delta) if detector is None else detector
+    if performance_trigger is None and detector is None:
+        detector = ADWIN(delta)
     seed_cuts = 0
     for value in seed or []:
         seed_cuts += int(detector.update(float(value)))
-    window_after_seed = len(detector.window)
+    window_after_seed = len(detector.window) if detector is not None else 0
     events = []
     served_rows = []
     adwin_alarm_months = []
@@ -73,8 +74,10 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
         pred = np.asarray(predict(active, month), dtype=float)
         actual = np.asarray(y[month], dtype=float)
         lag = np.asarray(naive[month], dtype=float)
-        before = list(detector.window)
-        if error_mode == "province_abs":
+        before = list(detector.window) if detector is not None else []
+        if performance_trigger is not None:
+            adwin_hit = False
+        elif error_mode == "province_abs":
             adwin_hit = False
             added = [float(e) for e in np.abs(actual - pred)]
             for error in added:
@@ -101,7 +104,9 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
             features = [name for name in features if name != "rain_lag_1"]
             psi_hit = bool(features)
         last_rain = month if rain_raw else None
-        fired = trigger_fires(trigger_mode, psi_hit, adwin_hit, recent_psi, gate_months)
+        fired = (performance_trigger(month, _block(actual, pred, lag)["wape"])
+                 if performance_trigger is not None else
+                 trigger_fires(trigger_mode, psi_hit, adwin_hit, recent_psi, gate_months))
         recent_psi.append(psi_hit)
         if psi_hit and not fired:
             # PSI by itself is a watch. It is logged and does not train a Challenger.
@@ -190,8 +195,8 @@ def replay(months: list[str], y: dict, naive: dict, predict, psi, candidates: tu
             block = _block(actual, pred, lag)
             log({
                 "month": month, "served_model": served_model, "served": block,
-                "adwin_window_len": len(detector.window),
-                "adwin_mean": float(np.mean(detector.window)) if detector.window else float("nan"),
+                "adwin_window_len": len(detector.window) if detector is not None else 0,
+                "adwin_mean": float(np.mean(detector.window)) if detector is not None and detector.window else float("nan"),
                 "adwin_cut": cut is not None, "adwin_alarm": bool(adwin_hit), "cut": cut,
                 "psi": bool(psi_hit), "psi_features": list(features), "rain_confirmed": rain_confirmed,
                 "trigger": bool(fired), "decision": decision, "reference_end": reference_end,

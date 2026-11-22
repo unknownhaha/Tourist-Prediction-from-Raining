@@ -1,0 +1,252 @@
+"""Local, click-driven monthly training. Run python -m experiments.online_replay.manual_studio."""
+import io
+import json
+import sqlite3
+import tempfile
+import traceback
+from contextlib import closing
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+import joblib
+import numpy as np
+import pandas as pd
+
+from experiments.beat_seasonal_naive.run import matrix_for, reconstruct
+from experiments.online_replay import experts as X, replay as R
+from experiments.online_replay.selection import load_config, frozen_choice
+from experiments.psi_adwin.policy import replay
+from src.stream.champion_policy import promotion_rule
+from src.stream.drift import PageHinkley
+from src.stream.metrics import _block, wape
+from src.stream.studio_models import psi_alarm
+
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+PANEL = ROOT / "data/model/province_month_unified.parquet"
+INITIAL = HERE / "results/stream_2024_2025"
+RECIPES = {"logdiff": ("logdiff", X.EXP_COLUMNS), "level": ("level", ()),
+           "rf_logdiff": ("logdiff", ()), "yoy3": ("logdiff", ("yoy_3m_log",))}
+CHALLENGERS = ("rf_logdiff", "yoy3")
+# 95th percentile of 24-month null maxima in compare_detectors.py (2023 calibration).
+PH_THRESHOLD = 3.8816619246981006
+
+
+def ph_updates(seed):
+    baseline = np.asarray(seed[-12:], dtype=float)
+    mean, scale = baseline.mean(), baseline.std(ddof=1)
+    if len(baseline) != 12 or not np.isfinite(scale) or scale <= 0:
+        raise ValueError("Page-Hinkley requires 12 variable baseline errors")
+    detector = PageHinkley(delta=.5, threshold=PH_THRESHOLD, initial_count=12)
+    def update(error):
+        alarm = detector.update((error - mean) / scale)
+        return {"ph_alarm": bool(alarm), "ph_score": float(detector.statistic)}
+    return update
+
+
+def context(end):
+    data = pd.read_parquet(PANEL, filters=[("year_month", "<=", end)])
+    data["province_id"] = data.province_id.astype(str).str.zfill(2)
+    return X.Context.build(data.sort_values(["year_month", "province_id"]))
+
+
+def fitted(ctx, end, initial=False):
+    models = {}
+    with tempfile.TemporaryDirectory() as tmp:
+        for name, (target, extra) in RECIPES.items():
+            path = INITIAL / f"{name}_{end}.joblib"
+            if not (initial and name in ("level", "logdiff") and path.exists()):
+                path = Path(tmp) / f"{name}.joblib"
+                X.fit_predict(ctx, target, end, [], exp=extra, checkpoint=path)
+            models[name] = joblib.load(path)
+            if models[name]["train_end"] != end:
+                raise ValueError("Checkpoint cutoff mismatch")
+    return models
+
+
+def predict(ctx, models, month, end):
+    part = X.part_of(ctx, [month]).sort_values("province_id")
+    if len(part) != 77 or not part.guest_arrivals_total.isna().all():
+        raise ValueError("Expected 77 unlabeled forecast rows")
+    output = {}
+    for key, model in models.items():
+        target, extra = RECIPES[key]
+        matrix = matrix_for(part, ctx.history, "base" if target == "level" else "ext", end)
+        matrix = pd.concat([matrix, part[list(extra)]], axis=1)
+        features = matrix[model["columns"]].fillna(model["medians"]).to_numpy(float)
+        raw = model["model"].predict(model["scaler"].transform(features))
+        output[key] = reconstruct(target, raw, part.guest_lag_12.to_numpy())
+    return part, output
+
+
+def monitor(history, seed, cfg, start):
+    months = [r["month"] for r in history]
+    data = {r["month"]: r for r in history}
+    def psi(m, _):
+        features = [k for k, v in data[m]["psi"].items() if psi_alarm(v)]
+        return bool(features), features, "rain_lag_1" in features
+    states = []
+    update = ph_updates(seed)
+    reading = {}
+    def trigger(month, error):
+        reading.update(update(error))
+        if "adwin" in data[month]:  # Reproduce actual decisions made before migration.
+            return "prepare_retrain" in data[month]["action"]
+        return reading["ph_alarm"]
+
+    policy = replay(months, {m: data[m]["actual"] for m in months},
+                    {m: data[m]["naive"] for m in months},
+                    lambda key, m: data[m]["predictions"][key.split("@")[0]], psi, CHALLENGERS,
+                    promotion_rule(cfg["promotion_preset"]), trigger_mode="performance",
+                    performance_trigger=trigger, log=states.append,
+                    rollback_months=cfg["rollback_months"], initial_model="champion@"+start,
+                    trained_through=start, reference_end=start)
+    st = states[-1]
+    return dict(served=st["served_model"].split("@")[0], action=R.month_action(st),
+                **reading, psi_watch=st["psi"], decision=st["decision"],
+                registry=policy["registry"])
+
+
+class Studio:
+    def __init__(self, db, start="2023-12", stop="2025-12"):
+        self.db, self.start, self.stop = db, start, stop
+        db.parent.mkdir(parents=True, exist_ok=True)
+        with closing(sqlite3.connect(db)) as conn, conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS initial (id INTEGER PRIMARY KEY, models BLOB, seed TEXT)")
+            conn.execute("CREATE TABLE IF NOT EXISTS session (id INTEGER PRIMARY KEY, revision INTEGER, history TEXT, models BLOB)")
+            conn.execute("INSERT OR IGNORE INTO session VALUES (1, 0, '[]', NULL)")
+
+    def state(self, revision, history):
+        end = history[-1]["month"] if history else self.start
+        nxt = str(pd.Period(end, "M")+1) if end < self.stop else None
+        return dict(revision=revision, through=end, next=nxt, history=history, ph_threshold=PH_THRESHOLD)
+
+    def read(self):
+        with closing(sqlite3.connect(self.db)) as conn:
+            rev, history = conn.execute("SELECT revision,history FROM session").fetchone()
+        return self.state(rev, json.loads(history))
+
+    def initialize(self):
+        with closing(sqlite3.connect(self.db)) as conn, conn:
+            conn.execute("BEGIN IMMEDIATE")
+            existing = conn.execute("SELECT seed FROM initial").fetchone()
+            if existing:
+                history = json.loads(conn.execute("SELECT history FROM session").fetchone()[0])
+                if any("ph_score" not in r for r in history):
+                    update = ph_updates(json.loads(existing[0]))
+                    for r in history:
+                        r.update(update(r["metrics"][r["served"]]["wape"]))
+                    conn.execute("UPDATE session SET history=?, revision=revision+1 WHERE id=1",
+                                 (json.dumps(history, allow_nan=False),))
+                return
+            ctx = context(self.start)
+            seed = []
+            for year in (int(self.start[:4])-1, int(self.start[:4])):
+                part, pred, _, _ = R._champion_inputs(ctx, frozen_choice(load_config()), year)
+                seed.extend(R.monthly_wape_series(part, pred))
+            blob = serialize(fitted(ctx, self.start, initial=True))
+            conn.execute("INSERT INTO initial VALUES(1,?,?)", (blob, json.dumps(seed)))
+
+    def change(self, action, revision):
+        with closing(sqlite3.connect(self.db, timeout=1)) as conn, conn:
+            conn.execute("BEGIN IMMEDIATE")
+            rev, encoded, blob = conn.execute("SELECT revision,history,models FROM session").fetchone()
+            if revision != rev:
+                raise ValueError("สถานะเปลี่ยนแล้ว กรุณาโหลดหน้าใหม่")
+            history = json.loads(encoded)
+            if action == "reset":
+                history, blob = [], None
+            else:
+                state = self.state(rev, history)
+                end, month = state["through"], state["next"]
+                if not month:
+                    raise ValueError("ครบทุกเดือนแล้ว")
+                ctx = context(end)
+                cfg = load_config()
+                R._gate(ctx, month)
+                initial_blob, encoded_seed = conn.execute("SELECT models,seed FROM initial").fetchone()
+                seed = json.loads(encoded_seed)
+                models = joblib.load(io.BytesIO(blob or initial_blob))
+                part, pred = predict(ctx, models, month, end)
+                weights = np.array(history[-1]["next_weights"] if history else [.5,.5])
+                pred["champion"] = weights[0]*pred["logdiff"] + weights[1]*pred["level"]
+                drift = cfg["drift"]
+                psi = R.psi_values(ctx.table, month, self.start, drift["psi_features"])
+                # Open this month's observations only after the four forests have predicted.
+                observed = context(month)
+                actual = X.part_of(observed, [month]).set_index("province_id").loc[part.province_id, "guest_arrivals_total"].to_numpy(float)
+                if not np.isfinite(actual).all():
+                    raise ValueError("Incomplete observations")
+                naive = part.guest_lag_12.to_numpy()
+                weights *= np.exp(-float(cfg["selection"]["eta"])*np.array([wape(actual, pred[k]) for k in ("logdiff","level")]))
+                keys = ("champion", *CHALLENGERS)
+                record = dict(month=month, cutoff=end, province=part.province_th.tolist(), actual=actual.tolist(),
+                              naive=naive.tolist(), predictions={k: pred[k].tolist() for k in keys},
+                              metrics={k: _block(actual, pred[k], naive) for k in keys}, psi=psi,
+                              next_weights=(weights/weights.sum()).tolist())
+                history.append(record)
+                record.update(monitor(history, seed, drift, self.start))
+                blob = serialize(fitted(observed, month))
+            conn.execute("UPDATE session SET revision=?,history=?,models=? WHERE id=1",
+                         (rev+1,json.dumps(history, allow_nan=False),blob))
+        return self.state(rev+1, history)
+
+
+def serialize(models):
+    stream = io.BytesIO()
+    joblib.dump(models, stream, compress=3)
+    return stream.getvalue()
+
+
+class Handler(BaseHTTPRequestHandler):
+    def reply(self, status, value, mime="application/json"):
+        body = value if isinstance(value, bytes) else json.dumps(value, ensure_ascii=False).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", mime+"; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        if self.path in ("/", "/index.html"):
+            self.reply(200,(HERE/"web/index.html").read_bytes(),"text/html")
+        elif self.path == "/studio.css":
+            source = (ROOT/"site/studio.html").read_text(encoding="utf8")
+            self.reply(200,source.split("<style>",1)[1].split("</style>",1)[0].encode(),"text/css")
+        elif self.path == "/api/state":
+            self.reply(200,self.server.studio.read())
+        else:
+            self.reply(404,{})
+
+    def do_POST(self):
+        if self.path not in ("/api/train","/api/reset"):
+            return self.reply(404,{})
+        address = "127.0.0.1:"+str(self.server.server_port)
+        if (self.headers.get("Host") != address or self.headers.get("Origin", "http://"+address) != "http://"+address
+                or self.headers.get_content_type() != "application/json"):
+            return self.reply(403, {"error":"Local JSON requests only"})
+        try:
+            size = int(self.headers.get("Content-Length",0))
+            if not 0 < size <= 256:
+                raise ValueError("Invalid request")
+            revision = json.loads(self.rfile.read(size))["revision"]
+            state = self.server.studio.change(self.path.split("/")[-1], revision)
+        except (ValueError, KeyError, sqlite3.OperationalError) as exc:
+            return self.reply(409, {"error":str(exc)})
+        except Exception:
+            traceback.print_exc()
+            return self.reply(500, {"error":"ฝึกไม่สำเร็จ ระบบยังอยู่ที่เดือนเดิม กรุณาดู server log"})
+        self.reply(200,state)
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", type=int, default=8774)
+    args = parser.parse_args()
+    server = ThreadingHTTPServer(("127.0.0.1", args.port),Handler)
+    server.studio = Studio(ROOT/"outputs/manual_studio/session.sqlite")
+    server.studio.initialize()
+    server.serve_forever()

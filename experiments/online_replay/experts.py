@@ -62,7 +62,8 @@ class Context:
 
 
 def fit_predict(ctx: Context, target: str, train_end: str, months: list[str], add=(), drop=(),
-                seed: int = 42, table: pd.DataFrame | None = None, exp: tuple[str, ...] = EXP_COLUMNS) -> tuple[np.ndarray, pd.DataFrame]:
+                seed: int = 42, table: pd.DataFrame | None = None, exp: tuple[str, ...] = EXP_COLUMNS,
+                checkpoint: Path | None = None) -> tuple[np.ndarray, pd.DataFrame]:
     """Fit one expert on 2019-01..train_end and predict ``months`` (all after train_end)."""
     if any(m <= train_end for m in months):
         raise AssertionError(f"target month not after train_end {train_end}")
@@ -96,6 +97,13 @@ def fit_predict(ctx: Context, target: str, train_end: str, months: list[str], ad
     est = _fit_estimator(LOGDIFF if target == "logdiff" else LEVEL)
     est.set_params(n_jobs=8, random_state=seed)
     est.fit(scaler.transform(X), label[ok])
+    if checkpoint is not None:
+        import joblib
+        joblib.dump(dict(model=est, scaler=scaler, medians=med, target=target,
+                         columns=M.columns.tolist(), train_end=train_end, n_fit=int(ok.sum())),
+                    checkpoint, compress=3)
+    if not months:
+        return np.empty(0), part
     tm = vis["year_month"].isin(months).to_numpy()
     raw = est.predict(scaler.transform(M[tm].fillna(med).to_numpy(dtype=float)))
     pred = reconstruct(target, raw, l12[tm])

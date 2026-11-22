@@ -1,5 +1,79 @@
 # 2025 online replay (Champion EWA, drift log, 2023 demo)
 
+## Manual monthly training studio
+
+On Windows run `experiments/online_replay/start_manual_studio.ps1` from the checkout
+or run `python -m experiments.online_replay.manual_studio` with the experiment dependencies.
+Open `http://127.0.0.1:8774/`. The live studio monitors the serving model's monthly WAPE
+with upward Page-Hinkley. The last 12 pre-stream errors (2023) supply the mean and sample
+standard deviation. The standardized detector starts with count 12, delta 0.5 and the
+3.88166 threshold calibrated in the detector comparison. An alarm opens challenger
+evaluation independently of PSI; promotion and rollback use the existing safeguards.
+Older sessions display retrospectively calculated PH scores alongside their actual decisions.
+Training data for the initial models ends in December 2023. The
+Champion uses its existing recipe (historically selected on 2024) and starts with equal
+expert weights. RF logdiff and YoY3 run as shadow challengers.
+
+Each Train request predicts one month from the last committed forests, opens that
+month's observations, scores the three models, applies the drift policy and refits the
+four underlying forests through that month. All models keep learning after a promotion.
+SQLite commits the new model parameters and month history together in
+`outputs/manual_studio/session.sqlite`. Reloading resumes the session. Reset restores
+the initial snapshot. The studio does not consume the batch experiments' 2024–2025
+predictions or final model files.
+
+## Select among eight models before monthly replay
+
+Run `python -m experiments.online_replay.compare_models` from the repository root
+with the experiment dependencies and CatBoost installed. Results are written to
+`results/comparison_2024/`. The target is monthly provincial guest arrivals. All eight
+recipes forecast the same 924 province-months in 2024. Training starts in January 2019
+after building lags with 2018 history. During selection, the fitted models, imputers,
+scalers and the Champion's initial 50/50 expert weights remain fixed at December 2023.
+Observed feature lags advance monthly. The lowest pooled 2024 WAPE wins, with MAE
+as the first tiebreaker. The scoring year is reused in the retrospective online replay.
+Only 2025 is outside this model-selection period.
+
+Seasonal naive uses lag 12. Linear Regression, Ridge (alpha 1) and CatBoost
+(300 trees, depth 6, learning rate 0.05) predict levels using the extended matrix.
+Random Forest uses the repository's level expert. RF logdiff models the log change
+from lag 12. YoY3 adds the lagged three-month year-over-year log ratio to RF logdiff.
+Champion combines the seasonal-adjusted logdiff and level experts. Its original
+configuration was itself chosen on 2024 in earlier work.
+
+The online winner forecasts all provinces before the next expanding-window refit.
+The run saves the fitted YoY3 forests through December 2023 and December 2025,
+forecasts and monthly drift decisions. Winner-specific rolling forecast errors from
+2022–2023 initialize ADWIN. The existing challenger promotion policy is retained,
+excluding the duplicate of the winning model from the standby list.
+
+## Fresh 2019–2023 fit and continuous 2024–2025 stream
+
+From the repository root run `python -m experiments.online_replay.train_stream` with the
+repository experiment dependencies installed. The run starts without cached predictions.
+2018 supplies lag and seasonal history. The first two forests fit on eligible rows of
+2019-01 through 2023-12. January 2024 starts with equal expert weights. Each calendar
+month is forecast for every province before its losses update the EWA weights.
+The forests refit on the expanding history and the weights carry across January 2025.
+The December 2025 observations are included in the final saved fit.
+
+The original C0/E2 configuration and eta 5 were chosen on 2024 in earlier work.
+This run fixes that recipe in advance. Its 2024 scores therefore have prior model-selection exposure.
+The drift detector starts with rolling one-month-ahead Champion errors from 2022–2023.
+PSI uses same-calendar-month observations from the two years ending December 2023.
+The original PSI + upward ADWIN trigger, six challenger definitions, two-month confirmation
+and rollback policy apply throughout both stream years.
+
+Outputs are in `results/stream_2024_2025/`. The four joblib files store the initial and final
+scikit-learn estimators, training medians, feature order and scalers. For inference, build the
+same feature matrix as `experts.fit_predict`, align columns, fill missing values with training
+medians, scale, predict, and call `reconstruct` with each target and its lag-12 input.
+Use equal mixture weights for the initial checkpoint and `summary.json`'s
+`weights_after_last_update` for the final checkpoint. `forecasts.csv` records served
+predictions, `monthly.csv` records detector and model decisions, and `events.jsonl`
+contains policy events. `challenger_readiness.csv` exercises all six candidate predictors
+on January 2024 at startup cutoff independently of promotion eligibility.
+
 Implements `/workspace/plans/online-ml-replay-2025-plan.md` (Desin) with all of Desin's defaults, in the
 trimmed form the PM asked for (see "What was trimmed"). Branch `exp/online-replay-2025` from
 `exp/online-model-trials` @ 6cc2a63. Local commits only. Final model choice belongs to DS/ML: everything here is a recommendation.
