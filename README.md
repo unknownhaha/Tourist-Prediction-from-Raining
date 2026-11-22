@@ -87,3 +87,7 @@ The pipeline table `data/core/province_month.parquet` is still produced by `pyth
 - **Interactive explorer:** open [site/index.html](site/index.html) in a browser after `python -m src.docs.build_site` (switch **English / ไทย** in the header)
 
 Tested with **Python 3.11+** (CI/local may use 3.14).
+
+## 2025 online replay (exp/online-replay-2025)
+
+`experiments/online_replay/` holds the month-by-month 2025 replay of the EWA Champion: the seasonally adjusted `exp_lr_recent` features, DQ v2, the COVID and EWA A/B tests chosen on 2024, the PSI/ADWIN drift log, the 2023 drift demo, the rain-effect report and the slide charts. See `experiments/online_replay/README.md`. Run it with `./.venv/bin/python experiments/online_replay/run.py --stage all`.
