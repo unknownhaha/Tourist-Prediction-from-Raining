@@ -221,7 +221,7 @@ def stage_ewa(ctx: X.Context) -> pd.DataFrame:
     return frame
 
 
-STAGES = ["reproduce", "dq", "select", "covid", "ewa", "replay2025", "demo2023", "rain", "results", "charts"]
+STAGES = ["reproduce", "dq", "select", "covid", "ewa", "replay2025", "demo2023", "drift_demos", "rain", "results", "charts"]
 
 
 def main(argv=None) -> None:
@@ -230,6 +230,9 @@ def main(argv=None) -> None:
     args = parser.parse_args(argv)
     stages = STAGES if args.stage == "all" else [args.stage]
     t0 = time.time()
+    if args.stage == "all" and CACHE.exists():
+        # The cache has no code/data fingerprint, so a full run always starts cold.
+        CACHE.unlink()
     ctx = X.Context.build()
     X.load_cache(ctx, CACHE)
     timings = {}
@@ -242,6 +245,9 @@ def main(argv=None) -> None:
             elif stage in ("replay2025", "demo2023"):
                 from experiments.online_replay import replay
                 getattr(replay, f"stage_{stage}")(ctx)
+            elif stage == "drift_demos":
+                from experiments.online_replay import drift_demos
+                drift_demos.stage_drift_demos(ctx)
             elif stage in ("rain",):
                 from experiments.online_replay import rain_report
                 rain_report.stage_rain(ctx)

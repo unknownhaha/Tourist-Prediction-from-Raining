@@ -37,7 +37,8 @@ def check_features(rows: pd.DataFrame) -> dict:
     return {"n_rows": int(len(rows)), "problems": problems}
 
 
-def check_inputs(panel: pd.DataFrame, table: pd.DataFrame, as_of: str, config: dict | None = None) -> dict:
+def check_inputs(panel: pd.DataFrame, table: pd.DataFrame, as_of: str, config: dict | None = None,
+                 strict: bool = True) -> dict:
     """DQ on what month ``as_of`` may read (panel <= as_of - 1) plus its feature rows."""
     visible_end = shift_year_month(as_of, 1)
     visible = panel.loc[panel["year_month"].astype(str) <= visible_end]
@@ -47,7 +48,7 @@ def check_inputs(panel: pd.DataFrame, table: pd.DataFrame, as_of: str, config: d
     except DataQualityError as exc:
         raise GateError(f"{as_of}: {exc}") from exc
     features = check_features(table.loc[table["year_month"] == as_of])
-    if features["problems"]:
+    if features["problems"] and strict:
         raise GateError(f"{as_of}: " + "; ".join(features["problems"]))
     acc = dq["accuracy"]
     return {
@@ -59,4 +60,5 @@ def check_inputs(panel: pd.DataFrame, table: pd.DataFrame, as_of: str, config: d
         "dq_accuracy_covid_base": acc["accuracy_covid_base"],
         "dq_hard_fail": dq["hard_fail"],
         "feature_rows_checked": features["n_rows"],
+        "gate_feature_problems": "; ".join(features["problems"]),
     }

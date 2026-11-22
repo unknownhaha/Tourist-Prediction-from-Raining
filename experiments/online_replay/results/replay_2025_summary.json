@@ -1,10 +1,10 @@
 {
   "label": "2025 replay, frozen Champion (EWA) served",
   "served": {
-    "wape": 0.04522632697152265,
-    "mae": 8629.721545874703,
-    "rmse": 21034.276962475476,
-    "mase": 0.8252348097765023,
+    "wape": 0.04522632697152263,
+    "mae": 8629.7215458747,
+    "rmse": 21034.27696247547,
+    "mase": 0.825234809776502,
     "n": 924
   },
   "seed_length": 24,
@@ -45,41 +45,42 @@
   "seed": {
     "source": "Champion one-step OOS monthly WAPE 2023-01..2024-12 (EWA weights reset each January)",
     "values": [
-      0.12362695937594786,
-      0.0492738148300104,
-      0.06952085309237584,
+      0.12362695937594793,
+      0.049273814830010455,
+      0.06952085309237585,
       0.06910291536566875,
-      0.05008669871434821,
-      0.06524377990223333,
-      0.04448295184721347,
-      0.04293491930277766,
-      0.06627323765212333,
-      0.06782378154759093,
-      0.0540313609689489,
-      0.05695275724651991,
-      0.06921606315952245,
-      0.08096436033258299,
-      0.07349815424508666,
-      0.06805390149619761,
-      0.033853082794465236,
-      0.04884908169219391,
-      0.05791461035098909,
-      0.03797108766824697,
-      0.057319022563385114,
-      0.04739946774053267,
-      0.044551294849504666,
-      0.048386293064888806
+      0.050086698714348205,
+      0.06524377990223328,
+      0.044482951847213445,
+      0.04293491930277769,
+      0.06627323765212334,
+      0.06782378154759097,
+      0.054031360968948956,
+      0.056952757246520026,
+      0.06921606315952247,
+      0.08096436033258311,
+      0.07349815424508672,
+      0.06805390149619756,
+      0.03385308279446522,
+      0.04884908169219393,
+      0.05791461035098913,
+      0.03797108766824694,
+      0.057319022563384996,
+      0.04739946774053262,
+      0.04455129484950463,
+      0.048386293064888834
     ]
   },
   "explanation": "no prepare_retrain; no ADWIN cut; PSI watches: 2025-02, 2025-03, 2025-05, 2025-06, 2025-07, 2025-08, 2025-12",
-  "champion_2025_wape_offline": 0.04522632697152265,
+  "champion_2025_wape_offline": 0.04522632697152263,
   "loop_matches_offline": true,
   "old_policy_reproduced": {
     "served_wape": 0.04788460348726727,
     "target": 0.04788460348726727,
     "match": true,
-    "promotions": 0
+    "promotions": 0,
+    "rollbacks": 0
   },
   "psi_threshold": 0.15,
-  "adwin_note": "local ADWIN never cuts a window shorter than 32 points; with a 24-month seed the first month that can fire is month 8 (August)"
+  "adwin_note": "The approved local ADWIN (delta 0.002, window >= 32, >= 16 points per side, monthly WAPE) CANNOT fire on a shift that starts inside the replay year: a cut needs >= 16 post-shift months and a mean shift of about 0.8 WAPE. Month 8 is only the first month the window is long enough to be tested at all (24-month seed + 8), not a month in which in-year drift can be detected. See drift_demos.py and README for the parameters that would fire."
 }

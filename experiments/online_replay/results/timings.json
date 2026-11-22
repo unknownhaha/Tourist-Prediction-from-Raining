@@ -1,13 +1,14 @@
 {
-  "reproduce": 175.8,
-  "dq": 3.8,
-  "select": 24.1,
-  "covid": 97.9,
+  "reproduce": 177.5,
+  "dq": 3.9,
+  "select": 25.6,
+  "covid": 105.6,
   "ewa": 0.0,
-  "replay2025": 61.8,
-  "demo2023": 108.1,
-  "rain": 63.4,
-  "results": 58.6,
-  "charts": 2.2,
-  "total_s": 600.5
+  "replay2025": 62.0,
+  "demo2023": 98.5,
+  "drift_demos": 294.1,
+  "rain": 70.5,
+  "results": 59.6,
+  "charts": 3.8,
+  "total_s": 907.1
 }
