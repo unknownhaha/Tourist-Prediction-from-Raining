@@ -64,3 +64,21 @@ def test_freeze_writes_the_stamp(tmp_path):
     cfg = S.freeze({"etas": [1.0]}, {"covid_variant": "C0"}, path)
     assert S.frozen_choice(S.load_config(path))["selected_on"] == 2024
     assert cfg["selection"]["covid_variant"] == "C0"
+
+
+def test_readme_headline_numbers_equal_results_csv():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1] / "experiments" / "online_replay"
+    res = pd.read_csv(root / "results" / "results.csv")
+    text = (root / "README.md").read_text(encoding="utf-8")
+    block = text.split("<!-- headline:start -->")[1].split("<!-- headline:end -->")[0]
+    lines = [l for l in block.splitlines() if l.startswith("|") and "---" not in l][1:]
+    names = ["seasonal_naive", "old_champion_rf_logdiff", "ewa_old_logdiff_level_eta10", "champion_baseline_C0_E2_eta10"]
+    final = [m for m in res["model"].unique() if m.startswith("final_champion") and not m.endswith("no_rain")][0]
+    names += [final, final + "_no_rain"]
+    assert len(lines) == len(names)
+    for line, name in zip(lines, names):
+        cells = [c.strip().strip("*") for c in line.strip("|").split("|")][1:]
+        got = [float(c) for c in cells]
+        want = [float(res[(res.model == name) & (res.year == y)]["wape_pct"].iloc[0]) for y in (2023, 2024, 2025)]
+        assert got == want, (name, got, want)

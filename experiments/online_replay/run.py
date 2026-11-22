@@ -183,9 +183,10 @@ def stage_covid(ctx: X.Context) -> pd.DataFrame:
     _write("covid_ab.csv", frame)
     chosen = sel["covid_variant"]
     table = []
-    for label, variant in ((f"with: selected ({chosen})", chosen), ("with: binary flags (C0)", "C0"), ("without COVID info (C4)", "C4")):
-        if label.endswith("(C0)") and chosen == "C0":
-            continue
+    labels = {"C0": "with: binary COVID flags (C0)", "C3": "with: recovery level + lagged event flag (C3)",
+              "C4": "without COVID info (C4)"}
+    for variant in list(cfg["covid_candidates"]) + list(cfg["covid_report_only"]):
+        label = labels[variant] + (" [selected on 2024]" if variant == chosen else "")
         r = frame.loc[frame["variant"] == variant].set_index("year")["wape"]
         table.append({"row": label, "variant": variant, **{f"wape_{y}_pct": round(r[y] * 100, 2) for y in YEARS}})
     _write("covid_with_without.csv", pd.DataFrame(table))

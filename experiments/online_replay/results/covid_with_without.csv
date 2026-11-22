@@ -1,2 +1,4 @@
 row,variant,wape_2023_pct,wape_2024_pct,wape_2025_pct
+with: binary COVID flags (C0) [selected on 2024],C0,6.34,5.58,4.52
+with: recovery level + lagged event flag (C3),C3,6.52,6.9,4.8
 without COVID info (C4),C4,6.67,5.32,4.75

@@ -1,0 +1,24 @@
+section,stat,spec,value,rain_coef,rain_p,model_input,n
+regression,r2,lr ~ mom,0.4294603760843728,,,True,2695.0
+regression,r2,lr ~ mom + d_rain_l1,0.43005569047094705,0.0020271962100444543,0.05816080048043198,True,2695.0
+regression,r2,lr ~ mom + ranom_l1,0.43013107947591234,3.179751005805173e-05,0.16629593538023968,True,2695.0
+regression,r2,lr ~ mom + d_rain_now,0.43366195584563605,-0.005255242211250104,3.838093625158105e-05,False,2695.0
+regression,delta_r2,"lagged rain (log YoY change, t-1)",0.0005953143865742305,0.0020271962100444543,0.05816080048043198,True,2695.0
+regression,delta_r2,lagged rain anomaly (t-1),0.0006707033915395177,3.179751005805173e-05,0.16629593538023968,True,2695.0
+regression,delta_r2,"same-month rain (descriptive, not a model input)",0.00420157976126323,-0.005255242211250104,3.838093625158105e-05,False,2695.0
+quintile,mean_yoy_residual_log_q1,"same-month rain anomaly quintile (1=driest, 5=wettest)",0.008250926438828072,,,False,537.0
+quintile,mean_yoy_residual_log_q2,"same-month rain anomaly quintile (1=driest, 5=wettest)",0.00865709765532636,,,False,537.0
+quintile,mean_yoy_residual_log_q3,"same-month rain anomaly quintile (1=driest, 5=wettest)",-0.0029542510004348216,,,False,537.0
+quintile,mean_yoy_residual_log_q4,"same-month rain anomaly quintile (1=driest, 5=wettest)",-0.002004326784362062,,,False,537.0
+quintile,mean_yoy_residual_log_q5,"same-month rain anomaly quintile (1=driest, 5=wettest)",-0.012222060929303254,,,False,537.0
+quintile,wettest_vs_other_quintiles_pct,"exp(diff)-1, descriptive",-1.5147521599346905,,,False,2695.0
+quintile,wettest_vs_driest_quintile_pct,"exp(q5-q1)-1, descriptive",-2.0264838657684505,,,False,2695.0
+ablation,drop_rain_diff_pt_2023,Champion without rain minus Champion (WAPE pt; + = rain helps),0.1159425916291229,,,True,
+ablation,drop_rain_diff_pt_2024,Champion without rain minus Champion (WAPE pt; + = rain helps),0.04799005556215541,,,True,
+ablation,drop_rain_diff_pt_2025,Champion without rain minus Champion (WAPE pt; + = rain helps),-0.049661889933103054,,,True,
+permutation,wape_increase_pt_rain_lag_1_2024,"frozen logdiff expert, fit ..2023-12, 5 shuffles",0.07968871056809351,,,True,924.0
+permutation,wape_increase_pt_rain_roll3_2024,"frozen logdiff expert, fit ..2023-12, 5 shuffles",0.140431474194187,,,True,924.0
+permutation,note_2024,"rain_anomaly is recomputed from rain_lag_1 inside the matrix, so shuffling rain_lag_1 also shuffles it",,,,,
+permutation,wape_increase_pt_rain_lag_1_2025,"frozen logdiff expert, fit ..2024-12, 5 shuffles",-0.018686249124740678,,,True,924.0
+permutation,wape_increase_pt_rain_roll3_2025,"frozen logdiff expert, fit ..2024-12, 5 shuffles",0.43469438054834914,,,True,924.0
+permutation,note_2025,"rain_anomaly is recomputed from rain_lag_1 inside the matrix, so shuffling rain_lag_1 also shuffles it",,,,,

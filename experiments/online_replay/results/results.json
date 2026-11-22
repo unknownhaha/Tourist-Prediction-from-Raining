@@ -1,0 +1,902 @@
+{
+  "selection": {
+    "covid_variant": "C0",
+    "experts": "E2",
+    "eta": 5.0,
+    "covid_ab": {
+      "chosen": "C0",
+      "best_raw": "C0",
+      "grid": {
+        "C0": {
+          "eta": 5.0,
+          "wape_2024": 0.05577904164895203,
+          "eta_grid": {
+            "0.5": 0.05607146373596413,
+            "1.0": 0.056011082269866404,
+            "2.0": 0.055915059819781156,
+            "5.0": 0.05577904164895203,
+            "10.0": 0.05590939333326368,
+            "20.0": 0.0570469313041829,
+            "50.0": 0.0595404585172364,
+            "100.0": 0.060233300922232336
+          }
+        },
+        "C3": {
+          "eta": 2.0,
+          "wape_2024": 0.06900332730000235,
+          "eta_grid": {
+            "0.5": 0.06919960067666432,
+            "1.0": 0.06903233589117674,
+            "2.0": 0.06900332730000235,
+            "5.0": 0.07052807642389457,
+            "10.0": 0.07298574485811321,
+            "20.0": 0.07545471939774633,
+            "50.0": 0.07624316073551902,
+            "100.0": 0.07625162229360528
+          }
+        }
+      },
+      "tie_break_pt": 0.05
+    },
+    "ewa_ab": {
+      "chosen": "E2",
+      "E2": {
+        "eta": 5.0,
+        "wape_2024": 0.05577904164895203,
+        "eta_grid": {
+          "0.5": 0.05607146373596413,
+          "1.0": 0.056011082269866404,
+          "2.0": 0.055915059819781156,
+          "5.0": 0.05577904164895203,
+          "10.0": 0.05590939333326368,
+          "20.0": 0.0570469313041829,
+          "50.0": 0.0595404585172364,
+          "100.0": 0.060233300922232336
+        }
+      },
+      "E3": {
+        "eta": 0.5,
+        "wape_2024": 0.05603067947115436,
+        "eta_grid": {
+          "0.5": 0.05603067947115436,
+          "1.0": 0.056064935260320116,
+          "2.0": 0.05615789584915149,
+          "5.0": 0.05642379298803945,
+          "10.0": 0.056976825701836965,
+          "20.0": 0.05799164418181801,
+          "50.0": 0.05948405499203316,
+          "100.0": 0.06010362671284221
+        }
+      },
+      "gain_pt": -0.025163782220232606,
+      "min_gain_pt": 0.02
+    },
+    "rule": "lowest 2024 monthly EWA WAPE; COVID tie < 0.05 pt -> fewer features; E3 kept only if >= 0.02 pt better",
+    "selected_on": 2024
+  },
+  "reproduce": {
+    "online_trials": {
+      "rf_logdiff|2023": {
+        "wape": 0.19966991334615072,
+        "reference": 0.19966991334615072,
+        "match_4dp": true
+      },
+      "rf_level|2023": {
+        "wape": 0.07488332904130364,
+        "reference": 0.07488332904130364,
+        "match_4dp": true
+      },
+      "ewa_logdiff_level|2023": {
+        "wape": 0.07131169664207725,
+        "reference": 0.07131169664207725,
+        "match_4dp": true
+      },
+      "seasonal_naive|2023": {
+        "wape": 0.32715528816404066,
+        "reference": 0.32715528816404066,
+        "match_4dp": true
+      },
+      "level_port_equals_run_year|2023": {
+        "max_abs_diff": 6.984919309616089e-10
+      },
+      "rf_logdiff|2024": {
+        "wape": 0.05936084069568007,
+        "reference": 0.05936084069568007,
+        "match_4dp": true
+      },
+      "rf_level|2024": {
+        "wape": 0.06997717936881007,
+        "reference": 0.06997717936881007,
+        "match_4dp": true
+      },
+      "ewa_logdiff_level|2024": {
+        "wape": 0.056370727420677634,
+        "reference": 0.056370727420677634,
+        "match_4dp": true
+      },
+      "seasonal_naive|2024": {
+        "wape": 0.11152113853639248,
+        "reference": 0.11152113853639248,
+        "match_4dp": true
+      },
+      "level_port_equals_run_year|2024": {
+        "max_abs_diff": 1.3969838619232178e-09
+      },
+      "rf_logdiff|2025": {
+        "wape": 0.04829016837105007,
+        "reference": 0.04829016837105007,
+        "match_4dp": true
+      },
+      "rf_level|2025": {
+        "wape": 0.05961592738032414,
+        "reference": 0.05961592738032414,
+        "match_4dp": true
+      },
+      "ewa_logdiff_level|2025": {
+        "wape": 0.04554990159651405,
+        "reference": 0.04554990159651405,
+        "match_4dp": true
+      },
+      "seasonal_naive|2025": {
+        "wape": 0.05480419201387209,
+        "reference": 0.05480419201387209,
+        "match_4dp": true
+      },
+      "level_port_equals_run_year|2025": {
+        "max_abs_diff": 9.313225746154785e-10
+      }
+    },
+    "champion": {
+      "2023": {
+        "wape": 0.06502057545896253,
+        "wape_pct": 6.5021,
+        "reference_pct": 6.5,
+        "within_0.01pt": true,
+        "logdiff_expert_wape": 0.08549391530241658
+      },
+      "2024": {
+        "wape": 0.05590939333326368,
+        "wape_pct": 5.5909,
+        "reference_pct": 5.59,
+        "within_0.01pt": true,
+        "logdiff_expert_wape": 0.05937713042970685
+      },
+      "2025": {
+        "wape": 0.045366183441453725,
+        "wape_pct": 4.5366,
+        "reference_pct": 4.54,
+        "within_0.01pt": true,
+        "logdiff_expert_wape": 0.04656365545474668
+      }
+    },
+    "no_rain": {
+      "2023": {
+        "wape": 0.06657219298990788,
+        "wape_pct": 6.6572,
+        "reference_pct": 6.66,
+        "within_0.01pt": true,
+        "logdiff_expert_wape": 0.0864731761495282
+      },
+      "2024": {
+        "wape": 0.057192804848631484,
+        "wape_pct": 5.7193,
+        "reference_pct": 5.72,
+        "within_0.01pt": true,
+        "logdiff_expert_wape": 0.06072795930938022
+      },
+      "2025": {
+        "wape": 0.04435770937211993,
+        "wape_pct": 4.4358,
+        "reference_pct": 4.44,
+        "within_0.01pt": true,
+        "logdiff_expert_wape": 0.044942120058078044
+      }
+    },
+    "all_match": true
+  },
+  "dq": {
+    "hard_fail": false,
+    "scores": {
+      "completeness": 1.0,
+      "accuracy": 0.8927272727272727,
+      "consistency": 1.0,
+      "uniqueness": 1.0,
+      "timeliness": 1.0,
+      "validity": 1.0,
+      "overall": 0.9821212121212121
+    }
+  },
+  "dq_accuracy": {
+    "accuracy_normal": 0.8927272727272727,
+    "accuracy_covid": 0.05920550038197092,
+    "accuracy_covid_base": 0.3084415584415584,
+    "accuracy_legacy_v1": 0.5392316017316017,
+    "accuracy_normal_total_and_rain_only": 0.9516883116883117
+  },
+  "replay_2025": {
+    "label": "2025 replay, frozen Champion (EWA) served",
+    "served": {
+      "wape": 0.04522632697152265,
+      "mae": 8629.721545874703,
+      "rmse": 21034.276962475476,
+      "mase": 0.8252348097765023,
+      "n": 924
+    },
+    "seed_length": 24,
+    "seed_cuts": 0,
+    "window_after_seed": 24,
+    "adwin_cut_months": [],
+    "adwin_alarm_months": [],
+    "psi_alarm_months": [
+      "2025-02",
+      "2025-03",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-12"
+    ],
+    "watch_months": [
+      "2025-02",
+      "2025-03",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-12"
+    ],
+    "prepare_retrain_months": [],
+    "promotions": [],
+    "rollbacks": [],
+    "seed": {
+      "source": "Champion one-step OOS monthly WAPE 2023-01..2024-12 (EWA weights reset each January)",
+      "values": [
+        0.12362695937594786,
+        0.0492738148300104,
+        0.06952085309237584,
+        0.06910291536566875,
+        0.05008669871434821,
+        0.06524377990223333,
+        0.04448295184721347,
+        0.04293491930277766,
+        0.06627323765212333,
+        0.06782378154759093,
+        0.0540313609689489,
+        0.05695275724651991,
+        0.06921606315952245,
+        0.08096436033258299,
+        0.07349815424508666,
+        0.06805390149619761,
+        0.033853082794465236,
+        0.04884908169219391,
+        0.05791461035098909,
+        0.03797108766824697,
+        0.057319022563385114,
+        0.04739946774053267,
+        0.044551294849504666,
+        0.048386293064888806
+      ]
+    },
+    "explanation": "no prepare_retrain; no ADWIN cut; PSI watches: 2025-02, 2025-03, 2025-05, 2025-06, 2025-07, 2025-08, 2025-12",
+    "champion_2025_wape_offline": 0.04522632697152265,
+    "loop_matches_offline": true,
+    "old_policy_reproduced": {
+      "served_wape": 0.04788460348726727,
+      "target": 0.04788460348726727,
+      "match": true,
+      "promotions": 0
+    },
+    "psi_threshold": 0.15,
+    "adwin_note": "local ADWIN never cuts a window shorter than 32 points; with a 24-month seed the first month that can fire is month 8 (August)"
+  },
+  "demo_2023": {
+    "A": {
+      "label": "Track A: plain RF logdiff (old Champion) served, refit monthly",
+      "served": {
+        "wape": 0.19966991334615072,
+        "mae": 34005.56231105054,
+        "rmse": 107191.30307271762,
+        "mase": 0.6103215218273751,
+        "n": 924
+      },
+      "seed_length": 24,
+      "seed_cuts": 0,
+      "window_after_seed": 24,
+      "adwin_cut_months": [],
+      "adwin_alarm_months": [],
+      "psi_alarm_months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12"
+      ],
+      "watch_months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12"
+      ],
+      "prepare_retrain_months": [],
+      "promotions": [],
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "rf_logdiff_monthly@2022-12",
+          "trained_through": "2022-12",
+          "effective_from": "2023-01",
+          "rolled_back": false
+        }
+      ],
+      "seed": [
+        0.7065935701711064,
+        0.9822711157932391,
+        0.6890004416530008,
+        0.8978633591155019,
+        1.8273593841058138,
+        2.8511139703005464,
+        4.381459878960756,
+        0.720461681202699,
+        0.4315702176486475,
+        0.4510815485005971,
+        0.1973029835509786,
+        0.31174000885399644,
+        0.6287322598725197,
+        0.4084013489410463,
+        0.35754004973878367,
+        0.4337816916553076,
+        0.5934465069143555,
+        0.905262879581066,
+        0.3581449183944657,
+        0.321498708925333,
+        0.4030618210403369,
+        0.6892244818531982,
+        0.2197815179949847,
+        0.14246257176045546
+      ],
+      "explanation": "no prepare_retrain; no ADWIN cut; PSI watches: 2023-01, 2023-02, 2023-03, 2023-04, 2023-05, 2023-06, 2023-07, 2023-08, 2023-09, 2023-10, 2023-11, 2023-12"
+    },
+    "B": {
+      "label": "Track B: new EWA Champion served",
+      "served": {
+        "wape": 0.0633801023801144,
+        "mae": 10794.195202716017,
+        "rmse": 29233.796507492567,
+        "mase": 0.1937309426841196,
+        "n": 924
+      },
+      "seed_length": 24,
+      "seed_cuts": 0,
+      "window_after_seed": 24,
+      "adwin_cut_months": [],
+      "adwin_alarm_months": [],
+      "psi_alarm_months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12"
+      ],
+      "watch_months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12"
+      ],
+      "prepare_retrain_months": [],
+      "promotions": [],
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "champion@2022-12",
+          "trained_through": "2022-12",
+          "effective_from": "2023-01",
+          "rolled_back": false
+        }
+      ],
+      "seed": [
+        0.6269751858782839,
+        0.9666893561495362,
+        0.6758949593546134,
+        0.8107129686007061,
+        1.7734949204064103,
+        0.3132440302275102,
+        1.305292062967704,
+        0.24278731462990688,
+        0.5712327790125763,
+        0.47164040003627294,
+        0.23433700317412917,
+        0.32730248817232727,
+        0.28418792508621993,
+        0.16697444396259883,
+        0.1170844899909108,
+        0.16658079191915412,
+        0.2625147437400466,
+        0.10896509565655707,
+        0.15308511493044497,
+        0.09945270146945624,
+        0.09982743712504004,
+        0.13875177563686397,
+        0.14495350689917,
+        0.14455324237554754
+      ],
+      "explanation": "no prepare_retrain; no ADWIN cut; PSI watches: 2023-01, 2023-02, 2023-03, 2023-04, 2023-05, 2023-06, 2023-07, 2023-08, 2023-09, 2023-10, 2023-11, 2023-12"
+    },
+    "A_sensitivity": {
+      "label": "ILLUSTRATIVE ONLY: Track A with ADWIN delta=0.05 (not tuned, not a config)",
+      "served": {
+        "wape": 0.19966991334615072,
+        "mae": 34005.56231105054,
+        "rmse": 107191.30307271762,
+        "mase": 0.6103215218273751,
+        "n": 924
+      },
+      "seed_length": 24,
+      "seed_cuts": 0,
+      "window_after_seed": 24,
+      "adwin_cut_months": [
+        "2023-10"
+      ],
+      "adwin_alarm_months": [],
+      "psi_alarm_months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12"
+      ],
+      "watch_months": [
+        "2023-01",
+        "2023-02",
+        "2023-03",
+        "2023-04",
+        "2023-05",
+        "2023-06",
+        "2023-07",
+        "2023-08",
+        "2023-09",
+        "2023-10",
+        "2023-11",
+        "2023-12"
+      ],
+      "prepare_retrain_months": [],
+      "promotions": [],
+      "rollbacks": [],
+      "registry": [
+        {
+          "id": "v001",
+          "model": "rf_logdiff_monthly@2022-12",
+          "trained_through": "2022-12",
+          "effective_from": "2023-01",
+          "rolled_back": false
+        }
+      ],
+      "explanation": "no prepare_retrain; ADWIN cut(s) ['2023-10'] (alarms []); PSI watches: 2023-01, 2023-02, 2023-03, 2023-04, 2023-05, 2023-06, 2023-07, 2023-08, 2023-09, 2023-10, 2023-11, 2023-12"
+    }
+  },
+  "rows": [
+    {
+      "model": "seasonal_naive",
+      "desc": "lag-12",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.32715528816404066,
+      "mae": 55717.455627705625,
+      "rmse": 170728.72135881853,
+      "mase": 1.0,
+      "bias": -0.3244785501444889,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": 0.0,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "wape_pct": 32.72
+    },
+    {
+      "model": "old_champion_rf_logdiff",
+      "desc": "RF logdiff, refit monthly (old Champion)",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.19966991334615072,
+      "mae": 34005.56231105054,
+      "rmse": 107191.30307271762,
+      "mase": 0.6103215218273751,
+      "bias": 0.06881410425139145,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.12748537481788993,
+      "provinces_beating_naive": 42,
+      "provinces": 77,
+      "wape_pct": 19.97
+    },
+    {
+      "model": "ewa_old_logdiff_level_eta10",
+      "desc": "EWA(RF logdiff, RF level), eta 10 (online_trials)",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.07131169664207723,
+      "mae": 12145.01625723093,
+      "rmse": 30475.92579861974,
+      "mase": 0.21797506939982725,
+      "bias": -0.0154394021185843,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.25584359152196345,
+      "provinces_beating_naive": 73,
+      "provinces": 77,
+      "wape_pct": 7.13
+    },
+    {
+      "model": "champion_baseline_C0_E2_eta10",
+      "desc": "EWA(logdiff+exp_lr_recent3, level), eta 10 (data-review baseline)",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.06502057545896253,
+      "mae": 11073.582360087397,
+      "rmse": 30399.55655151812,
+      "mase": 0.19874529867406643,
+      "bias": -0.020197201099935502,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.26213471270507815,
+      "provinces_beating_naive": 75,
+      "provinces": 77,
+      "wape_pct": 6.5
+    },
+    {
+      "model": "final_champion_C0_E2_eta5",
+      "desc": "frozen choice from 2024",
+      "year": 2023,
+      "selected_on_2024": true,
+      "wape": 0.0633801023801144,
+      "mae": 10794.195202716017,
+      "rmse": 29233.796507492567,
+      "mase": 0.1937309426841196,
+      "bias": -0.01788097380615372,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.2637751857839262,
+      "provinces_beating_naive": 75,
+      "provinces": 77,
+      "wape_pct": 6.34
+    },
+    {
+      "model": "expert_logdiff_C0",
+      "desc": "single expert inside the final Champion: logdiff",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.08549391530241658,
+      "mae": 14560.374246228675,
+      "rmse": 34859.26845877169,
+      "mase": 0.2613251822466297,
+      "bias": 0.004005577352572454,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.2416613728616241,
+      "provinces_beating_naive": 69,
+      "provinces": 77,
+      "wape_pct": 8.55
+    },
+    {
+      "model": "expert_level_C0",
+      "desc": "single expert inside the final Champion: level",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.07488332904130363,
+      "mae": 12753.29702456668,
+      "rmse": 39752.29530653481,
+      "mase": 0.22889230818043807,
+      "bias": -0.03356975532904194,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.25227195912273703,
+      "provinces_beating_naive": 75,
+      "provinces": 77,
+      "wape_pct": 7.49
+    },
+    {
+      "model": "final_champion_C0_E2_eta5_no_rain",
+      "desc": "final Champion with every rain column dropped (ablation)",
+      "year": 2023,
+      "selected_on_2024": false,
+      "wape": 0.06453952829640563,
+      "mae": 10991.655749379037,
+      "rmse": 27350.923472165792,
+      "mase": 0.19727490470532924,
+      "bias": -0.013749665769544506,
+      "naive_wape": 0.32715528816404066,
+      "gap_vs_naive": -0.262615759867635,
+      "provinces_beating_naive": 75,
+      "provinces": 77,
+      "wape_pct": 6.45
+    },
+    {
+      "model": "seasonal_naive",
+      "desc": "lag-12",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.11152113853639248,
+      "mae": 21049.72943722944,
+      "rmse": 56692.98828924528,
+      "mase": 1.0,
+      "bias": -0.09770612813213153,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": 0.0,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "wape_pct": 11.15
+    },
+    {
+      "model": "old_champion_rf_logdiff",
+      "desc": "RF logdiff, refit monthly (old Champion)",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.05936084069568007,
+      "mae": 11204.41964823366,
+      "rmse": 30295.865257899422,
+      "mase": 0.5322833094670115,
+      "bias": -0.01894312147187527,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.05216029784071241,
+      "provinces_beating_naive": 56,
+      "provinces": 77,
+      "wape_pct": 5.94
+    },
+    {
+      "model": "ewa_old_logdiff_level_eta10",
+      "desc": "EWA(RF logdiff, RF level), eta 10 (online_trials)",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.056370727420677655,
+      "mae": 10640.032696562348,
+      "rmse": 28416.787289985918,
+      "mase": 0.505471233171479,
+      "bias": -0.0254283800003694,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.05515041111571482,
+      "provinces_beating_naive": 62,
+      "provinces": 77,
+      "wape_pct": 5.64
+    },
+    {
+      "model": "champion_baseline_C0_E2_eta10",
+      "desc": "EWA(logdiff+exp_lr_recent3, level), eta 10 (data-review baseline)",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.05590939333326368,
+      "mae": 10552.95541374689,
+      "rmse": 27898.733987451636,
+      "mase": 0.5013344919808085,
+      "bias": -0.020711007645515478,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.055611745203128796,
+      "provinces_beating_naive": 63,
+      "provinces": 77,
+      "wape_pct": 5.59
+    },
+    {
+      "model": "final_champion_C0_E2_eta5",
+      "desc": "frozen choice from 2024",
+      "year": 2024,
+      "selected_on_2024": true,
+      "wape": 0.05577904164895203,
+      "mae": 10528.35139945455,
+      "rmse": 27816.267665251868,
+      "mase": 0.5001656401736767,
+      "bias": -0.021881877493764024,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.055742096887440445,
+      "provinces_beating_naive": 62,
+      "provinces": 77,
+      "wape_pct": 5.58
+    },
+    {
+      "model": "expert_logdiff_C0",
+      "desc": "single expert inside the final Champion: logdiff",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.05937713042970685,
+      "mae": 11207.494352261689,
+      "rmse": 29872.963916773173,
+      "mase": 0.5324293780441492,
+      "bias": -0.01341234959600468,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.05214400810668563,
+      "provinces_beating_naive": 56,
+      "provinces": 77,
+      "wape_pct": 5.94
+    },
+    {
+      "model": "expert_level_C0",
+      "desc": "single expert inside the final Champion: level",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.06997717936881007,
+      "mae": 13208.26447636422,
+      "rmse": 36532.14188727553,
+      "mase": 0.6274790617024999,
+      "bias": -0.0328864684091974,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.04154395916758241,
+      "provinces_beating_naive": 54,
+      "provinces": 77,
+      "wape_pct": 7.0
+    },
+    {
+      "model": "final_champion_C0_E2_eta5_no_rain",
+      "desc": "final Champion with every rain column dropped (ablation)",
+      "year": 2024,
+      "selected_on_2024": false,
+      "wape": 0.056258942204573587,
+      "mae": 10618.933122212997,
+      "rmse": 27785.778770804478,
+      "mase": 0.504468865211726,
+      "bias": -0.024661238045211697,
+      "naive_wape": 0.11152113853639248,
+      "gap_vs_naive": -0.05526219633181889,
+      "provinces_beating_naive": 63,
+      "provinces": 77,
+      "wape_pct": 5.63
+    },
+    {
+      "model": "seasonal_naive",
+      "desc": "lag-12",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.05480419201387209,
+      "mae": 10457.292207792209,
+      "rmse": 25420.935258304846,
+      "mase": 1.0,
+      "bias": -0.010800566335927075,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": 0.0,
+      "provinces_beating_naive": 0,
+      "provinces": 77,
+      "wape_pct": 5.48
+    },
+    {
+      "model": "old_champion_rf_logdiff",
+      "desc": "RF logdiff, refit monthly (old Champion)",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.04829016837105007,
+      "mae": 9214.338955891064,
+      "rmse": 20876.888872928965,
+      "mase": 0.8811400478055913,
+      "bias": 0.0014497808110907062,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": -0.0065140236428220255,
+      "provinces_beating_naive": 52,
+      "provinces": 77,
+      "wape_pct": 4.83
+    },
+    {
+      "model": "ewa_old_logdiff_level_eta10",
+      "desc": "EWA(RF logdiff, RF level), eta 10 (online_trials)",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.04554990159651405,
+      "mae": 8691.463436051743,
+      "rmse": 20755.84593386585,
+      "mase": 0.8311390045671034,
+      "bias": 0.0002327019711456657,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": -0.009254290417358042,
+      "provinces_beating_naive": 54,
+      "provinces": 77,
+      "wape_pct": 4.55
+    },
+    {
+      "model": "champion_baseline_C0_E2_eta10",
+      "desc": "EWA(logdiff+exp_lr_recent3, level), eta 10 (data-review baseline)",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.045366183441453725,
+      "mae": 8656.407825144168,
+      "rmse": 20756.361928397586,
+      "mase": 0.8277867399262192,
+      "bias": 0.003238925441483076,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": -0.009438008572418367,
+      "provinces_beating_naive": 54,
+      "provinces": 77,
+      "wape_pct": 4.54
+    },
+    {
+      "model": "final_champion_C0_E2_eta5",
+      "desc": "frozen choice from 2024",
+      "year": 2025,
+      "selected_on_2024": true,
+      "wape": 0.04522632697152265,
+      "mae": 8629.721545874703,
+      "rmse": 21034.276962475476,
+      "mase": 0.8252348097765023,
+      "bias": 0.0026211221968639453,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": -0.009577865042349441,
+      "provinces_beating_naive": 53,
+      "provinces": 77,
+      "wape_pct": 4.52
+    },
+    {
+      "model": "expert_logdiff_C0",
+      "desc": "single expert inside the final Champion: logdiff",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.04656365545474668,
+      "mae": 8884.899739603705,
+      "rmse": 19955.18341502258,
+      "mase": 0.8496367475495386,
+      "bias": 0.005199170456591018,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": -0.008240536559125412,
+      "provinces_beating_naive": 55,
+      "provinces": 77,
+      "wape_pct": 4.66
+    },
+    {
+      "model": "expert_level_C0",
+      "desc": "single expert inside the final Champion: level",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.05961592738032414,
+      "mae": 11375.428593067638,
+      "rmse": 29015.019625879773,
+      "mase": 1.0877986735984373,
+      "bias": -0.0015353990656227223,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": 0.004811735366452047,
+      "provinces_beating_naive": 32,
+      "provinces": 77,
+      "wape_pct": 5.96
+    },
+    {
+      "model": "final_champion_C0_E2_eta5_no_rain",
+      "desc": "final Champion with every rain column dropped (ablation)",
+      "year": 2025,
+      "selected_on_2024": false,
+      "wape": 0.04472970807219162,
+      "mae": 8534.960748290056,
+      "rmse": 22872.85662244886,
+      "mase": 0.8161731142915051,
+      "bias": 0.0005004447403069712,
+      "naive_wape": 0.05480419201387209,
+      "gap_vs_naive": -0.010074483941680472,
+      "provinces_beating_naive": 59,
+      "provinces": 77,
+      "wape_pct": 4.47
+    }
+  ]
+}
