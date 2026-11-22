@@ -8,5 +8,11 @@
   "consistency_max_calendar_mismatch": 0,
   "accuracy_max_flagged_row_frac": 0.5,
   "holiday_count_max": 31,
-  "notes": "A warning never blocks training. A rate above a max does. DS/ML may edit these numbers."
+  "accuracy_rule": "v2",
+  "rain_rule": "seasonal_log_mad",
+  "rain_z_limit": 3.5,
+  "guest_log_jump_limit": 0.6931471805599453,
+  "covid_window": ["2020-03", "2022-12"],
+  "accuracy_min_normal": 0.90,
+  "notes": "A warning never blocks training. A rate above a max does. DS/ML may edit these numbers. accuracy_rule v1 reproduces the legacy accuracy (0.5392316017); v2 scores the normal bucket (t and t-12 outside covid_window, which mirrors config/sources.yaml) and reports the COVID buckets separately."
 }
