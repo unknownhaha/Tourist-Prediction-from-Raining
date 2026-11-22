@@ -86,8 +86,20 @@ def test_full_2025_loop_ignores_labels_from_july_on(clean, poisoned_2025_07, cfg
     T = "2025-07"
     # With the gate on, the poisoned stream is stopped by the input gate before 2025-08 is served
     # (2025-08 is the first month whose visible history contains a poisoned label).
-    with pytest.raises(GateError):
-        _track(poisoned_2025_07, cfg, sel, gate=True)
+    served_months = []
+    original_call = R.Server.__call__
+
+    def spy(self, key, month):
+        served_months.append(month)
+        return original_call(self, key, month)
+
+    R.Server.__call__ = spy
+    try:
+        with pytest.raises(GateError, match=r"^2025-08:"):
+            _track(poisoned_2025_07, cfg, sel, gate=True)
+    finally:
+        R.Server.__call__ = original_call
+    assert sorted(set(served_months)) == [m for m in X.months_of(2025) if m <= T]
     seed_c, served_c, tr_c = _track(clean, cfg, sel, gate=False)
     seed_p, served_p, tr_p = _track(poisoned_2025_07, cfg, sel, gate=False)
     np.testing.assert_allclose(seed_c, seed_p, **TOL)
@@ -102,6 +114,27 @@ def test_full_2025_loop_ignores_labels_from_july_on(clean, poisoned_2025_07, cfg
     pd.testing.assert_series_equal(lc.loc[T, decision], lp.loc[T, decision], check_exact=False, rtol=1e-9, atol=1e-12)
     # The poison has teeth: month T's observed error differs.
     assert abs(lc.loc[T, "served_wape"] - lp.loc[T, "served_wape"]) > 0.5
+
+
+def test_gate_result_is_never_shared_between_contexts(clean, poisoned_2025_07):
+    """Regression (QA N1): an id()-keyed module cache let a poisoned context reuse a freed clean
+    context's gate result. Contexts are rebuilt cheaply from the same frames 5 times so that
+    CPython id reuse is near-certain; every poisoned context must still fail the gate."""
+    import gc
+
+    for _ in range(5):
+        c = X.Context(clean.panel, clean.table, clean.history, clean.normal)
+        R._gate(c, "2025-08")  # passes and is cached
+        assert ("2025-08", True) in c.gate_cache
+        del c
+        gc.collect()
+        p = X.Context(poisoned_2025_07.panel, poisoned_2025_07.table, poisoned_2025_07.history, poisoned_2025_07.normal)
+        assert p.gate_cache == {}
+        with pytest.raises(GateError, match=r"^2025-08:"):
+            R._gate(p, "2025-08")
+        del p
+        gc.collect()
+    assert not hasattr(R, "_GATE_CACHE")
 
 
 def test_adwin_seed_ignores_labels_from_t_on(clean, sel):

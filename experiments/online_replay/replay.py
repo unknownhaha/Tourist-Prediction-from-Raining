@@ -151,15 +151,13 @@ def run_track(ctx: X.Context, cfg: dict, months: list[str], served: dict, initia
     return {"result": result, "log": pd.DataFrame(rows), "y": y, "naive": naive, "server": server}
 
 
-_GATE_CACHE: dict = {}
-
-
 def _gate(ctx: X.Context, month: str, strict: bool = True) -> dict:
-    """The gate result depends only on the panel and the month, so tracks share it."""
-    key = (id(ctx), month, strict)
-    if key not in _GATE_CACHE:
-        _GATE_CACHE[key] = check_inputs(ctx.panel, ctx.table, month, strict=strict)
-    return _GATE_CACHE[key]
+    """The gate result depends only on the context's panel and the month, so tracks on the same
+    context share it. It is cached on the context object itself, never in a module-level dict."""
+    key = (month, strict)
+    if key not in ctx.gate_cache:
+        ctx.gate_cache[key] = check_inputs(ctx.panel, ctx.table, month, strict=strict)
+    return ctx.gate_cache[key]
 
 
 def _by_month(part: pd.DataFrame, pred: np.ndarray) -> dict[str, np.ndarray]:

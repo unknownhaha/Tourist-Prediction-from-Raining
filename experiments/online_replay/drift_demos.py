@@ -17,8 +17,11 @@ Illustrative runs (clearly labelled, not configs, not tuned on the replay years)
 river's variance-aware ADWIN was tried too: its bound keeps a 2/(3m)*ln(2/delta) term that
 assumes values in [0, 1], so it does not fire on 4 % -> 20 % WAPE steps either (adapter kept, tested).
 
-The input gate runs non-strict here: COVID months push exp_lr_recent outside [-5, 5], which is a
-hard stop for the 2025 replay. In the demos the problem is logged (gate_feature_problems) instead.
+Gating: the ILLUSTRATIVE_* detector runs are UNGATED (gate=False: check_inputs never runs).
+Only the approved_adwin runs call the input gate, and non-strictly: COVID months push exp_lr_recent
+outside [-5, 5], which is a hard stop in the 2025 replay; here that feature problem is logged in
+gate_feature_problems instead (DQ hard failures would still raise). The 2025 replay and the 2023
+demo are gated strictly.
 """
 
 from __future__ import annotations

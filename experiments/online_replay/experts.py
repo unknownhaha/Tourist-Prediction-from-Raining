@@ -49,6 +49,9 @@ class Context:
     history: dict
     normal: list[int]
     cache: dict = field(default_factory=dict)
+    # Input-gate results per (month, strict). Lives on the context so it can never be reused for
+    # another context (an id()-keyed module cache could hand a freed context's result to a new one).
+    gate_cache: dict = field(default_factory=dict)
 
     @classmethod
     def build(cls, panel: pd.DataFrame | None = None, events: list[dict] | None = None) -> "Context":
