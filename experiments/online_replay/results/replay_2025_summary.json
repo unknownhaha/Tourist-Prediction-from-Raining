@@ -1,0 +1,85 @@
+{
+  "label": "2025 replay, frozen Champion (EWA) served",
+  "served": {
+    "wape": 0.04522632697152265,
+    "mae": 8629.721545874703,
+    "rmse": 21034.276962475476,
+    "mase": 0.8252348097765023,
+    "n": 924
+  },
+  "seed_length": 24,
+  "seed_cuts": 0,
+  "window_after_seed": 24,
+  "adwin_cut_months": [],
+  "adwin_alarm_months": [],
+  "psi_alarm_months": [
+    "2025-02",
+    "2025-03",
+    "2025-05",
+    "2025-06",
+    "2025-07",
+    "2025-08",
+    "2025-12"
+  ],
+  "watch_months": [
+    "2025-02",
+    "2025-03",
+    "2025-05",
+    "2025-06",
+    "2025-07",
+    "2025-08",
+    "2025-12"
+  ],
+  "prepare_retrain_months": [],
+  "promotions": [],
+  "rollbacks": [],
+  "registry": [
+    {
+      "id": "v001",
+      "model": "champion@2024-12",
+      "trained_through": "2024-12",
+      "effective_from": "2025-01",
+      "rolled_back": false
+    }
+  ],
+  "seed": {
+    "source": "Champion one-step OOS monthly WAPE 2023-01..2024-12 (EWA weights reset each January)",
+    "values": [
+      0.12362695937594786,
+      0.0492738148300104,
+      0.06952085309237584,
+      0.06910291536566875,
+      0.05008669871434821,
+      0.06524377990223333,
+      0.04448295184721347,
+      0.04293491930277766,
+      0.06627323765212333,
+      0.06782378154759093,
+      0.0540313609689489,
+      0.05695275724651991,
+      0.06921606315952245,
+      0.08096436033258299,
+      0.07349815424508666,
+      0.06805390149619761,
+      0.033853082794465236,
+      0.04884908169219391,
+      0.05791461035098909,
+      0.03797108766824697,
+      0.057319022563385114,
+      0.04739946774053267,
+      0.044551294849504666,
+      0.048386293064888806
+    ]
+  },
+  "explanation": "no prepare_retrain; no ADWIN cut; PSI watches: 2025-02, 2025-03, 2025-05, 2025-06, 2025-07, 2025-08, 2025-12",
+  "champion_2025_wape_offline": 0.04522632697152265,
+  "loop_matches_offline": true,
+  "old_policy_reproduced": {
+    "served_wape": 0.04788460348726727,
+    "target": 0.04788460348726727,
+    "match": true,
+    "promotions": 0
+  },
+  "psi_threshold": 0.15,
+  "adwin_note": "local ADWIN never cuts a window shorter than 32 points; with a 24-month seed the first month that can fire is month 8 (August)"
+}

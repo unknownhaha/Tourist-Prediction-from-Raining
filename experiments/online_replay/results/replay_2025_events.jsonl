@@ -1,0 +1,7 @@
+{"month": "2025-02", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_roll3"], "reference_end": "2024-12"}
+{"month": "2025-03", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_lag_1"], "reference_end": "2024-12"}
+{"month": "2025-05", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_roll3"], "reference_end": "2024-12"}
+{"month": "2025-06", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_lag_1", "rain_roll3"], "reference_end": "2024-12"}
+{"month": "2025-07", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_lag_1", "rain_roll3"], "reference_end": "2024-12"}
+{"month": "2025-08", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_roll3"], "reference_end": "2024-12"}
+{"month": "2025-12", "event": "watch", "psi": true, "adwin": false, "trigger": false, "retrain": false, "features": ["rain_lag_1"], "reference_end": "2024-12"}
